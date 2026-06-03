@@ -1,0 +1,1217 @@
+{
+  "generatedAt": "2026-05-30T05:00:00.000Z",
+  "results": [
+    {
+      "attackId": "PREDICATE_HAPPY_PATH",
+      "label": "Agent stays within your limits",
+      "traceId": "trace-predicate-happy",
+      "description": "Concrete settlement satisfies the human-signed predicate.",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          },
+          "R17_PREDICATE_TRUE_FOR_MODE_B": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-predicate-happy",
+          "mode": "MODE_B_PREDICATE",
+          "status": "PASS",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "failedRules": [],
+          "clbCommitment": "0x3ae4ee9fe81a9f632999e6644a1748e676d34435f68768f1e2bea82acb361a85",
+          "settlementTxHash": "0xf099d39007a612f97863a53064b72a60975d8413138b271a5944eb4898dd8d4d",
+          "traceMerkleRoot": "0x36e51814b0f866add13fe8409fb33b8c113c3dfbc0a743e8654d49e225871592",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-31T07:59:23.281Z",
+          "certificateHash": "0x31d4a24151799d5e567950893d2a3b048e7f199f58c9ff138faca59cf811819a"
+        },
+        "result": {
+          "traceId": "trace-predicate-happy",
+          "status": "PASS",
+          "failedRules": [],
+          "warnings": [],
+          "certificateHash": "0x31d4a24151799d5e567950893d2a3b048e7f199f58c9ff138faca59cf811819a",
+          "checkedAt": "2026-05-31T07:59:23.281Z",
+          "mode": "MODE_B_PREDICATE"
+        }
+      },
+      "expectedFailedRules": [],
+      "matched": true,
+      "preventionLayer": "none",
+      "guardPrevented": false,
+      "anatomy": {
+        "summary": "The human signed spending rules once; the agent then settled a concrete payment that stays inside every rule, so it is allowed.",
+        "steps": [
+          "Human signs a predicate: allowed merchants, a spending cap, allowed tokens, and a deadline.",
+          "Agent later picks a concrete payee, amount, and token within those rules.",
+          "The predicate guard allows the settlement and the verifier confirms it (R17 passes)."
+        ],
+        "mutations": [],
+        "evidenceFocus": [
+          "AP2_INTENT_MANDATE",
+          "X402_PAYMENT_PAYLOAD",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [],
+        "authorizedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0x625d620d07f80f8b4309043902900dafbf3018dc8a3a3717b629e0ee6ce73bbd",
+          "nonce": "0x8200bdc834820aa93530fab6b2f7afe4af486e801ceea438eea838f2c47defe8",
+          "guardWouldAllow": true
+        },
+        "violatedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0x3ae4ee9fe81a9f632999e6644a1748e676d34435f68768f1e2bea82acb361a85",
+          "nonce": "0x00d71f325e5f9eb2d0fdc32eb653ffe0eec3a05cfffb69a9ec2d0857acde259b",
+          "guardWouldAllow": true
+        }
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Valid settlement; nothing to detect."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "Valid settlement; nothing to detect."
+        },
+        "B2": {
+          "detected": false,
+          "prevented": false,
+          "note": "Valid settlement; R17 passes."
+        },
+        "B3": {
+          "detected": false,
+          "prevented": false,
+          "failedRules": [],
+          "note": "Live B3: valid settlement (happy path)."
+        }
+      },
+      "metrics": {
+        "verifyLatencyMs": 10.327332999999996,
+        "eventCount": 7,
+        "storageBytesEstimate": 3676
+      }
+    },
+    {
+      "attackId": "PREDICATE_PAYEE_VIOLATION",
+      "label": "Pay an unapproved merchant",
+      "traceId": "trace-predicate-payee",
+      "description": "Agent settles to a payee outside the predicate allowedPayees.",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": false,
+            "detail": "Payee is not a registered merchant receiving address"
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          },
+          "R17_PREDICATE_TRUE_FOR_MODE_B": {
+            "ok": false,
+            "detail": "Predicate violated: PAYEE_NOT_ALLOWED"
+          }
+        },
+        "certificate": {
+          "traceId": "trace-predicate-payee",
+          "mode": "MODE_B_PREDICATE",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "failedRules": [
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "clbCommitment": "0x8cd7e4645d63d249ade4023d14729c820b920284d74931f633f0235deba9a82a",
+          "settlementTxHash": "0x869aff192e715b59b83be52f05f601ae1ca3c05ce4e7277222edac25db885782",
+          "traceMerkleRoot": "0x0f88f2f9f7565b630226629c0b236faad704938f1e6527a8d90e688b85b5acb3",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-31T07:59:23.295Z",
+          "certificateHash": "0x1d587220861804b0e4a47dc97964c282bfea079626c2dc2a4dba9720c89877bb"
+        },
+        "result": {
+          "traceId": "trace-predicate-payee",
+          "status": "FAIL",
+          "failedRules": [
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "warnings": [],
+          "certificateHash": "0x1d587220861804b0e4a47dc97964c282bfea079626c2dc2a4dba9720c89877bb",
+          "checkedAt": "2026-05-31T07:59:23.295Z",
+          "mode": "MODE_B_PREDICATE"
+        }
+      },
+      "expectedFailedRules": [
+        "R17_PREDICATE_TRUE_FOR_MODE_B",
+        "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+      ],
+      "matched": true,
+      "preventionLayer": "predicate-guard",
+      "guardPrevented": true,
+      "anatomy": {
+        "summary": "The agent tries to send the payment to a merchant the human never approved. The predicate guard blocks it before settlement and the verifier flags it.",
+        "steps": [
+          "Human approved a specific set of merchants in the predicate.",
+          "Agent attempts to settle to a different, unapproved address.",
+          "Guard refuses the settlement; R17 and R12 fail in the audit."
+        ],
+        "mutations": [
+          {
+            "path": "settlement.payTo",
+            "before": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "after": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "impact": "Funds would route to a merchant outside the human-approved allowlist."
+          }
+        ],
+        "evidenceFocus": [
+          "AP2_INTENT_MANDATE",
+          "X402_PAYMENT_PAYLOAD",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [
+          "predicate-guard",
+          "R17_PREDICATE_TRUE_FOR_MODE_B",
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "authorizedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0xf3dd7a56ddde07c10ce5a0f4d633d79e48a0c104766b1d0001c0af1dddaf6cf7",
+          "nonce": "0xc39df4b462d98284dc6079a3b8b2f760bb4c3a80065cefc062db7e55418fa0d9",
+          "guardWouldAllow": true
+        },
+        "violatedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0x8cd7e4645d63d249ade4023d14729c820b920284d74931f633f0235deba9a82a",
+          "nonce": "0xe71ab7bf518de491e39d49f53511e74198eb6e43adcef116393ee0193329a1ef",
+          "guardWouldAllow": false
+        }
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no predicate enforcement."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 INTENT without C' binding or guard."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "Audit-only detects post-settlement: payee outside allowedPayees"
+        },
+        "B3": {
+          "detected": true,
+          "prevented": true,
+          "failedRules": [
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+        }
+      },
+      "metrics": {
+        "verifyLatencyMs": 4.4455409999999915,
+        "eventCount": 7,
+        "storageBytesEstimate": 3676
+      }
+    },
+    {
+      "attackId": "PREDICATE_AMOUNT_VIOLATION",
+      "label": "Spend above your limit",
+      "traceId": "trace-predicate-amount",
+      "description": "Agent settles for more than the predicate maxValue.",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": false,
+            "detail": "Settled 9.99 exceeds max 5"
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          },
+          "R17_PREDICATE_TRUE_FOR_MODE_B": {
+            "ok": false,
+            "detail": "Predicate violated: AMOUNT_EXCEEDS_MAX"
+          }
+        },
+        "certificate": {
+          "traceId": "trace-predicate-amount",
+          "mode": "MODE_B_PREDICATE",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "failedRules": [
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "clbCommitment": "0x6fca6fd15b326b4c4259d2a9bc71e606949f5d37bee6d12d4413b8d84235d5af",
+          "settlementTxHash": "0x5e19b49ad31ca1d2b14366ea846b5288ecc5209a503c5f6ecda4538f87315ad5",
+          "traceMerkleRoot": "0x628d8c1acb53f61fabcce9b4795e18a48498180b597dbc41482b467c2a3c2049",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-31T07:59:23.306Z",
+          "certificateHash": "0x6d10433e5975a56cd7c0b983214659b02d6f90ca23d02ba3756da65c0a974d23"
+        },
+        "result": {
+          "traceId": "trace-predicate-amount",
+          "status": "FAIL",
+          "failedRules": [
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "warnings": [],
+          "certificateHash": "0x6d10433e5975a56cd7c0b983214659b02d6f90ca23d02ba3756da65c0a974d23",
+          "checkedAt": "2026-05-31T07:59:23.306Z",
+          "mode": "MODE_B_PREDICATE"
+        }
+      },
+      "expectedFailedRules": [
+        "R17_PREDICATE_TRUE_FOR_MODE_B",
+        "R11_AMOUNT_WITHIN_MANDATE"
+      ],
+      "matched": true,
+      "preventionLayer": "predicate-guard",
+      "guardPrevented": true,
+      "anatomy": {
+        "summary": "The agent tries to spend more than the human's signed cap. The predicate guard blocks the over-limit settlement and the verifier flags it.",
+        "steps": [
+          "Human capped spending at 5.00 in the predicate.",
+          "Agent attempts to settle 9.99 — above the cap.",
+          "Guard refuses the settlement; R17 and R11 fail in the audit."
+        ],
+        "mutations": [
+          {
+            "path": "settlement.value",
+            "before": "2.00",
+            "after": "9.99",
+            "impact": "Exceeds the signed maxValue of 5.00; more than the human authorized."
+          }
+        ],
+        "evidenceFocus": [
+          "AP2_INTENT_MANDATE",
+          "X402_PAYMENT_PAYLOAD",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [
+          "predicate-guard",
+          "R17_PREDICATE_TRUE_FOR_MODE_B",
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "authorizedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0x6ab37632165a9a93c89ce6b6b5921bf1b7ebb2731bd860929f3692f818968149",
+          "nonce": "0x4aaf68a2119b593dd8d5d79a2b3f7ec13fe4514419ff69aea7de81a8e3b90efe",
+          "guardWouldAllow": true
+        },
+        "violatedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "9.99",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0x6fca6fd15b326b4c4259d2a9bc71e606949f5d37bee6d12d4413b8d84235d5af",
+          "nonce": "0x46bbc89e32ac3bc0e5a86e634a467325e3288840eec3c173b61e60aabd821d2c",
+          "guardWouldAllow": false
+        }
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no predicate enforcement."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 INTENT without C' binding or guard."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "Audit-only detects post-settlement: value exceeds maxValue"
+        },
+        "B3": {
+          "detected": true,
+          "prevented": true,
+          "failedRules": [
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+        }
+      },
+      "metrics": {
+        "verifyLatencyMs": 4.24283299999999,
+        "eventCount": 7,
+        "storageBytesEstimate": 3683
+      }
+    },
+    {
+      "attackId": "PREDICATE_ASSET_VIOLATION",
+      "label": "Pay with the wrong token",
+      "traceId": "trace-predicate-asset",
+      "description": "Agent settles in an asset outside the predicate allowedAssets.",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": false,
+            "detail": "Asset WETH not allowed"
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          },
+          "R17_PREDICATE_TRUE_FOR_MODE_B": {
+            "ok": false,
+            "detail": "Predicate violated: ASSET_NOT_ALLOWED"
+          }
+        },
+        "certificate": {
+          "traceId": "trace-predicate-asset",
+          "mode": "MODE_B_PREDICATE",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "failedRules": [
+            "R13_ASSET_ALLOWED",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "clbCommitment": "0xc2a6d699c7638c2bd64dbbb14ff82831ec7c1d2ba2e6b6acc82714116973020d",
+          "settlementTxHash": "0xd4330b337ce20a3601324967a9f99ecfe968fe2843490b335605f6628e8cb069",
+          "traceMerkleRoot": "0xe2cee8854b8905f3c1f84e9a45bdcdec7548b6fc40740bfdf9805015ff8c9313",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-31T07:59:23.321Z",
+          "certificateHash": "0xf1e638b743369b9c2ac35499813c09730d666c2b85c9e31b68558789da07b7e6"
+        },
+        "result": {
+          "traceId": "trace-predicate-asset",
+          "status": "FAIL",
+          "failedRules": [
+            "R13_ASSET_ALLOWED",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "warnings": [],
+          "certificateHash": "0xf1e638b743369b9c2ac35499813c09730d666c2b85c9e31b68558789da07b7e6",
+          "checkedAt": "2026-05-31T07:59:23.321Z",
+          "mode": "MODE_B_PREDICATE"
+        }
+      },
+      "expectedFailedRules": [
+        "R17_PREDICATE_TRUE_FOR_MODE_B",
+        "R13_ASSET_ALLOWED"
+      ],
+      "matched": true,
+      "preventionLayer": "predicate-guard",
+      "guardPrevented": true,
+      "anatomy": {
+        "summary": "The agent tries to pay with a token the human never allowed. The predicate guard blocks the settlement and the verifier flags it.",
+        "steps": [
+          "Human allowed only USDC in the predicate.",
+          "Agent attempts to settle in WETH.",
+          "Guard refuses the settlement; R17 and R13 fail in the audit."
+        ],
+        "mutations": [
+          {
+            "path": "settlement.asset",
+            "before": "USDC",
+            "after": "WETH",
+            "impact": "Settles in a token outside the human-approved allowedAssets list."
+          }
+        ],
+        "evidenceFocus": [
+          "AP2_INTENT_MANDATE",
+          "X402_PAYMENT_PAYLOAD",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [
+          "predicate-guard",
+          "R17_PREDICATE_TRUE_FOR_MODE_B",
+          "R13_ASSET_ALLOWED"
+        ],
+        "authorizedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0xa1483d522bec01a0e12fa35a0b99798276c1c53033595156ec49bab70c9575c0",
+          "nonce": "0x79bb77a979b2b1051d8b5cc1a2c3a2c506a36cdbdcba781c28ca75b719b86599",
+          "guardWouldAllow": true
+        },
+        "violatedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "WETH",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0xc2a6d699c7638c2bd64dbbb14ff82831ec7c1d2ba2e6b6acc82714116973020d",
+          "nonce": "0x1cdc9c6bafbba2e414be9f097002ebb74823e15301a2f5863fedf723dec73f5d",
+          "guardWouldAllow": false
+        }
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no predicate enforcement."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 INTENT without C' binding or guard."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "Audit-only detects post-settlement: asset not in allowedAssets"
+        },
+        "B3": {
+          "detected": true,
+          "prevented": true,
+          "failedRules": [
+            "R13_ASSET_ALLOWED",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+        }
+      },
+      "metrics": {
+        "verifyLatencyMs": 4.527375000000006,
+        "eventCount": 7,
+        "storageBytesEstimate": 3676
+      }
+    },
+    {
+      "attackId": "PREDICATE_EXPIRED",
+      "label": "Settle after your deadline",
+      "traceId": "trace-predicate-expired",
+      "description": "Settlement occurs after the predicate validUntil window.",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          },
+          "R17_PREDICATE_TRUE_FOR_MODE_B": {
+            "ok": false,
+            "detail": "Predicate violated: PREDICATE_EXPIRED"
+          }
+        },
+        "certificate": {
+          "traceId": "trace-predicate-expired",
+          "mode": "MODE_B_PREDICATE",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES",
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "failedRules": [
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "clbCommitment": "0x1c120d4a5f201d16bbba098aefc63c662d524185fbe4a46e362e41b9702c580b",
+          "settlementTxHash": "0x0c7e093d1acbf01aebd08750c0d9a9ce13e619d5159a0933e02162227c57ef59",
+          "traceMerkleRoot": "0xfc107ecc4cbd8968f6ad20a0e4e5538143d7c0a1ce30c5d1f6e9e40019f42275",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-31T07:59:23.331Z",
+          "certificateHash": "0xb3dcbcc53b1a26e5a8d8f7f68acda655f246d04230f17b4a448f84627e778a1f"
+        },
+        "result": {
+          "traceId": "trace-predicate-expired",
+          "status": "FAIL",
+          "failedRules": [
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "warnings": [],
+          "certificateHash": "0xb3dcbcc53b1a26e5a8d8f7f68acda655f246d04230f17b4a448f84627e778a1f",
+          "checkedAt": "2026-05-31T07:59:23.331Z",
+          "mode": "MODE_B_PREDICATE"
+        }
+      },
+      "expectedFailedRules": [
+        "R17_PREDICATE_TRUE_FOR_MODE_B"
+      ],
+      "matched": true,
+      "preventionLayer": "predicate-guard",
+      "guardPrevented": true,
+      "anatomy": {
+        "summary": "The agent settles after the human's authorization window has closed. The predicate guard blocks the late settlement and the verifier flags it.",
+        "steps": [
+          "Human authorized spending only until 2026-12-30T06:00:00.000Z.",
+          "Settlement occurs at 2026-05-30T05:00:05.000Z, after the deadline.",
+          "Guard refuses the expired settlement; R17 fails in the audit."
+        ],
+        "mutations": [
+          {
+            "path": "predicate.validUntil",
+            "before": "2026-12-30T06:00:00.000Z",
+            "after": "2026-05-30T04:00:00.000Z",
+            "impact": "Settlement at 2026-05-30T05:00:05.000Z falls outside the signed validity window."
+          }
+        ],
+        "evidenceFocus": [
+          "AP2_INTENT_MANDATE",
+          "X402_PAYMENT_PAYLOAD",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [
+          "predicate-guard",
+          "R17_PREDICATE_TRUE_FOR_MODE_B"
+        ],
+        "authorizedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-12-30T06:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0xf71108f1492851304898b7fa9517c0e3e9b6eb13db6360854264664d72ea2d8b",
+          "nonce": "0xce5b4c8d237d2d8516a08cad0e185e471b26c9b6a11c76319e8b873f0dc16a2a",
+          "guardWouldAllow": true
+        },
+        "violatedTrace": {
+          "mandateType": "INTENT",
+          "predicate": {
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "maxValue": "5.00",
+            "allowedAssets": [
+              "USDC"
+            ],
+            "validUntil": "2026-05-30T04:00:00.000Z",
+            "allowedChainIds": [
+              84532
+            ]
+          },
+          "concreteSettlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "validBefore": "2026-12-30T06:00:00.000Z"
+          },
+          "settledAt": "2026-05-30T05:00:05.000Z",
+          "commitmentCprime": "0x1c120d4a5f201d16bbba098aefc63c662d524185fbe4a46e362e41b9702c580b",
+          "nonce": "0xca8bc9055cbb3b5fc2b4a441e0329fdce55af370b39c0d84019e71f2f428b566",
+          "guardWouldAllow": false
+        }
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no predicate enforcement."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 INTENT without C' binding or guard."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "Audit-only detects post-settlement: settlement after validUntil"
+        },
+        "B3": {
+          "detected": true,
+          "prevented": true,
+          "failedRules": [
+            "R17_PREDICATE_TRUE_FOR_MODE_B"
+          ],
+          "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+        }
+      },
+      "metrics": {
+        "verifyLatencyMs": 4.2254999999999825,
+        "eventCount": 7,
+        "storageBytesEstimate": 3690
+      }
+    }
+  ],
+  "matrix": {
+    "PREDICATE_HAPPY_PATH": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Valid settlement; nothing to detect."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "Valid settlement; nothing to detect."
+      },
+      "B2": {
+        "detected": false,
+        "prevented": false,
+        "note": "Valid settlement; R17 passes."
+      },
+      "B3": {
+        "detected": false,
+        "prevented": false,
+        "failedRules": [],
+        "note": "Live B3: valid settlement (happy path)."
+      }
+    },
+    "PREDICATE_PAYEE_VIOLATION": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no predicate enforcement."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 INTENT without C' binding or guard."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "Audit-only detects post-settlement: payee outside allowedPayees"
+      },
+      "B3": {
+        "detected": true,
+        "prevented": true,
+        "failedRules": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+          "R17_PREDICATE_TRUE_FOR_MODE_B"
+        ],
+        "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+      }
+    },
+    "PREDICATE_AMOUNT_VIOLATION": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no predicate enforcement."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 INTENT without C' binding or guard."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "Audit-only detects post-settlement: value exceeds maxValue"
+      },
+      "B3": {
+        "detected": true,
+        "prevented": true,
+        "failedRules": [
+          "R11_AMOUNT_WITHIN_MANDATE",
+          "R17_PREDICATE_TRUE_FOR_MODE_B"
+        ],
+        "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+      }
+    },
+    "PREDICATE_ASSET_VIOLATION": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no predicate enforcement."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 INTENT without C' binding or guard."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "Audit-only detects post-settlement: asset not in allowedAssets"
+      },
+      "B3": {
+        "detected": true,
+        "prevented": true,
+        "failedRules": [
+          "R13_ASSET_ALLOWED",
+          "R17_PREDICATE_TRUE_FOR_MODE_B"
+        ],
+        "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+      }
+    },
+    "PREDICATE_EXPIRED": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no predicate enforcement."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 INTENT without C' binding or guard."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "Audit-only detects post-settlement: settlement after validUntil"
+      },
+      "B3": {
+        "detected": true,
+        "prevented": true,
+        "failedRules": [
+          "R17_PREDICATE_TRUE_FOR_MODE_B"
+        ],
+        "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+      }
+    }
+  }
+}

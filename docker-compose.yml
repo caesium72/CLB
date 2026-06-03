@@ -1,0 +1,60 @@
+services:
+  # Local Postgres is parked for now because Phase 1 uses a Neon DATABASE_URL.
+  # Uncomment when you want a local database again.
+  # postgres:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: clb_acel
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+
+  # Local MinIO is parked for now because evidence payloads use AWS S3.
+  # Uncomment when you want local S3-compatible storage again.
+  # minio:
+  #   image: minio/minio:latest
+  #   command: server /data --console-address ":9001"
+  #   environment:
+  #     MINIO_ROOT_USER: minio
+  #     MINIO_ROOT_PASSWORD: minio123
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   volumes:
+  #     - minio_data:/data
+  #   healthcheck:
+  #     test: ["CMD", "mc", "ready", "local"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #
+  # minio-init:
+  #   image: minio/mc:latest
+  #   depends_on:
+  #     minio:
+  #       condition: service_started
+  #   entrypoint: >
+  #     /bin/sh -c "
+  #     mc alias set local http://minio:9000 minio minio123;
+  #     mc mb --ignore-existing local/clb-acel-evidence;
+  #     exit 0;
+  #     "
+
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:latest
+    entrypoint: ["anvil", "--host", "0.0.0.0", "--port", "8545", "--chain-id", "31337"]
+    ports:
+      - "8545:8545"
+
+# Named volumes for postgres/minio are commented out with those services above.
+# volumes:
+#   postgres_data:
+#   minio_data:

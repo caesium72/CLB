@@ -1,0 +1,18 @@
+[Unit]
+Description=CLB-ACEL Anvil (local chain 31337)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+# Foundry installs to ~/.foundry/bin via install.sh
+# Demo: bind all interfaces so port 8545 works when opened in Lightsail firewall.
+# Prefer HTTPS RPC at https://<ip>.nip.io/rpc when using nginx + TLS.
+ExecStart=/home/ubuntu/.foundry/bin/anvil --host 0.0.0.0 --port 8545 --chain-id 31337
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

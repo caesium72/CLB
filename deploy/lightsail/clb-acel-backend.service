@@ -1,0 +1,19 @@
+[Unit]
+Description=CLB-ACEL backend (orchestrator + Fastify services)
+After=network-online.target clb-acel-anvil.service
+Wants=network-online.target clb-acel-anvil.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/agentic-web3
+EnvironmentFile=/home/ubuntu/agentic-web3/.env
+ExecStart=/home/ubuntu/agentic-web3/scripts/start-backend.sh
+Restart=on-failure
+RestartSec=10
+# Bun + 7 services need headroom on a small Lightsail plan
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,24 @@
+{
+  "name": "@clb-acel/delivery-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clb-acel/evidence-core": "workspace:*",
+    "@clb-acel/schemas": "workspace:*",
+    "viem": "^2.40.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

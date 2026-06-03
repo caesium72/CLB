@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-05-30T05:00:00.000Z",
+  "mode": "MODE_B_PREDICATE",
+  "traceId": "trace-delegated-e2e-phase4",
+  "status": "PASS",
+  "rulesChecked": [
+    "R1_HASH_CHAIN_INTACT",
+    "R2_SIGNATURES_VALID",
+    "R3_AGENT_IDENTITY_RESOLVES",
+    "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+    "R5_MANDATE_SIGNATURE_VALID",
+    "R6_CLB_COMMITMENT_RECOMPUTES",
+    "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+    "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+    "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+    "R10_CHAIN_DOMAIN_MATCHES",
+    "R11_AMOUNT_WITHIN_MANDATE",
+    "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+    "R13_ASSET_ALLOWED",
+    "R14_DELIVERY_AFTER_SETTLEMENT",
+    "R15_TASK_HASH_MATCHES",
+    "R17_PREDICATE_TRUE_FOR_MODE_B"
+  ],
+  "r17": {
+    "ok": true
+  },
+  "modeBCommitment": "0x7cb254becff82a11ab67fc0166a3fc06cf83c3317de6a12e52d8841b11d7b5f4",
+  "nonce": "0xfd5b486be9bdcdbaa52bb376bf8441ce8815de59e55bfca80e5ba714b12a019a",
+  "predicate": {
+    "predicateId": "predicate-e2e-phase4",
+    "predicate": {
+      "allowedAssets": [
+        "USDC"
+      ],
+      "allowedPayees": [
+        "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+      ],
+      "maxValue": "2.00",
+      "validUntil": "2026-05-31T05:00:00.000Z",
+      "allowedChainIds": [
+        31337
+      ],
+      "allowedAgentIds": [
+        "shopping-agent-001"
+      ]
+    },
+    "x402Scheme": "predicate"
+  },
+  "concreteSettlement": {
+    "chainId": 31337,
+    "network": "base-sepolia",
+    "asset": "USDC",
+    "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "value": "2.00",
+    "validBefore": "2026-05-30T05:10:00.000Z",
+    "x402Scheme": "exact"
+  },
+  "guardGas": {
+    "validateAndConsume": "50396",
+    "source": "forge"
+  }
+}

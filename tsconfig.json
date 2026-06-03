@@ -1,0 +1,25 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/schemas" },
+    { "path": "./packages/evidence-core" },
+    { "path": "./packages/clb-core" },
+    { "path": "./packages/service-kit" },
+    { "path": "./packages/erc8004-adapter" },
+    { "path": "./packages/ap2-adapter" },
+    { "path": "./packages/x402-adapter" },
+    { "path": "./packages/delivery-core" },
+    { "path": "./packages/anchor-core" },
+    { "path": "./packages/llm-adapter" },
+    { "path": "./packages/verifier-core" },
+    { "path": "./packages/attack-core" },
+    { "path": "./services/evidence-service" },
+    { "path": "./services/identity-service" },
+    { "path": "./services/mandate-service" },
+    { "path": "./services/verifier-service" },
+    { "path": "./services/attack-simulator" },
+    { "path": "./apps/merchant-agent-api" },
+    { "path": "./apps/agent-orchestrator" },
+    { "path": "./apps/web-demo" }
+  ]
+}

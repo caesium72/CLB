@@ -1,0 +1,2746 @@
+{
+  "generatedAt": "2026-05-30T17:53:00.938Z",
+  "results": [
+    {
+      "attackId": "PAYEE_SUBSTITUTION",
+      "traceId": "trace-attack-001",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": false,
+            "detail": "Payee is not a registered merchant receiving address"
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-attack-001",
+          "mode": "MODE_A_EXACT",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+          ],
+          "clbCommitment": "0xbd4c4d8ed8e4d5aab9ae9dd81afa2a9c9d96aaaa3d5d9004e045eb5928b32fdc",
+          "settlementTxHash": "0x59235d0f6edf4de812c588540a5d4948e5419ae51febf2db3844475dd2c0f448",
+          "traceMerkleRoot": "0x9c3a777d9597c32e845cc5c672415630567434d6386b3079bd123860d309a665",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:00.958Z",
+          "certificateHash": "0x35341e2fe0f1a9d56fadfe3535fca6f3d8a65e711042edaaf5d23a3283eaf915"
+        },
+        "result": {
+          "traceId": "trace-attack-001",
+          "status": "FAIL",
+          "failedRules": [
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+          ],
+          "warnings": [],
+          "certificateHash": "0x35341e2fe0f1a9d56fadfe3535fca6f3d8a65e711042edaaf5d23a3283eaf915",
+          "checkedAt": "2026-05-30T17:53:00.958Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "PAYEE_MISMATCH",
+      "expectedFailedRules": [
+        "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+      ],
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "The payment recipient is replaced with an attacker wallet while the mandate still expects the approved merchant.",
+        "steps": [
+          "Honest checkout binds the merchant payee",
+          "Attack swaps settlement.payTo",
+          "Verifier compares payee against allowedPayees and merchant identity"
+        ],
+        "mutations": [
+          {
+            "path": "settlement.payTo",
+            "before": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "after": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "impact": "Funds would route to an address outside the human-approved merchant constraint."
+          }
+        ],
+        "evidenceFocus": [
+          "AP2_CART_MANDATE",
+          "X402_PAYMENT_PAYLOAD",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x2e49b11a1d92000faf4552a14aa6b74417a4368c0c98301436bcaca506ecbd9c"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xc7b4ef1ca95510c548975260a85a7ff8b79bd803d824b5683fec0e058b5bafb8"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x6030c726c64f6d78579c58e13627b26e2e486d30323bebfcbfa561899c265c41"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x4e3b2f3e7abcebb5c3489dc8f88a7422c6f2554b01874932000e0fdc0b86c7ad"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "verifier",
+      "metrics": {
+        "verifyLatencyMs": 6.619791000000006,
+        "eventCount": 7,
+        "storageBytesEstimate": 3637
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+          ],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    },
+    {
+      "attackId": "AMOUNT_ESCALATION",
+      "traceId": "trace-attack-001",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": false,
+            "detail": "Settled 3 exceeds mandate max 2"
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-attack-001",
+          "mode": "MODE_A_EXACT",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [
+            "R11_AMOUNT_WITHIN_MANDATE"
+          ],
+          "clbCommitment": "0x305ac3af86eeaa225508ff7349e4370b68649d1a8cb35f6b01251f5cc580f2c6",
+          "settlementTxHash": "0x3bc06c0d50dc69ea4f46fb484d2a6bce3c23163145e58cf14a44f9c1c3041e6e",
+          "traceMerkleRoot": "0xe39747a4072d450bedc4a563ecf75b4cabb368fde442db3a01e37f0d73d1b2b7",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:00.968Z",
+          "certificateHash": "0xdaf867cd68d44802f937686d6066a88df7ca0309c6cb2e1d4a42e726e9ac7236"
+        },
+        "result": {
+          "traceId": "trace-attack-001",
+          "status": "FAIL",
+          "failedRules": [
+            "R11_AMOUNT_WITHIN_MANDATE"
+          ],
+          "warnings": [],
+          "certificateHash": "0xdaf867cd68d44802f937686d6066a88df7ca0309c6cb2e1d4a42e726e9ac7236",
+          "checkedAt": "2026-05-30T17:53:00.968Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "AMOUNT_EXCEEDS_MANDATE",
+      "expectedFailedRules": [
+        "R11_AMOUNT_WITHIN_MANDATE"
+      ],
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "The settlement amount is raised above the user-approved spending limit.",
+        "steps": [
+          "Honest mandate caps spend at 2.00",
+          "Attack submits a 3.00 settlement",
+          "Verifier checks settled value against maxAmount"
+        ],
+        "mutations": [
+          {
+            "path": "settlement.value",
+            "before": "2.00",
+            "after": "3.00",
+            "impact": "The merchant would collect more than the mandate permits."
+          }
+        ],
+        "evidenceFocus": [
+          "AP2_CART_MANDATE",
+          "X402_PAYMENT_PAYLOAD",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0xf9d9b2273878396fa6de2c7be214d89f1a857f82c0c5ab5305b0d5724973cbad"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xdaa0a9a2f84a9bca633e7d68d4dbb8b3263583afb785641abea900c2d03bc5f8"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "3.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x9118ad62c720cca3b5397a352608ae47cf70a3f0ab0bee61154aa426c43a437a"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x94238d3b13acab525ccb6554ee673b5355c66327695f8b8bac625128f1e8aaf1"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "verifier",
+      "metrics": {
+        "verifyLatencyMs": 4.214375000000004,
+        "eventCount": 7,
+        "storageBytesEstimate": 3637
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R11_AMOUNT_WITHIN_MANDATE"
+          ],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    },
+    {
+      "attackId": "ASSET_SWITCH",
+      "traceId": "trace-attack-001",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": false,
+            "detail": "Asset USDC not allowed"
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-attack-001",
+          "mode": "MODE_A_EXACT",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [
+            "R13_ASSET_ALLOWED"
+          ],
+          "clbCommitment": "0x8b72123e848e5b8fbe7e0d67891c91950ffdf474d006747a1d4f6fa211847fd3",
+          "settlementTxHash": "0x37ca13d11bfa1c86cdc26106700c8d7a85386f581c99a77fb61fe80d6f660210",
+          "traceMerkleRoot": "0x0683c9aba7dcdff90510d7a68bd45793d192e466eab0eeeb26c8b1dd7565766e",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:00.978Z",
+          "certificateHash": "0xfdf6b9b857a097de42d7411fdc512c79be2bcffbf46e29d6515c5a2d85083c16"
+        },
+        "result": {
+          "traceId": "trace-attack-001",
+          "status": "FAIL",
+          "failedRules": [
+            "R13_ASSET_ALLOWED"
+          ],
+          "warnings": [],
+          "certificateHash": "0xfdf6b9b857a097de42d7411fdc512c79be2bcffbf46e29d6515c5a2d85083c16",
+          "checkedAt": "2026-05-30T17:53:00.978Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "ASSET_NOT_ALLOWED",
+      "expectedFailedRules": [
+        "R13_ASSET_ALLOWED"
+      ],
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "The payment asset changes from the allowed EURC asset to USDC.",
+        "steps": [
+          "Honest mandate allows EURC",
+          "Attack submits a USDC settlement",
+          "Verifier checks settlement asset against allowedAssets"
+        ],
+        "mutations": [
+          {
+            "path": "settlement.asset",
+            "before": "EURC",
+            "after": "USDC",
+            "impact": "The user did not authorize this asset for payment."
+          }
+        ],
+        "evidenceFocus": [
+          "AP2_CART_MANDATE",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [
+          "R13_ASSET_ALLOWED"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x0c2846851d17b987aa2abab0d52010af66381a4776bd65919eee1fa863f162d1"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x6d7c754fdd3bdd969a0c61916c8546808d8891281f2663ae3bc4b3b88151cee9"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "USDC",
+            "chainId": 84532,
+            "nonce": "0x733bcc0d57ea1ef2906e8951980d5443b4c36420759d3af0727309dd99eea302"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xd291bf511bc3e337cfd8d3edc0c695f0e74396dd584ed40a9290fdf0076170a7"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "verifier",
+      "metrics": {
+        "verifyLatencyMs": 3.797291999999999,
+        "eventCount": 7,
+        "storageBytesEstimate": 3637
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R13_ASSET_ALLOWED"
+          ],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    },
+    {
+      "attackId": "CHAIN_TRANSPLANT",
+      "traceId": "trace-chain_transplant-1780163580938",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": false,
+            "detail": "Settlement mismatches descriptor: chainId"
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": false,
+            "detail": "chainId differs across domain/descriptor/settlement/identity"
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-chain_transplant-1780163580938",
+          "mode": "MODE_A_EXACT",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R10_CHAIN_DOMAIN_MATCHES"
+          ],
+          "clbCommitment": "0x8ae6ec061278e4a0bc188e325a1f8ffc57ad427227f505e8eaa62e072079a73f",
+          "settlementTxHash": "0xb227dc5fae9e0608a4cba27316843a76e6e01fb9c9c18ecc974f002a90022c82",
+          "traceMerkleRoot": "0x2600e26f229b8034a3dd61e8dc73d523d4e796c99773196f742d012cd642f133",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:00.985Z",
+          "certificateHash": "0x6dcdef3e03ba3ddddca3625df9ba26c621efe39adf10f878793e2267830fccc4"
+        },
+        "result": {
+          "traceId": "trace-chain_transplant-1780163580938",
+          "status": "FAIL",
+          "failedRules": [
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R10_CHAIN_DOMAIN_MATCHES"
+          ],
+          "warnings": [],
+          "certificateHash": "0x6dcdef3e03ba3ddddca3625df9ba26c621efe39adf10f878793e2267830fccc4",
+          "checkedAt": "2026-05-30T17:53:00.985Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "CHAIN_DOMAIN_MISMATCH",
+      "expectedFailedRules": [
+        "R10_CHAIN_DOMAIN_MATCHES"
+      ],
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "A settlement from another chain domain is presented inside the Base Sepolia trace.",
+        "steps": [
+          "Honest CLB domain binds chain 84532",
+          "Attack transplants settlement.chainId to 1",
+          "Verifier compares domain, descriptor, identity, and settlement chain"
+        ],
+        "mutations": [
+          {
+            "path": "settlement.chainId",
+            "before": "84532",
+            "after": "1",
+            "impact": "The settlement no longer belongs to the chain domain committed by C."
+          }
+        ],
+        "evidenceFocus": [
+          "CLB_DOMAIN",
+          "CHAIN_SETTLEMENT",
+          "ERC8004_AGENT_IDENTITY"
+        ],
+        "detectedBy": [
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x75be3d4084ef8de0d37ecb625c6e1f5c23f55e191265013c3632d237c8db6791"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x6aa4cec5eaaceed9b00b62bcfe6fd7d1c2e864f926a8974fc46530d926b10c92"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 1,
+            "nonce": "0x75be3d4084ef8de0d37ecb625c6e1f5c23f55e191265013c3632d237c8db6791"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x6aa4cec5eaaceed9b00b62bcfe6fd7d1c2e864f926a8974fc46530d926b10c92"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "verifier",
+      "metrics": {
+        "verifyLatencyMs": 4.733457999999999,
+        "eventCount": 7,
+        "storageBytesEstimate": 3777
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R10_CHAIN_DOMAIN_MATCHES"
+          ],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    },
+    {
+      "attackId": "AGENT_IDENTITY_SWAP",
+      "traceId": "trace-agent_identity_swap-1780163580938",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": false,
+            "detail": "Payer 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 not authorized by agent card"
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-agent_identity_swap-1780163580938",
+          "mode": "MODE_A_EXACT",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED"
+          ],
+          "clbCommitment": "0xa7512ac36d978c190fdd42e2550f70080bec9bc08378b51080b7406c57e7eda0",
+          "settlementTxHash": "0xd640e44065b5aa358bbfe80c811f0d99bff3b5864b1baae1a2423dde8e92b50b",
+          "traceMerkleRoot": "0xc2d3027a03cb068c0a5f1a5302e82294e8e4cc58cab52d806739ad9c0297ee37",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:00.991Z",
+          "certificateHash": "0x65334fd0633d6ae57f7aa391735644a000cc701066a6f7e221bb13e5a0e18bba"
+        },
+        "result": {
+          "traceId": "trace-agent_identity_swap-1780163580938",
+          "status": "FAIL",
+          "failedRules": [
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED"
+          ],
+          "warnings": [],
+          "certificateHash": "0x65334fd0633d6ae57f7aa391735644a000cc701066a6f7e221bb13e5a0e18bba",
+          "checkedAt": "2026-05-30T17:53:00.991Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "UNAUTHORIZED_PAYMENT_KEY",
+      "expectedFailedRules": [
+        "R4_AGENT_PAYMENT_KEY_AUTHORIZED"
+      ],
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "The payer key used by settlement is no longer authorized by the bound shopping-agent identity.",
+        "steps": [
+          "Honest agent card authorizes the shopper key",
+          "Attack swaps the authorized payment key set",
+          "Verifier checks settlement payer against the bound agent card"
+        ],
+        "mutations": [
+          {
+            "path": "payerAgent.authorizedPaymentKeys",
+            "before": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "after": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "impact": "The settlement payer cannot be attributed to the authorized shopping agent."
+          }
+        ],
+        "evidenceFocus": [
+          "ERC8004_AGENT_IDENTITY",
+          "CHAIN_SETTLEMENT"
+        ],
+        "detectedBy": [
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x7ce15e5f8e0fef7e17a3af1a356094894c32e6cbdb4679653999e06d8418b998"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xd1f3fc7b8c97261ae82efab9023a3d691739549d2b854567c606ba3bf88693f4"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x7ce15e5f8e0fef7e17a3af1a356094894c32e6cbdb4679653999e06d8418b998"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xd1f3fc7b8c97261ae82efab9023a3d691739549d2b854567c606ba3bf88693f4"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "verifier",
+      "metrics": {
+        "verifyLatencyMs": 3.715457999999998,
+        "eventCount": 7,
+        "storageBytesEstimate": 3798
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 identity exists, but key authorization is not enforced in payment."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED"
+          ],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    },
+    {
+      "attackId": "MANDATE_REPLAY",
+      "traceId": "trace-mandate_replay-1780163580938",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": false,
+            "detail": "Nonce replay detected"
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-mandate_replay-1780163580938",
+          "mode": "MODE_A_EXACT",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+          ],
+          "clbCommitment": "0x1d78347ed0a79e6e01f5f2fd8da8340f8878245461ba1b0f1c9a9dce5bb284c6",
+          "settlementTxHash": "0x86c7c8430cb96ac78278375b69e73f5712251251c76fb8b22bb1fefb72e3db47",
+          "traceMerkleRoot": "0x953f2d33359738569fd2e7763b345ae8b483c067674d1c03225f64134ca8e88b",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:00.998Z",
+          "certificateHash": "0xbaf944bf2ac4ede6004a4042929540c3b8096c6a5ade83b6413d4305a085316f"
+        },
+        "result": {
+          "traceId": "trace-mandate_replay-1780163580938",
+          "status": "FAIL",
+          "failedRules": [
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+          ],
+          "warnings": [],
+          "certificateHash": "0xbaf944bf2ac4ede6004a4042929540c3b8096c6a5ade83b6413d4305a085316f",
+          "checkedAt": "2026-05-30T17:53:00.998Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "NONCE_REPLAY",
+      "expectedFailedRules": [
+        "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+      ],
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "The same CLB-derived x402 nonce is submitted twice to replay an already-consumed mandate payment.",
+        "steps": [
+          "Honest settlement consumes nonce = H(C)",
+          "Attack resubmits the same payment payload",
+          "x402 rejects the second nonce and verifier records replay evidence"
+        ],
+        "mutations": [
+          {
+            "path": "nonceReplayAttempt",
+            "before": "false",
+            "after": "true",
+            "impact": "The trace records a second settlement attempt against the same nonce."
+          }
+        ],
+        "evidenceFocus": [
+          "X402_PAYMENT_PAYLOAD",
+          "CHAIN_SETTLEMENT",
+          "nonce = H(C)"
+        ],
+        "detectedBy": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+          "NonceAlreadyConsumedError"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x8d9898503dd6fc49aedb2cb8f3458d5f4e2291dcb849b635ca1853dd7861764b"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xfa98444ac64c0f90195de8dda55870543a5a3894f630c156b9d89fbdb8619314"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x8d9898503dd6fc49aedb2cb8f3458d5f4e2291dcb849b635ca1853dd7861764b"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xfa98444ac64c0f90195de8dda55870543a5a3894f630c156b9d89fbdb8619314"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": true
+        }
+      },
+      "matched": true,
+      "preventionLayer": "x402",
+      "metrics": {
+        "verifyLatencyMs": 3.3070419999999956,
+        "settlementLatencyMs": 1.5449589999999773,
+        "eventCount": 7,
+        "storageBytesEstimate": 3763
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 without CLB replay audit does not expose mandate replay."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2-only does not bind replay freshness to C."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "Audit-only detects replay evidence but cannot prevent settlement."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": true,
+          "failedRules": [
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+          ],
+          "note": "Live B3 prevented at x402 replay enforcement and verifier flagged R9."
+        }
+      }
+    },
+    {
+      "attackId": "CART_OR_TASK_SWITCH",
+      "traceId": "trace-attack-001",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": false,
+            "detail": "Report inputDataHash does not match mandate taskHash"
+          }
+        },
+        "certificate": {
+          "traceId": "trace-attack-001",
+          "mode": "MODE_A_EXACT",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "clbCommitment": "0xd855ef1e65aa50203292adc7edf751bc455fd4a7ee66d769f5a96c591ebade1d",
+          "settlementTxHash": "0x15141d7e23050846eb8aab4708d670e4c3a00fe060f94d22daf0347d1dd9ea13",
+          "traceMerkleRoot": "0x092b893ef0ee270e589b0733f4bfdc31216e781e1071a59bbb82a4b8d0059af0",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:01.007Z",
+          "certificateHash": "0x8d1f0de3d6710940f0b44ed902e3c11b74c0cf99d5e2ac1b79f1824159f40aea"
+        },
+        "result": {
+          "traceId": "trace-attack-001",
+          "status": "FAIL",
+          "failedRules": [
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "warnings": [],
+          "certificateHash": "0x8d1f0de3d6710940f0b44ed902e3c11b74c0cf99d5e2ac1b79f1824159f40aea",
+          "checkedAt": "2026-05-30T17:53:01.007Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "TASK_HASH_MISMATCH",
+      "expectedFailedRules": [
+        "R15_TASK_HASH_MATCHES"
+      ],
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "The mandate pins one task hash, but the delivered report still describes different input data.",
+        "steps": [
+          "Honest report input hash is produced",
+          "Attack sets mandate.constraints.taskHash to another hash",
+          "Verifier compares taskHash with report.inputDataHash"
+        ],
+        "mutations": [
+          {
+            "path": "mandate.constraints.taskHash",
+            "before": "unset",
+            "after": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+            "impact": "The delivered report is no longer bound to the task authorized in the mandate."
+          },
+          {
+            "path": "report.inputDataHash",
+            "before": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "after": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "impact": "The report stays on the old input, exposing the mismatch with taskHash."
+          }
+        ],
+        "evidenceFocus": [
+          "AP2_CART_MANDATE",
+          "DELIVERY_PROOF"
+        ],
+        "detectedBy": [
+          "R15_TASK_HASH_MATCHES"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0xe2ffaa0bf6369d858d38dbbb6420794a0989f7eee86cbd5e8a4cb3e308802cb1"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x56f0ff6e862901442df1bdf849356ab25d78817793e4c26f10a101f2dbd8b3b5"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x09a377b4fbd31907b7ca14c8e6f38de89d480b5b11d1c8ae188a8548d61c80d0"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ],
+            "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf"
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xfbab8481bcebad4ce175e65f960225e1850d0b90be97f0fb91793998a12e4570"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "verifier",
+      "metrics": {
+        "verifyLatencyMs": 3.3524579999999844,
+        "eventCount": 7,
+        "storageBytesEstimate": 3637
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "Mandate task binding is not checked at payment time."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    },
+    {
+      "attackId": "PAYMENT_WITHOUT_DELIVERY",
+      "traceId": "trace-payment_without_delivery-1780163580938",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": false,
+            "detail": "Invalid signatures: report"
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-payment_without_delivery-1780163580938",
+          "mode": "MODE_A_EXACT",
+          "status": "FAIL",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [
+            "R2_SIGNATURES_VALID"
+          ],
+          "clbCommitment": "0x2509e872d4c1b796a37ed5d5d57d31979b8b3e38957b172310deb5cb00713959",
+          "settlementTxHash": "0x232ac5594dda2bb876f0b9488c9d7c52d8c38839037ae4506dbe7d438a2af0b2",
+          "traceMerkleRoot": "0x9bcf5c2a6de3f0880ae588a84c93efaef1832d31bae42fc8ace0a728b17cf77e",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:01.012Z",
+          "certificateHash": "0xdb65498e3278837f5b3fc37e8c6c7d2431cd964839fed509b97a5b6d86f8609f"
+        },
+        "result": {
+          "traceId": "trace-payment_without_delivery-1780163580938",
+          "status": "FAIL",
+          "failedRules": [
+            "R2_SIGNATURES_VALID"
+          ],
+          "warnings": [],
+          "certificateHash": "0xdb65498e3278837f5b3fc37e8c6c7d2431cd964839fed509b97a5b6d86f8609f",
+          "checkedAt": "2026-05-30T17:53:01.012Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "DELIVERY_MISSING_OR_INVALID",
+      "expectedFailedRules": [
+        "R2_SIGNATURES_VALID"
+      ],
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "The payment settles, but the delivered report hash is broken so delivery cannot be authenticated.",
+        "steps": [
+          "Honest merchant signs a report hash",
+          "Attack tampers with report.reportHash",
+          "Verifier recomputes report content and signature binding"
+        ],
+        "mutations": [
+          {
+            "path": "report.reportHash",
+            "before": "valid report hash",
+            "after": "0x77d4f6da81121c7dd41f8582aa47d0553588621ae53c925d81411b8207dc0b75",
+            "impact": "The delivery proof no longer authenticates the report content."
+          }
+        ],
+        "evidenceFocus": [
+          "CHAIN_SETTLEMENT",
+          "DELIVERY_PROOF"
+        ],
+        "detectedBy": [
+          "R2_SIGNATURES_VALID"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x40c45201ca9deadc6ae6c0e95081f4e039ea3c80e7c01df611f225c7d3a8bb45"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x751dc194e7c9a41c943ce99c36cb122f4fd75e855762c69c9367cdd070c25732"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0x40c45201ca9deadc6ae6c0e95081f4e039ea3c80e7c01df611f225c7d3a8bb45"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x77d4f6da81121c7dd41f8582aa47d0553588621ae53c925d81411b8207dc0b75"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "verifier",
+      "metrics": {
+        "verifyLatencyMs": 3.352291999999977,
+        "eventCount": 7,
+        "storageBytesEstimate": 3833
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "Audit-only detects invalid delivery evidence after settlement."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R2_SIGNATURES_VALID"
+          ],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    },
+    {
+      "attackId": "FAKE_FEEDBACK",
+      "traceId": "trace-fake_feedback-1780163580938",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-fake_feedback-1780163580938",
+          "mode": "MODE_A_EXACT",
+          "status": "PASS",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [],
+          "clbCommitment": "0x0c541fa33a577a15127f9910e838d5c1bf3b64934a251ce4051c1f110e1eb8c3",
+          "settlementTxHash": "0x942c276a8895e54a294d2de4b14df1d6422668201d274c8fe23a2c89e9a505ad",
+          "traceMerkleRoot": "0xe0f71fac034ca111a31a8799fc0ac5f4973e28415694146cd4197ea013d51064",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:01.018Z",
+          "certificateHash": "0x4396dbbe47b33fd7f0e7d634cecd6b6b4dcac2c095dea8c31f9b775c9fb22ba9"
+        },
+        "result": {
+          "traceId": "trace-fake_feedback-1780163580938",
+          "status": "PASS",
+          "failedRules": [],
+          "warnings": [],
+          "certificateHash": "0x4396dbbe47b33fd7f0e7d634cecd6b6b4dcac2c095dea8c31f9b775c9fb22ba9",
+          "checkedAt": "2026-05-30T17:53:01.018Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "FAKE_FEEDBACK_WITHOUT_VERIFICATION",
+      "expectedFailedRules": [],
+      "auditCheck": {
+        "ok": true,
+        "detail": "Feedback event has no prior VERIFICATION_CERTIFICATE evidence"
+      },
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "A positive ERC-8004 feedback event is appended without a prior verification certificate.",
+        "steps": [
+          "Honest evidence trace ends after delivery",
+          "Attack appends ERC8004_FEEDBACK",
+          "Audit check requires feedback to be backed by verifier evidence"
+        ],
+        "mutations": [
+          {
+            "path": "events[]",
+            "before": "No ERC8004_FEEDBACK event",
+            "after": "evt-feedback-1 / ERC8004_FEEDBACK",
+            "impact": "The reputation signal is not backed by a verified trace."
+          }
+        ],
+        "evidenceFocus": [
+          "ERC8004_FEEDBACK",
+          "VERIFICATION_CERTIFICATE"
+        ],
+        "detectedBy": [
+          "audit: checkFakeFeedback"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0xf54d2a6c2620660ecc69a04fbaa18b179b5145218bfc8a7c7b974a9600a34a03"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x6c7306017a09534a482fcd9f1b8dbde35e237271666ad99dbed37a12d37f6cb1"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0xf54d2a6c2620660ecc69a04fbaa18b179b5145218bfc8a7c7b974a9600a34a03"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0x6c7306017a09534a482fcd9f1b8dbde35e237271666ad99dbed37a12d37f6cb1"
+          },
+          "evidence": {
+            "eventCount": 8,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF",
+              "ERC8004_FEEDBACK"
+            ],
+            "feedbackEventIds": [
+              "evt-feedback-938"
+            ]
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "audit",
+      "metrics": {
+        "verifyLatencyMs": 3.34375,
+        "eventCount": 8,
+        "storageBytesEstimate": 4327
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "ACEL graph audit catches feedback without certificate evidence."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    },
+    {
+      "attackId": "PROMPT_INJECTION_SELECTION",
+      "traceId": "trace-prompt_injection_selection-1780163580938",
+      "verification": {
+        "outcomes": {
+          "R1_HASH_CHAIN_INTACT": {
+            "ok": true
+          },
+          "R2_SIGNATURES_VALID": {
+            "ok": true
+          },
+          "R3_AGENT_IDENTITY_RESOLVES": {
+            "ok": true
+          },
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED": {
+            "ok": true
+          },
+          "R5_MANDATE_SIGNATURE_VALID": {
+            "ok": true
+          },
+          "R6_CLB_COMMITMENT_RECOMPUTES": {
+            "ok": true
+          },
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR": {
+            "ok": true
+          },
+          "R8_PAYMENT_NONCE_EQUALS_HASH_C": {
+            "ok": true
+          },
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE": {
+            "ok": true
+          },
+          "R10_CHAIN_DOMAIN_MATCHES": {
+            "ok": true
+          },
+          "R11_AMOUNT_WITHIN_MANDATE": {
+            "ok": true
+          },
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK": {
+            "ok": true
+          },
+          "R13_ASSET_ALLOWED": {
+            "ok": true
+          },
+          "R14_DELIVERY_AFTER_SETTLEMENT": {
+            "ok": true
+          },
+          "R15_TASK_HASH_MATCHES": {
+            "ok": true
+          }
+        },
+        "certificate": {
+          "traceId": "trace-prompt_injection_selection-1780163580938",
+          "mode": "MODE_A_EXACT",
+          "status": "PASS",
+          "rulesChecked": [
+            "R1_HASH_CHAIN_INTACT",
+            "R2_SIGNATURES_VALID",
+            "R3_AGENT_IDENTITY_RESOLVES",
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R5_MANDATE_SIGNATURE_VALID",
+            "R6_CLB_COMMITMENT_RECOMPUTES",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+            "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "R10_CHAIN_DOMAIN_MATCHES",
+            "R11_AMOUNT_WITHIN_MANDATE",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R13_ASSET_ALLOWED",
+            "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R15_TASK_HASH_MATCHES"
+          ],
+          "failedRules": [],
+          "clbCommitment": "0x957350db73ee7e45f1add07adf014c59d0c2048af406eda2af2e6cb738cc8599",
+          "settlementTxHash": "0xb0036d75792c0e3616db2c5230924cf871c665a687e693b599f4cd2ab6bbab97",
+          "traceMerkleRoot": "0x9b4ca37e19c42d81e68f8cb2a8e5d08d676b2cab6bd287b60c74422c05ec1e0c",
+          "verifierVersion": "verifier-1.0.0",
+          "createdAt": "2026-05-30T17:53:01.024Z",
+          "certificateHash": "0x4894e27b2cbe5307a8d671c23c6e89319c449f9793ca4926dfded667895e1824"
+        },
+        "result": {
+          "traceId": "trace-prompt_injection_selection-1780163580938",
+          "status": "PASS",
+          "failedRules": [],
+          "warnings": [],
+          "certificateHash": "0x4894e27b2cbe5307a8d671c23c6e89319c449f9793ca4926dfded667895e1824",
+          "checkedAt": "2026-05-30T17:53:01.024Z",
+          "mode": "MODE_A_EXACT"
+        }
+      },
+      "expectedResultCode": "PROMPT_INJECTION_SELECTED_UNAUTHORIZED_MERCHANT",
+      "expectedFailedRules": [],
+      "auditCheck": {
+        "ok": true,
+        "detail": "Discovery selected a merchant outside allowedPayees"
+      },
+      "scenario": {
+        "seed": 1780163580938,
+        "token": "AAVE",
+        "baseAmount": "2.00",
+        "attackAmount": "3.00",
+        "allowedAsset": "EURC",
+        "attackAsset": "USDC",
+        "attackerPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "taskHash": "0x66c9d09a5b093277eed356925017772f6ee8455a9db908d73c492512b194f3cf",
+        "reportInputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9"
+      },
+      "anatomy": {
+        "summary": "Discovery evidence shows the agent selected a merchant payee outside the user-approved allowedPayees list.",
+        "steps": [
+          "Honest mandate constrains allowedPayees",
+          "Attack logs an injected merchant selection",
+          "Audit check compares selectedPayee with mandate constraints"
+        ],
+        "mutations": [
+          {
+            "path": "events[].publicFields.selectedPayee",
+            "before": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "after": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "impact": "The selected merchant violates the user's payee constraint before payment."
+          }
+        ],
+        "evidenceFocus": [
+          "ERC8004_AGENT_SELECTION",
+          "AP2_CART_MANDATE"
+        ],
+        "detectedBy": [
+          "audit: checkPromptInjection"
+        ],
+        "honestTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0xffd0fab97d6a4ab92c27a676054a4a13439160f38434fefde0f62bbb0b5cc3fd"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xe85e470fca7320f7aa75b56fa3cd88f3627b2c625df3eb687df8968c8643918a"
+          },
+          "evidence": {
+            "eventCount": 7,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF"
+            ],
+            "feedbackEventIds": []
+          },
+          "nonceReplayAttempt": false
+        },
+        "attackedTrace": {
+          "settlement": {
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "value": "2.00",
+            "asset": "EURC",
+            "chainId": 84532,
+            "nonce": "0xffd0fab97d6a4ab92c27a676054a4a13439160f38434fefde0f62bbb0b5cc3fd"
+          },
+          "mandate": {
+            "maxAmount": "2.00",
+            "allowedAssets": [
+              "EURC"
+            ],
+            "allowedPayees": [
+              "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+            ]
+          },
+          "payerAgent": {
+            "authorizedPaymentKeys": [
+              "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+            ]
+          },
+          "report": {
+            "inputDataHash": "0xe2d5691a52bc1a01601cf4b28fd67619917d945a07659ee15293a4f2c84883b9",
+            "reportHash": "0xe85e470fca7320f7aa75b56fa3cd88f3627b2c625df3eb687df8968c8643918a"
+          },
+          "evidence": {
+            "eventCount": 8,
+            "objectTypes": [
+              "USER_INTENT",
+              "ERC8004_AGENT_IDENTITY",
+              "AP2_CART_MANDATE",
+              "X402_PAYMENT_REQUIREMENT",
+              "X402_PAYMENT_PAYLOAD",
+              "CHAIN_SETTLEMENT",
+              "DELIVERY_PROOF",
+              "ERC8004_AGENT_SELECTION"
+            ],
+            "feedbackEventIds": [],
+            "selectedPayee": "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
+          },
+          "nonceReplayAttempt": false
+        }
+      },
+      "matched": true,
+      "preventionLayer": "audit",
+      "metrics": {
+        "verifyLatencyMs": 4.00283300000001,
+        "eventCount": 8,
+        "storageBytesEstimate": 4504
+      },
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Vanilla x402 has no CLB or evidence verifier signal."
+        },
+        "B1": {
+          "detected": false,
+          "prevented": false,
+          "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "ACEL logged constraints expose the unauthorized merchant selection."
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [],
+          "note": "Live B3 detected by verifier or audit-layer check."
+        }
+      }
+    }
+  ],
+  "matrix": {
+    "PAYEE_SUBSTITUTION": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    },
+    "AMOUNT_ESCALATION": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    },
+    "ASSET_SWITCH": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [
+          "R13_ASSET_ALLOWED"
+        ],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    },
+    "CHAIN_TRANSPLANT": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    },
+    "AGENT_IDENTITY_SWAP": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 identity exists, but key authorization is not enforced in payment."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [
+          "R4_AGENT_PAYMENT_KEY_AUTHORIZED"
+        ],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    },
+    "MANDATE_REPLAY": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 without CLB replay audit does not expose mandate replay."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2-only does not bind replay freshness to C."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "Audit-only detects replay evidence but cannot prevent settlement."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": true,
+        "failedRules": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ],
+        "note": "Live B3 prevented at x402 replay enforcement and verifier flagged R9."
+      }
+    },
+    "CART_OR_TASK_SWITCH": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "Mandate task binding is not checked at payment time."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "ACEL verifier detects post-settlement; no x402 enforcement."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [
+          "R15_TASK_HASH_MATCHES"
+        ],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    },
+    "PAYMENT_WITHOUT_DELIVERY": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "Audit-only detects invalid delivery evidence after settlement."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [
+          "R2_SIGNATURES_VALID"
+        ],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    },
+    "FAKE_FEEDBACK": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "ACEL graph audit catches feedback without certificate evidence."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    },
+    "PROMPT_INJECTION_SELECTION": {
+      "B0": {
+        "detected": false,
+        "prevented": false,
+        "note": "Vanilla x402 has no CLB or evidence verifier signal."
+      },
+      "B1": {
+        "detected": false,
+        "prevented": false,
+        "note": "AP2 mandate exists, but nonce is not bound to C and payment is not prevented."
+      },
+      "B2": {
+        "detected": true,
+        "prevented": false,
+        "note": "ACEL logged constraints expose the unauthorized merchant selection."
+      },
+      "B3": {
+        "detected": true,
+        "prevented": false,
+        "failedRules": [],
+        "note": "Live B3 detected by verifier or audit-layer check."
+      }
+    }
+  }
+}

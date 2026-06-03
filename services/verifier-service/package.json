@@ -1,0 +1,32 @@
+{
+  "name": "@clb-acel/verifier-service",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "bun run src/index.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clb-acel/service-kit": "workspace:*",
+    "@clb-acel/verifier-core": "workspace:*",
+    "fastify": "^5.6.2"
+  },
+  "devDependencies": {
+    "@clb-acel/ap2-adapter": "workspace:*",
+    "@clb-acel/clb-core": "workspace:*",
+    "@clb-acel/delivery-core": "workspace:*",
+    "@clb-acel/evidence-core": "workspace:*",
+    "@clb-acel/schemas": "workspace:*",
+    "@clb-acel/x402-adapter": "workspace:*",
+    "typescript": "^5.8.3",
+    "viem": "^2.40.0"
+  }
+}

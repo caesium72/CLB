@@ -1,0 +1,43 @@
+{
+  "name": "@clb-acel/web-demo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "e2e:phase5": "playwright test e2e/demo-walkthrough.playwright.ts"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.5.0",
+    "@clb-acel/agent-orchestrator": "workspace:*",
+    "@clb-acel/anchor-core": "workspace:*",
+    "@clb-acel/clb-core": "workspace:*",
+    "@clb-acel/evidence-core": "workspace:*",
+    "@clb-acel/schemas": "workspace:*",
+    "@xyflow/react": "^12.10.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.17.0",
+    "motion": "^12.40.0",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "shadcn": "^4.8.3",
+    "tailwind-merge": "^3.6.0",
+    "tw-animate-css": "^1.4.0",
+    "viem": "^2.40.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
