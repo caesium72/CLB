@@ -1,0 +1,32 @@
+{
+  "phase": "7A",
+  "chainId": 31337,
+  "guardAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "predicateId": "predicate-phase7a",
+  "violating": {
+    "reverted": true,
+    "reason": "AmountExceedsMax",
+    "commitment": "0xc1c71d6c57908843ad629aeed1ec72dc11d355c9fa0d5c00a25e9f4e9d9d02cb",
+    "nonce": "0x5185d0ba61cb30ea957a06e53768dabc568607517011bee624d0174c3316ae16",
+    "value": "9.00",
+    "maxValue": "5.00"
+  },
+  "happy": {
+    "reverted": false,
+    "txHash": "0xebda587fa4dc6146d6073ba323092b70dd642c078ce4921975b4469b63ec065f",
+    "commitment": "0xa553f7b125ccadbb805084e17db399c5bb38302e24f0bcc9baf5a36b387f0d27",
+    "nonce": "0x36a77123baae7280267c3798f7ffa67d96d243dde10355882327e5f507c00432",
+    "gasUsed": "76006",
+    "value": "2.00"
+  },
+  "replay": {
+    "reverted": true,
+    "reason": "NonceAlreadyConsumed"
+  },
+  "gas": {
+    "happyPathOnChainGasUsed": "76006",
+    "validateAndConsumeForgeReport": "52590",
+    "source": "forge+anvil"
+  },
+  "generatedAt": "2026-06-05T07:03:16.122Z"
+}

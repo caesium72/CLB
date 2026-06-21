@@ -1,8 +1,10 @@
 import {
   AgentNotFoundError,
   MetadataHashMismatchError,
-  createInMemoryErc8004Registry,
+  createIdentityRegistry,
+  createIdentityRegistryFromEnv,
   type Erc8004Registry,
+  type IdentityRegistry,
   type RegisterAgentInput,
 } from "@clb-acel/erc8004-adapter";
 import { AgentCardSchema } from "@clb-acel/schemas";
@@ -11,10 +13,14 @@ import Fastify, { type FastifyBaseLogger } from "fastify";
 import { z } from "zod";
 import { defaultAgents } from "./seed";
 
-export { createInMemoryErc8004Registry };
+export {
+  createIdentityRegistry,
+  createIdentityRegistryFromEnv,
+  createInMemoryErc8004Registry,
+} from "@clb-acel/erc8004-adapter";
 
 type BuildIdentityServerOptions = {
-  registry?: Erc8004Registry;
+  registry?: Erc8004Registry | IdentityRegistry;
   logger?: boolean | FastifyBaseLogger;
   seed?: boolean;
 };
@@ -56,14 +62,15 @@ function getAgentId(params: unknown): string {
 
 export async function buildIdentityServer(options: BuildIdentityServerOptions = {}) {
   const app = Fastify({ logger: options.logger ?? true });
-  const registry = options.registry ?? createInMemoryErc8004Registry();
+  const registry = options.registry ?? createIdentityRegistryFromEnv();
 
   await registerOpenApi(app, {
     title: "CLB-ACEL Identity Service",
-    description: "ERC-8004 mock identity registry adapter and agent-card hosting.",
+    description: "ERC-8004 identity registry adapter (on-chain on Base Sepolia, in-memory offline).",
   });
 
-  if (options.seed ?? true) {
+  const shouldSeed = options.seed ?? ("kind" in registry ? registry.kind === "mock" : true);
+  if (shouldSeed) {
     const seeded = await registry.list();
     if (seeded.length === 0) {
       for (const agent of defaultAgents()) {

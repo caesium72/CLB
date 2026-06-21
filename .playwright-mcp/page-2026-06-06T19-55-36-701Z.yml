@@ -1,0 +1,192 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - paragraph [ref=e6]: CLB-ACEL Demo
+      - heading "Human-present checkout" [level=1] [ref=e7]: Human-present checkout
+      - paragraph [ref=e9]: Cross-layer binding · Mode A · P1–P4
+    - banner [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: Act 1 · Setup
+          - heading "Tell your agent what you need" [level=2] [ref=e14]
+          - paragraph [ref=e15]: Describe the task and the rules your agent must respect. Your agent then chooses an on-chain agent that fits.
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - button "Mode A · exact" [ref=e18]:
+              - generic [ref=e20]: Mode A · exact
+            - button "Mode B · predicate" [ref=e21]:
+              - generic [ref=e22]: Mode B · predicate
+          - generic [ref=e23]:
+            - img [ref=e24]
+            - text: You approve each payment
+          - generic [ref=e28]: Ready
+    - complementary [ref=e29]:
+      - navigation [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - paragraph [ref=e34]: Start here
+            - paragraph [ref=e35]: Overview
+          - link "Overview The contribution at a glance" [ref=e36] [cursor=pointer]:
+            - /url: /overview
+            - img [ref=e38]
+            - generic [ref=e41]:
+              - generic [ref=e42]: Overview
+              - generic [ref=e43]: The contribution at a glance
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - paragraph [ref=e46]: Act 1
+            - paragraph [ref=e47]: Setup
+          - link "Set the task & rules Task, budget, allowed agents" [ref=e48] [cursor=pointer]:
+            - /url: /intent
+            - img [ref=e50]
+            - generic [ref=e54]:
+              - generic [ref=e55]: Set the task & rules
+              - generic [ref=e56]: Task, budget, allowed agents
+        - generic [ref=e57]:
+          - generic [ref=e58]:
+            - paragraph [ref=e59]: Act 2
+            - paragraph [ref=e60]: Agent run
+          - link "Agent chooses LLM decision + reasoning" [ref=e61] [cursor=pointer]:
+            - /url: /discovery
+            - img [ref=e63]
+            - generic [ref=e68]:
+              - generic [ref=e69]: Agent chooses
+              - generic [ref=e70]: LLM decision + reasoning
+          - link "Cart or limits Line item or spending rules" [ref=e71] [cursor=pointer]:
+            - /url: /quote
+            - img [ref=e73]
+            - generic [ref=e77]:
+              - generic [ref=e78]: Cart or limits
+              - generic [ref=e79]: Line item or spending rules
+          - link "Authorize One signature binds the layers" [ref=e80] [cursor=pointer]:
+            - /url: /mandate
+            - img [ref=e82]
+            - generic [ref=e84]:
+              - generic [ref=e85]: Authorize
+              - generic [ref=e86]: One signature binds the layers
+          - link "Agent pays 402, then settle" [ref=e87] [cursor=pointer]:
+            - /url: /checkout
+            - img [ref=e89]
+            - generic [ref=e91]:
+              - generic [ref=e92]: Agent pays
+              - generic [ref=e93]: 402, then settle
+          - link "Receipt Settlement receipt" [ref=e94] [cursor=pointer]:
+            - /url: /payment
+            - img [ref=e96]
+            - generic [ref=e99]:
+              - generic [ref=e100]: Receipt
+              - generic [ref=e101]: Settlement receipt
+        - generic [ref=e102]:
+          - generic [ref=e103]:
+            - paragraph [ref=e104]: Act 3
+            - paragraph [ref=e105]: Proof
+          - link "Evidence Tamper-evident event trace" [ref=e106] [cursor=pointer]:
+            - /url: /evidence
+            - img [ref=e108]
+            - generic [ref=e112]:
+              - generic [ref=e113]: Evidence
+              - generic [ref=e114]: Tamper-evident event trace
+          - link "Verdict Deterministic certificate" [ref=e115] [cursor=pointer]:
+            - /url: /verifier
+            - img [ref=e117]
+            - generic [ref=e120]:
+              - generic [ref=e121]: Verdict
+              - generic [ref=e122]: Deterministic certificate
+          - link "On-chain proof Explorer links to the truth" [ref=e123] [cursor=pointer]:
+            - /url: /anchor
+            - img [ref=e125]
+            - generic [ref=e128]:
+              - generic [ref=e129]: On-chain proof
+              - generic [ref=e130]: Explorer links to the truth
+        - generic [ref=e131]:
+          - generic [ref=e132]:
+            - paragraph [ref=e133]: Lab
+            - paragraph [ref=e134]: Attack Lab
+          - link "Attack Lab Five attacks, reproduced" [ref=e135] [cursor=pointer]:
+            - /url: /attacks
+            - img [ref=e137]
+            - generic [ref=e146]:
+              - generic [ref=e147]: Attack Lab
+              - generic [ref=e148]: Five attacks, reproduced
+        - generic [ref=e149]:
+          - generic [ref=e150]:
+            - paragraph [ref=e151]: Lab
+            - paragraph [ref=e152]: Privacy Lab
+          - link "Privacy Lab Confidential commit-and-prove" [ref=e153] [cursor=pointer]:
+            - /url: /privacy
+            - img [ref=e155]
+            - generic [ref=e160]:
+              - generic [ref=e161]: Privacy Lab
+              - generic [ref=e162]: Confidential commit-and-prove
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - generic [ref=e166]: Research mode
+          - paragraph [ref=e167]: Show hashes and protocol objects
+        - switch "Research mode" [checked] [ref=e168]
+        - checkbox [checked] [ref=e169]
+    - main [ref=e170]:
+      - generic [ref=e172]:
+        - generic [ref=e173]:
+          - generic [ref=e174]:
+            - generic [ref=e175]: Tell your shopping agent what you need
+            - generic [ref=e176]: Describe the task and set the rules your agent must respect. Next, the agent reads both on-chain agents' cards and decides — with reasoning — which one fits.
+          - generic [ref=e178]:
+            - generic [ref=e179]:
+              - generic [ref=e180]: "Try:"
+              - button "Grammar Checker example" [ref=e181]
+              - button "Weather example" [ref=e182]
+            - generic [ref=e183]:
+              - generic [ref=e184]: Task
+              - textbox "Task" [ref=e185]: Proofread and correct my paragraph
+              - paragraph [ref=e186]: What you want done. The agent matches this to an on-chain agent's capabilities.
+            - generic [ref=e187]:
+              - generic [ref=e188]: What should the agent work on?
+              - textbox "What should the agent work on?" [ref=e189]: i has two dog and they likes to runs very fast
+              - paragraph [ref=e190]: The text to proofread, or the city to forecast.
+            - generic [ref=e191]:
+              - generic [ref=e192]:
+                - generic [ref=e193]: Max price
+                - textbox "Max price" [ref=e194]: "2.00"
+                - paragraph [ref=e195]: The most you will spend (a decision rule).
+              - generic [ref=e196]:
+                - generic [ref=e197]: Asset
+                - textbox "Asset" [ref=e198]: USDC
+                - paragraph [ref=e199]: Currency you will pay in (a decision rule).
+              - generic [ref=e200]:
+                - generic [ref=e201]: Network
+                - textbox "Network" [ref=e202]: base-sepolia
+                - paragraph [ref=e203]: Settlement network (a decision rule).
+            - generic [ref=e204]:
+              - generic [ref=e205]: Allowed agents
+              - generic [ref=e206]:
+                - 'button "Grammar Checker Agent #6827 · Proofreads and corrects written text — grammar, spelling, punctuation." [pressed] [ref=e207]':
+                  - img [ref=e209]
+                  - generic [ref=e211]:
+                    - generic [ref=e212]: Grammar Checker Agent
+                    - generic [ref=e213]: "#6827 · Proofreads and corrects written text — grammar, spelling, punctuation."
+                - 'button "Weather Agent #6823 · Returns a short weather forecast (conditions + temperature) for a city." [pressed] [ref=e214]':
+                  - img [ref=e216]
+                  - generic [ref=e218]:
+                    - generic [ref=e219]: Weather Agent
+                    - generic [ref=e220]: "#6823 · Returns a short weather forecast (conditions + temperature) for a city."
+              - paragraph [ref=e221]: Optional. Restrict which on-chain agents qualify. Leave all checked to let the agent choose freely.
+            - generic [ref=e222]:
+              - button "Send to shopping agent" [ref=e223]
+              - generic [ref=e224]: Agent may choose any agent
+        - generic [ref=e225]:
+          - generic [ref=e226]:
+            - generic [ref=e227]:
+              - heading "What happens next" [level=3] [ref=e228]
+              - separator [ref=e229]
+            - generic [ref=e230]:
+              - paragraph [ref=e231]: Human-present checkout setup
+              - paragraph [ref=e232]: You will approve one exact cart payment, and the settlement nonce binds to that exact descriptor.
+              - paragraph [ref=e233]: The agent reads both agents' ERC-8004 cards and decides which one can do the task within your rules. This choice is recorded as evidence — but never trusted by the verifier.
+          - generic [ref=e234]:
+            - generic [ref=e235]:
+              - heading "Protocol preview" [level=3] [ref=e236]
+              - separator [ref=e237]
+            - generic [ref=e238]:
+              - paragraph [ref=e239]: Live intent
+              - generic [ref=e240]: "{ \"mode\": \"a\", \"intent\": { \"task\": \"Proofread and correct my paragraph\", \"input\": \"i has two dog and they likes to runs very fast\", \"budget\": \"2.00\", \"asset\": \"USDC\", \"network\": \"base-sepolia\", \"allowedAgentIds\": \"any\" }, \"next\": \"POST /api/demo/discover\" }"
+  - alert [ref=e241]

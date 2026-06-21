@@ -15,12 +15,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clb-acel/erc8004-adapter": "workspace:*",
     "@clb-acel/service-kit": "workspace:*",
     "@clb-acel/verifier-core": "workspace:*",
     "fastify": "^5.6.2"
   },
   "devDependencies": {
     "@clb-acel/ap2-adapter": "workspace:*",
+    "@clb-acel/attack-core": "workspace:*",
     "@clb-acel/clb-core": "workspace:*",
     "@clb-acel/delivery-core": "workspace:*",
     "@clb-acel/evidence-core": "workspace:*",

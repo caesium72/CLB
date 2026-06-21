@@ -1,0 +1,80 @@
+theory CLB_ReplayDemo
+begin
+
+/*
+  ============================================================================
+  CLB-ACEL — Phase 7C "hello-world" model.
+
+  Purpose: a minimal, readable Tamarin model that demonstrates property P3
+  (freshness / non-replay) for the CLB nonce binding, AND its falsification
+  for a naive baseline that omits the nonce. This is a teaching/sanity model;
+  the full P1-P5 model lives in clb.spthy.
+
+  Crypto is symbolic (perfect): h(.) cannot be inverted. The attacker is the
+  built-in Dolev-Yao network attacker (sees Out(.), can replay into In(.)).
+
+  Run:
+    tamarin-prover --prove formal/tamarin/replay-demo.spthy
+  Expected:
+    no_replay        verified     <- CLB design (nonce consumed once)
+    naive_no_replay  falsified    <- baseline without a nonce: replay succeeds
+    sane_settle      verified     <- honest settlement is reachable (not vacuous)
+  ============================================================================
+*/
+
+functions: h/1
+
+/* --------------------------------------------------------------------------
+   CLB design: settlement consumes a single-use nonce = H(C).
+
+   Authorize emits the mandate on the network AND a LINEAR fact
+   NonceUnused(h(~mandate)) that exists exactly once. Settle requires and
+   consumes it, so it can fire at most once per authorization even though the
+   Dolev-Yao attacker may replay the mandate arbitrarily.
+   -------------------------------------------------------------------------- */
+rule Authorize:
+    [ Fr(~mandate) ]
+  --[ Authorized(~mandate) ]->
+    [ Out(~mandate), NonceUnused(h(~mandate)) ]
+
+rule Settle:
+    [ In(mandate), NonceUnused(h(mandate)) ]
+  --[ Settled(mandate) ]->
+    [ ]
+
+/* --------------------------------------------------------------------------
+   Naive baseline (B0/B1 analogue): no nonce, nothing consumed.
+   We tag its events with a separate action fact so its lemma is independent.
+   -------------------------------------------------------------------------- */
+rule AuthorizeNaive:
+    [ Fr(~mandate) ]
+  --[ AuthorizedN(~mandate) ]->
+    [ Out(~mandate) ]
+
+rule SettleNaive:
+    [ In(mandate) ]
+  --[ SettledN(mandate) ]->
+    [ ]
+
+/* --------------------------------------------------------------------------
+   Lemmas
+   -------------------------------------------------------------------------- */
+
+// Sanity: an honest settlement is actually reachable (guards against proving
+// security properties vacuously over a model that can never settle).
+lemma sane_settle:
+  exists-trace
+  "Ex m #i. Settled(m) @ #i"
+
+// P3 for the CLB design: at most one settlement per mandate. EXPECT: verified.
+lemma no_replay:
+  all-traces
+  "All m #i #j. Settled(m) @ #i & Settled(m) @ #j ==> #i = #j"
+
+// P3 for the naive baseline: SAME claim, but it fails. EXPECT: falsified,
+// with a trace where one authorization is replayed into two settlements.
+lemma naive_no_replay:
+  all-traces
+  "All m #i #j. SettledN(m) @ #i & SettledN(m) @ #j ==> #i = #j"
+
+end

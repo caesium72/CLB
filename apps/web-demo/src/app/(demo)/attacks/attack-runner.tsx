@@ -21,6 +21,7 @@ import {
 } from "./components/baseline-matrix-section";
 import { PreventionLayerBadge } from "./components/prevention-layer-badge";
 import { AttackRunButton } from "./components/attack-run-button";
+import { AttackRecreation } from "./components/attack-recreation";
 
 type AttackId =
   | "PAYEE_SUBSTITUTION"
@@ -417,14 +418,14 @@ function AttackAnatomyPanel({ result }: { result: AttackRunResult | null }) {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border/70">
-          <div className="flex flex-col gap-1 border-b border-border/70 px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm font-semibold">Honest vs attacked trace</p>
+        <details className="rounded-lg border border-border/70">
+          <summary className="flex cursor-pointer list-none flex-col gap-1 px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm font-semibold">Full trace diff (details)</span>
             <Badge variant="secondary" className="w-fit">
               {diffRows.filter((row) => row.changed).length} changed
             </Badge>
-          </div>
-          <div className="overflow-x-auto">
+          </summary>
+          <div className="overflow-x-auto border-t border-border/70">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -465,7 +466,7 @@ function AttackAnatomyPanel({ result }: { result: AttackRunResult | null }) {
               </TableBody>
             </Table>
           </div>
-        </div>
+        </details>
       </div>
     </DemoSection>
   );
@@ -478,7 +479,7 @@ export function AttackRunner({ serviceUrl }: { serviceUrl: string }) {
   const [matrix, setMatrix] = useState<PartialBaselineMatrix | null>(null);
   const [result, setResult] = useState<AttackRunResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("Loading simulator metadata...");
+  const [status, setStatus] = useState("Attacks run in-process — deterministic, fixed seed.");
 
   const selectedMeta = useMemo(
     () => attacks.find((attack) => attack.id === selected) ?? fallbackAttacks[0],
@@ -507,11 +508,11 @@ export function AttackRunner({ serviceUrl }: { serviceUrl: string }) {
         const attacksPayload = (await attacksResponse.json()) as { attacks: AttackMeta[] };
         if (!cancelled) {
           setAttacks(attacksPayload.attacks);
-          setStatus("Connected to attack-simulator :4006");
+          setStatus("Attacks run in-process — deterministic, fixed seed.");
         }
       } catch {
         if (!cancelled) {
-          setStatus("Using fixture metadata fallback; start attack-simulator for live runs.");
+          setStatus("Using fixture metadata fallback.");
         }
       }
     }
@@ -664,7 +665,8 @@ export function AttackRunner({ serviceUrl }: { serviceUrl: string }) {
         </CardContent>
       </Card>
 
-      <div id="attack-anatomy" className="scroll-mt-6">
+      <div id="attack-anatomy" className="scroll-mt-6 space-y-6">
+        <AttackRecreation result={result} />
         <AttackAnatomyPanel result={result} />
       </div>
 

@@ -33,6 +33,12 @@ jobs:
       - name: Run Phase 4 P5 predicate-attack benchmark
         run: bun run e2e:phase4b
 
+      - name: Run Phase 7D baseline comparison
+        run: bun run e2e:phase7-baselines
+
+      - name: Check baseline-comparison drift
+        run: git diff --exit-code experiments/benchmarks/baseline-comparison.md
+
   forge:
     runs-on: ubuntu-latest
     steps:

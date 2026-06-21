@@ -17,6 +17,13 @@ export const EvidenceFlowNode = memo(function EvidenceFlowNode({
 }: NodeProps & { data: EvidenceNodeData }) {
   const { graphNode, index } = data;
   const colors = protocolColors(graphNode.protocol);
+  const NODE_TITLES: Partial<Record<string, string>> = {
+    DECISION_CONTEXT: "Agent decision — audit only",
+    DELIVERY_PROOF: "Delivered work",
+    VERIFICATION_CERTIFICATE: "Verifier verdict",
+    ERC8004_FEEDBACK: "Reputation feedback",
+  };
+  const title = NODE_TITLES[graphNode.nodeType] ?? shortenLabel(graphNode.label);
 
   return (
     <div
@@ -38,7 +45,7 @@ export const EvidenceFlowNode = memo(function EvidenceFlowNode({
         </Badge>
         <span className="font-mono text-[10px] text-muted-foreground">#{index + 1}</span>
       </div>
-      <p className="text-xs font-semibold leading-snug">{shortenLabel(graphNode.label)}</p>
+      <p className="text-xs font-semibold leading-snug">{title}</p>
       <p className="mt-1 truncate font-mono text-[10px] text-muted-foreground">{graphNode.id}</p>
       <Handle
         type="source"

@@ -209,7 +209,7 @@ export function MandateWalletSign() {
       const registered = await registerResponse.json();
       if (!registerResponse.ok) throw new Error(registered.error ?? "Mandate registration failed");
       updateRun({
-        mandateId: registered.mandate.mandateId,
+        mandateId: registered.mandateId ?? registered.mandate?.mandateId ?? mandateDraft.mandateId,
         runStatus: "ready",
         checkoutStage: "idle",
       });

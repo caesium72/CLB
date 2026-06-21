@@ -14,10 +14,24 @@ import {
 export type DemoMode = "a" | "b";
 export type DemoRunStatus = "ready" | "preparing" | "signing" | "running" | "live-trace" | "error";
 
+/** The full intent the user created — carried to later steps so a serverless
+ *  instance that lacks the in-memory copy can rebuild it from the request body. */
+export type DemoIntentFields = {
+  intentId: string;
+  token: string;
+  task: string;
+  input: string;
+  budget: string;
+  asset: string;
+  network: string;
+  allowedAgentIds?: string[];
+};
+
 export type DemoRunState = {
   mode: DemoMode;
   intentId?: string;
   intentToken?: string;
+  intent?: DemoIntentFields;
   traceId?: string;
   mandateId?: string;
   runStatus: DemoRunStatus;

@@ -1,0 +1,632 @@
+theory CLB
+
+begin
+
+// Function signature and definition of the equational theory E
+
+functions: fst/1, h/1, pair/2, pk/1, sign/2, snd/1, true/0, verify/3
+equations:
+    fst(<x.1, x.2>) = x.1,
+    snd(<x.1, x.2>) = x.2,
+    verify(sign(x.1, x.2), x.1, pk(x.2)) = true
+
+restriction Equality:
+  "∀ x y #i. (Eq( x, y ) @ #i) ⇒ (x = y)"
+  // safety formula
+
+  /*
+  expanded formula:
+  "∀ x y #i. (Eq( x, y ) @ #i) ⇒ (x = y)"
+  */
+
+rule (modulo E) Register_Agent:
+   [ Fr( ~sk ) ]
+  --[ KeyAuthorized( $agentId, pk(~sk) ) ]->
+   [ !AgentKey( $agentId, ~sk ), Out( pk(~sk) ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Register_Human:
+   [ Fr( ~hsk ) ]
+  -->
+   [ !HumanSk( $H, ~hsk ), !HumanPk( $H, pk(~hsk) ), Out( pk(~hsk) ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Authorize_ModeA:
+   [ !HumanSk( $H, ~hsk ), Fr( ~mandate ) ]
+  --[ Authorized( $H, $agentId, $payee, $asset, $value, $chainId ) ]->
+   [
+   Out( <
+         sign(h(<$chainId, $agentId, ~mandate, $asset, $payee, $value>), ~hsk), 
+         ~mandate, $chainId, $agentId, $asset, $payee, $value>
+   ),
+   NonceUnused( h(h(<$chainId, $agentId, ~mandate, $asset, $payee, $value>))
+   )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Settle_ModeA:
+   [
+   In( <sig, mandate, chainId, agentId, asset, payee, value> ),
+   !HumanPk( $H, pkH ), !AgentKey( agentId, ~sk ),
+   NonceUnused( h(h(<chainId, agentId, mandate, asset, payee, value>)) )
+   ]
+  --[
+  Eq( verify(sig, h(<chainId, agentId, mandate, asset, payee, value>),
+             pkH),
+      true
+  ),
+  Paid( agentId, pk(~sk) ),
+  Settled( $H, agentId, pk(~sk), payee, asset, value, chainId ),
+  Consumed( h(h(<chainId, agentId, mandate, asset, payee, value>)) )
+  ]->
+   [ ]
+
+  /*
+  rule (modulo AC) Settle_ModeA:
+     [
+     In( <sig, mandate, chainId, agentId, asset, payee, value> ),
+     !HumanPk( $H, pkH ), !AgentKey( agentId, ~sk ),
+     NonceUnused( h(h(<chainId, agentId, mandate, asset, payee, value>)) )
+     ]
+    --[
+    Eq( z, true ), Paid( agentId, pk(~sk) ),
+    Settled( $H, agentId, pk(~sk), payee, asset, value, chainId ),
+    Consumed( h(h(<chainId, agentId, mandate, asset, payee, value>)) )
+    ]->
+     [ ]
+    variants (modulo AC)
+    1. agentId
+             = agentId.12
+       asset = asset.12
+       chainId
+             = chainId.12
+       mandate
+             = mandate.12
+       payee = payee.12
+       pkH   = pkH.12
+       sig   = sig.12
+       value = value.12
+       z     = verify(sig.12,
+                      h(<chainId.12, agentId.12, mandate.12, asset.12, payee.12, value.12>),
+                      pkH.12)
+    
+    2. agentId
+             = x.12
+       asset = x.13
+       chainId
+             = x.14
+       mandate
+             = x.15
+       payee = x.16
+       pkH   = pk(x.17)
+       sig   = sign(h(<x.14, x.12, x.15, x.13, x.16, x.18>), x.17)
+       value = x.18
+       z     = true
+  */
+
+rule (modulo E) Authorize_ModeB:
+   [ !HumanSk( $H, ~hsk ), Fr( ~p ) ]
+  --[
+  DelegatedB( $H, ~p ),
+  AdmitB( $H, ~p, $okAgent, $okPayee, $okAsset, $okValue, $okChain )
+  ]->
+   [
+   Out( <~p, sign(h(<'PRED', ~p>), ~hsk)> ), !PredPk( ~p, pk(~hsk) ),
+   !Admissible( $H, ~p, $okAgent, $okPayee, $okAsset, $okValue, $okChain ),
+   NonceUnused( h(h(<$okChain, $okAgent, ~p, $okPayee, $okAsset, $okValue>))
+   )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Settle_ModeB:
+   [
+   In( <p, psig, agentId, payee, asset, value, chainId> ),
+   !PredPk( p, pkH ), !AgentKey( agentId, ~sk ),
+   !Admissible( H, p, agentId, payee, asset, value, chainId ),
+   NonceUnused( h(h(<chainId, agentId, p, payee, asset, value>)) )
+   ]
+  --[
+  Eq( verify(psig, h(<'PRED', p>), pkH), true ), Paid( agentId, pk(~sk) ),
+  GuardPassed( p, payee, asset, value, chainId ),
+  SettledB( H, agentId, pk(~sk), payee, asset, value, chainId, p ),
+  Consumed( h(h(<chainId, agentId, p, payee, asset, value>)) )
+  ]->
+   [ ]
+
+  /*
+  rule (modulo AC) Settle_ModeB:
+     [
+     In( <p, psig, agentId, payee, asset, value, chainId> ),
+     !PredPk( p, pkH ), !AgentKey( agentId, ~sk ),
+     !Admissible( H, p, agentId, payee, asset, value, chainId ),
+     NonceUnused( h(h(<chainId, agentId, p, payee, asset, value>)) )
+     ]
+    --[
+    Eq( z, true ), Paid( agentId, pk(~sk) ),
+    GuardPassed( p, payee, asset, value, chainId ),
+    SettledB( H, agentId, pk(~sk), payee, asset, value, chainId, p ),
+    Consumed( h(h(<chainId, agentId, p, payee, asset, value>)) )
+    ]->
+     [ ]
+    variants (modulo AC)
+    1. p     = p.12
+       pkH   = pkH.12
+       psig  = psig.12
+       z     = verify(psig.12, h(<'PRED', p.12>), pkH.12)
+    
+    2. p     = x.12
+       pkH   = pk(x.14)
+       psig  = sign(h(<'PRED', x.12>), x.14)
+       z     = true
+  */
+
+lemma exec_modeA:
+  exists-trace
+  "∃ H aid K payee asset val cid #s.
+    Settled( H, aid, K, payee, asset, val, cid ) @ #s"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ H aid K payee asset val cid #s.
+  (Settled( H, aid, K, payee, asset, val, cid ) @ #s)"
+*/
+simplify
+solve( !HumanPk( $H, pk(x) ) ▶₁ #s )
+  case Register_Human
+  solve( !AgentKey( aid, ~sk ) ▶₂ #s )
+    case Register_Agent
+    solve( NonceUnused( h(h(<cid, $agentId, mandate, asset, payee, val>))
+           ) ▶₃ #s )
+      case Authorize_ModeA
+      solve( !KU( sign(h(<$chainId, $agentId, ~mandate, $asset, $payee, $value
+                         >),
+                       ~hsk)
+             ) @ #vk.1 )
+        case Authorize_ModeA
+        solve( !KU( ~mandate ) @ #vk.3 )
+          case Authorize_ModeA
+          SOLVED // trace found
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma exec_modeB:
+  exists-trace
+  "∃ H aid K payee asset val cid p #s.
+    SettledB( H, aid, K, payee, asset, val, cid, p ) @ #s"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ H aid K payee asset val cid p #s.
+  (SettledB( H, aid, K, payee, asset, val, cid, p ) @ #s)"
+*/
+simplify
+solve( !PredPk( p, pk(x) ) ▶₁ #s )
+  case Authorize_ModeB
+  solve( !AgentKey( aid, ~sk ) ▶₂ #s )
+    case Register_Agent
+    solve( !Admissible( H, ~p, $agentId, payee, asset, val, cid ) ▶₃ #s )
+      case Authorize_ModeB
+      solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                               $okValue>))
+             ) ▶₄ #s )
+        case Authorize_ModeB
+        solve( !KU( ~p ) @ #vk.1 )
+          case Authorize_ModeB
+          solve( !KU( sign(h(<'PRED', ~p>), ~hsk) ) @ #vk.3 )
+            case Authorize_ModeB
+            SOLVED // trace found
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma P1_identity_binding:
+  all-traces
+  "∀ aid K #s.
+    (Paid( aid, K ) @ #s) ⇒ (∃ #r. KeyAuthorized( aid, K ) @ #r)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ aid K #s.
+  (Paid( aid, K ) @ #s) ∧ ∀ #r. (KeyAuthorized( aid, K ) @ #r) ⇒ ⊥"
+*/
+simplify
+solve( Paid( aid, K ) @ #s )
+  case Settle_ModeA
+  solve( !HumanPk( $H, pk(x) ) ▶₁ #s )
+    case Register_Human
+    solve( !AgentKey( aid, ~sk ) ▶₂ #s )
+      case Register_Agent
+      by contradiction /* from formulas */
+    qed
+  qed
+next
+  case Settle_ModeB
+  solve( !PredPk( p, pk(x) ) ▶₁ #s )
+    case Authorize_ModeB
+    solve( !AgentKey( aid, ~sk ) ▶₂ #s )
+      case Register_Agent
+      by contradiction /* from formulas */
+    qed
+  qed
+qed
+
+lemma P2_authorization_integrity:
+  all-traces
+  "∀ H aid K payee asset val cid #s.
+    (Settled( H, aid, K, payee, asset, val, cid ) @ #s) ⇒
+    (∃ #a. Authorized( H, aid, payee, asset, val, cid ) @ #a)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ H aid K payee asset val cid #s.
+  (Settled( H, aid, K, payee, asset, val, cid ) @ #s)
+ ∧
+  ∀ #a. (Authorized( H, aid, payee, asset, val, cid ) @ #a) ⇒ ⊥"
+*/
+simplify
+solve( !HumanPk( $H, pk(x) ) ▶₁ #s )
+  case Register_Human
+  solve( !AgentKey( aid, ~sk ) ▶₂ #s )
+    case Register_Agent
+    solve( NonceUnused( h(h(<cid, $agentId, mandate, asset, payee, val>))
+           ) ▶₃ #s )
+      case Authorize_ModeA
+      solve( !KU( sign(h(<$chainId, $agentId, ~mandate, $asset, $payee, $value
+                         >),
+                       ~hsk)
+             ) @ #vk.1 )
+        case Authorize_ModeA
+        by contradiction /* from formulas */
+      next
+        case c_sign
+        by solve( !KU( ~hsk ) @ #vk.14 )
+      qed
+    next
+      case Authorize_ModeB
+      solve( !KU( sign(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, $okValue
+                         >),
+                       ~hsk)
+             ) @ #vk.1 )
+        case c_sign
+        by solve( !KU( ~hsk ) @ #vk.14 )
+      qed
+    qed
+  qed
+qed
+
+lemma P3_no_replay:
+  all-traces
+  "∀ n #i #j. ((Consumed( n ) @ #i) ∧ (Consumed( n ) @ #j)) ⇒ (#i = #j)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ n #i #j. (Consumed( n ) @ #i) ∧ (Consumed( n ) @ #j) ∧ ¬(#i = #j)"
+*/
+simplify
+solve( (#i < #j)  ∥ (#j < #i) )
+  case case_1
+  solve( Consumed( n ) @ #i )
+    case Settle_ModeA
+    solve( !HumanPk( $H, pk(x) ) ▶₁ #i )
+      case Register_Human
+      solve( !AgentKey( agentId, ~sk ) ▶₂ #i )
+        case Register_Agent
+        solve( NonceUnused( h(h(<chainId, $agentId, mandate, asset, payee, value
+                                >))
+               ) ▶₃ #i )
+          case Authorize_ModeA
+          solve( Consumed( h(h(<$chainId, $agentId, ~mandate, $asset, $payee, 
+                                $value>))
+                 ) @ #j )
+            case Settle_ModeA
+            solve( !HumanPk( $H.1, pk(x) ) ▶₁ #j )
+              case Register_Human
+              solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                case Register_Agent
+                solve( NonceUnused( h(h(<$chainId, $agentId, ~mandate, $asset, $payee, 
+                                         $value>))
+                       ) ▶₃ #j )
+                  case Authorize_ModeA
+                  by contradiction /* cyclic */
+                qed
+              qed
+            qed
+          next
+            case Settle_ModeB
+            by solve( !PredPk( ~mandate, pk(x) ) ▶₁ #j )
+          qed
+        next
+          case Authorize_ModeB
+          solve( Consumed( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                $okValue>))
+                 ) @ #j )
+            case Settle_ModeA
+            solve( !HumanPk( $H.1, pk(x) ) ▶₁ #j )
+              case Register_Human
+              solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                case Register_Agent
+                solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                         $okValue>))
+                       ) ▶₃ #j )
+                  case Authorize_ModeB
+                  by contradiction /* cyclic */
+                qed
+              qed
+            qed
+          next
+            case Settle_ModeB
+            solve( !PredPk( ~p, pk(x) ) ▶₁ #j )
+              case Authorize_ModeB
+              solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                case Register_Agent
+                solve( !Admissible( H.1, ~p, $agentId, $okPayee, $okAsset, $okValue,
+                                    $okChain
+                       ) ▶₃ #j )
+                  case Authorize_ModeB
+                  by solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                              $okValue>))
+                            ) ▶₄ #j )
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  next
+    case Settle_ModeB
+    solve( !PredPk( p, pk(x) ) ▶₁ #i )
+      case Authorize_ModeB
+      solve( !AgentKey( agentId, ~sk ) ▶₂ #i )
+        case Register_Agent
+        solve( !Admissible( H, ~p, $agentId, payee, asset, value, chainId
+               ) ▶₃ #i )
+          case Authorize_ModeB
+          solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                   $okValue>))
+                 ) ▶₄ #i )
+            case Authorize_ModeB
+            solve( Consumed( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                  $okValue>))
+                   ) @ #j )
+              case Settle_ModeA
+              solve( !HumanPk( $H.1, pk(x) ) ▶₁ #j )
+                case Register_Human
+                solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                  case Register_Agent
+                  by solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                              $okValue>))
+                            ) ▶₃ #j )
+                qed
+              qed
+            next
+              case Settle_ModeB
+              solve( !PredPk( ~p, pk(x) ) ▶₁ #j )
+                case Authorize_ModeB
+                solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                  case Register_Agent
+                  solve( !Admissible( H.1, ~p, $agentId, $okPayee, $okAsset, $okValue,
+                                      $okChain
+                         ) ▶₃ #j )
+                    case Authorize_ModeB
+                    solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                             $okValue>))
+                           ) ▶₄ #j )
+                      case Authorize_ModeB
+                      by contradiction /* cyclic */
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+next
+  case case_2
+  solve( Consumed( n ) @ #i )
+    case Settle_ModeA
+    solve( !HumanPk( $H, pk(x) ) ▶₁ #i )
+      case Register_Human
+      solve( !AgentKey( agentId, ~sk ) ▶₂ #i )
+        case Register_Agent
+        solve( NonceUnused( h(h(<chainId, $agentId, mandate, asset, payee, value
+                                >))
+               ) ▶₃ #i )
+          case Authorize_ModeA
+          solve( Consumed( h(h(<$chainId, $agentId, ~mandate, $asset, $payee, 
+                                $value>))
+                 ) @ #j )
+            case Settle_ModeA
+            solve( !HumanPk( $H.1, pk(x) ) ▶₁ #j )
+              case Register_Human
+              solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                case Register_Agent
+                solve( NonceUnused( h(h(<$chainId, $agentId, ~mandate, $asset, $payee, 
+                                         $value>))
+                       ) ▶₃ #j )
+                  case Authorize_ModeA
+                  by contradiction /* cyclic */
+                qed
+              qed
+            qed
+          next
+            case Settle_ModeB
+            by solve( !PredPk( ~mandate, pk(x) ) ▶₁ #j )
+          qed
+        next
+          case Authorize_ModeB
+          solve( Consumed( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                $okValue>))
+                 ) @ #j )
+            case Settle_ModeA
+            solve( !HumanPk( $H.1, pk(x) ) ▶₁ #j )
+              case Register_Human
+              solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                case Register_Agent
+                solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                         $okValue>))
+                       ) ▶₃ #j )
+                  case Authorize_ModeB
+                  by contradiction /* cyclic */
+                qed
+              qed
+            qed
+          next
+            case Settle_ModeB
+            solve( !PredPk( ~p, pk(x) ) ▶₁ #j )
+              case Authorize_ModeB
+              solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                case Register_Agent
+                solve( !Admissible( H.1, ~p, $agentId, $okPayee, $okAsset, $okValue,
+                                    $okChain
+                       ) ▶₃ #j )
+                  case Authorize_ModeB
+                  by solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                              $okValue>))
+                            ) ▶₄ #j )
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  next
+    case Settle_ModeB
+    solve( !PredPk( p, pk(x) ) ▶₁ #i )
+      case Authorize_ModeB
+      solve( !AgentKey( agentId, ~sk ) ▶₂ #i )
+        case Register_Agent
+        solve( !Admissible( H, ~p, $agentId, payee, asset, value, chainId
+               ) ▶₃ #i )
+          case Authorize_ModeB
+          solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                   $okValue>))
+                 ) ▶₄ #i )
+            case Authorize_ModeB
+            solve( Consumed( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                  $okValue>))
+                   ) @ #j )
+              case Settle_ModeA
+              solve( !HumanPk( $H.1, pk(x) ) ▶₁ #j )
+                case Register_Human
+                solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                  case Register_Agent
+                  by solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                              $okValue>))
+                            ) ▶₃ #j )
+                qed
+              qed
+            next
+              case Settle_ModeB
+              solve( !PredPk( ~p, pk(x) ) ▶₁ #j )
+                case Authorize_ModeB
+                solve( !AgentKey( $agentId, ~sk.1 ) ▶₂ #j )
+                  case Register_Agent
+                  solve( !Admissible( H.1, ~p, $agentId, $okPayee, $okAsset, $okValue,
+                                      $okChain
+                         ) ▶₃ #j )
+                    case Authorize_ModeB
+                    solve( NonceUnused( h(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, 
+                                             $okValue>))
+                           ) ▶₄ #j )
+                      case Authorize_ModeB
+                      by contradiction /* cyclic */
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma P4_non_transferability:
+  all-traces
+  "∀ H aid K payee asset val cid #s.
+    (Settled( H, aid, K, payee, asset, val, cid ) @ #s) ⇒
+    (∃ #a. Authorized( H, aid, payee, asset, val, cid ) @ #a)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ H aid K payee asset val cid #s.
+  (Settled( H, aid, K, payee, asset, val, cid ) @ #s)
+ ∧
+  ∀ #a. (Authorized( H, aid, payee, asset, val, cid ) @ #a) ⇒ ⊥"
+*/
+simplify
+solve( !HumanPk( $H, pk(x) ) ▶₁ #s )
+  case Register_Human
+  solve( !AgentKey( aid, ~sk ) ▶₂ #s )
+    case Register_Agent
+    solve( NonceUnused( h(h(<cid, $agentId, mandate, asset, payee, val>))
+           ) ▶₃ #s )
+      case Authorize_ModeA
+      solve( !KU( sign(h(<$chainId, $agentId, ~mandate, $asset, $payee, $value
+                         >),
+                       ~hsk)
+             ) @ #vk.1 )
+        case Authorize_ModeA
+        by contradiction /* from formulas */
+      next
+        case c_sign
+        by solve( !KU( ~hsk ) @ #vk.14 )
+      qed
+    next
+      case Authorize_ModeB
+      solve( !KU( sign(h(<$okChain, $agentId, ~p, $okPayee, $okAsset, $okValue
+                         >),
+                       ~hsk)
+             ) @ #vk.1 )
+        case c_sign
+        by solve( !KU( ~hsk ) @ #vk.14 )
+      qed
+    qed
+  qed
+qed
+
+lemma P5_predicate_soundness:
+  all-traces
+  "∀ H aid K payee asset val cid p #s.
+    (SettledB( H, aid, K, payee, asset, val, cid, p ) @ #s) ⇒
+    (∃ #d. AdmitB( H, p, aid, payee, asset, val, cid ) @ #d)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ H aid K payee asset val cid p #s.
+  (SettledB( H, aid, K, payee, asset, val, cid, p ) @ #s)
+ ∧
+  ∀ #d. (AdmitB( H, p, aid, payee, asset, val, cid ) @ #d) ⇒ ⊥"
+*/
+simplify
+solve( !PredPk( p, pk(x) ) ▶₁ #s )
+  case Authorize_ModeB
+  solve( !AgentKey( aid, ~sk ) ▶₂ #s )
+    case Register_Agent
+    solve( !Admissible( H, ~p, $agentId, payee, asset, val, cid ) ▶₃ #s )
+      case Authorize_ModeB
+      by contradiction /* from formulas */
+    qed
+  qed
+qed
+
+/* All wellformedness checks were successful. */
+
+/*
+Generated from:
+Tamarin version 1.12.0
+Maude version 3.5.1
+Git revision: UNKNOWN, branch: UNKNOWN
+Compiled at: 2026-03-08 09:49:47.765662 UTC
+*/
+
+end

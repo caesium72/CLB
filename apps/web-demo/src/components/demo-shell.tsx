@@ -20,8 +20,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useResearchMode } from "@/components/research-mode-provider";
-import { demoSteps, getDemoStep } from "@/lib/demo-nav";
-import { FLOW_LABELS } from "@/lib/demo-copy";
+import { demoActs, demoSteps, getAct, getDemoStep } from "@/lib/demo-nav";
+import { MODE_THEME } from "@/lib/mode-theme";
 import { cn } from "@/lib/utils";
 
 function SidebarNav({
@@ -34,43 +34,52 @@ function SidebarNav({
   className?: string;
 }) {
   return (
-    <nav className={cn("space-y-1 p-3", className)}>
-      {demoSteps.map((step) => {
-        const active = pathname === step.href;
-        const Icon = step.icon;
+    <nav className={cn("space-y-5 p-3", className)}>
+      {demoActs.map((act) => (
+        <div key={act.id} className="space-y-1">
+          <div className="px-3 pb-1">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
+              {act.kicker}
+            </p>
+            <p className="text-sm font-semibold text-sidebar-foreground">{act.title}</p>
+          </div>
+          {act.steps.map((step) => {
+            const active = pathname === step.href;
+            const Icon = step.icon;
 
-        return (
-          <Link
-            key={step.href}
-            href={step.href}
-            onClick={onNavigate}
-            className={cn(
-              "flex items-start gap-3 rounded-lg px-3 py-3 transition-colors",
-              active
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground hover:bg-sidebar-accent/60",
-            )}
-          >
-            <span
-              className={cn(
-                "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md text-sm font-semibold",
-                active ? "bg-primary text-primary-foreground" : "bg-background text-foreground",
-              )}
-            >
-              {step.step}
-            </span>
-            <span className="min-w-0">
-              <span className="flex items-center gap-2">
-                <Icon className="size-4 shrink-0 opacity-80" />
-                <span className="truncate text-base font-semibold">{step.label}</span>
-              </span>
-              <span className="mt-1 block truncate text-sm leading-snug text-muted-foreground">
-                {step.description}
-              </span>
-            </span>
-          </Link>
-        );
-      })}
+            return (
+              <Link
+                key={step.href}
+                href={step.href}
+                onClick={onNavigate}
+                className={cn(
+                  "flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors",
+                  active
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent/60",
+                )}
+              >
+                <span
+                  className={cn(
+                    "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md",
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background text-foreground",
+                  )}
+                >
+                  <Icon className="size-4" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold">{step.label}</span>
+                  <span className="mt-0.5 block truncate text-xs leading-snug text-muted-foreground">
+                    {step.navHint}
+                  </span>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      ))}
     </nav>
   );
 }
@@ -96,26 +105,26 @@ function ResearchModeToggle({ idPrefix = "" }: { idPrefix?: string }) {
 
 function SidebarBrand({ className }: { className?: string }) {
   const { mode } = useDemoRun();
-  const flow = mode === "b" ? FLOW_LABELS.modeB : FLOW_LABELS.modeA;
+  const theme = MODE_THEME[mode];
 
   return (
     <div className={cn("flex flex-col justify-center", className)}>
       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         CLB-ACEL Demo
       </p>
-      <h1 className="mt-1 font-heading text-base font-semibold tracking-tight">
-        {flow.short}
+      <h1 className="mt-1 flex items-center gap-2 font-heading text-base font-semibold tracking-tight">
+        <span className={cn("size-2 shrink-0 rounded-full", theme.solid)} />
+        {theme.short}
       </h1>
-      <p className="mt-1 text-sm leading-snug text-muted-foreground">
-        {flow.research}
-      </p>
+      <p className="mt-1 text-sm leading-snug text-muted-foreground">{theme.research}</p>
     </div>
   );
 }
 
 function DesktopPageHeader({ step }: { step: NonNullable<ReturnType<typeof getDemoStep>> }) {
   const { mode, runStatus, checkoutStage } = useDemoRun();
-  const flow = mode === "b" ? FLOW_LABELS.modeB : FLOW_LABELS.modeA;
+  const theme = MODE_THEME[mode];
+  const ModeIcon = theme.icon;
   const statusLabel =
     runStatus === "live-trace"
       ? "Live trace"
@@ -130,13 +139,25 @@ function DesktopPageHeader({ step }: { step: NonNullable<ReturnType<typeof getDe
   return (
     <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
       <div className="min-w-0">
-        <h2 className="font-heading text-xl font-semibold tracking-tight">{step.title}</h2>
+        <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
+          {getAct(step.act).kicker} · {getAct(step.act).title}
+        </p>
+        <h2 className="mt-0.5 font-heading text-xl font-semibold tracking-tight">{step.title}</h2>
         <p className="mt-1 text-sm leading-snug text-muted-foreground">{step.pageDescription}</p>
       </div>
       <div className="flex shrink-0 items-center gap-3">
         <ModeSwitch />
+        <span
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold",
+            theme.chipClass,
+          )}
+        >
+          <ModeIcon className="size-3.5" />
+          {theme.plain}
+        </span>
         <Badge variant="secondary" className="w-fit">
-          {flow.short} · {statusLabel}
+          {statusLabel}
         </Badge>
       </div>
     </div>
@@ -193,7 +214,7 @@ function MobileStepPills({ pathname }: { pathname: string }) {
                 active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
               )}
             >
-              {step.step}. {step.label}
+              {step.label}
             </Link>
           );
         })}
@@ -208,7 +229,7 @@ export function DemoLayoutShell({ children }: { children: React.ReactNode }) {
   const { mode, runStatus } = useDemoRun();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const currentStep = getDemoStep(pathname);
-  const flow = mode === "b" ? FLOW_LABELS.modeB : FLOW_LABELS.modeA;
+  const theme = MODE_THEME[mode];
 
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden">
@@ -226,7 +247,7 @@ export function DemoLayoutShell({ children }: { children: React.ReactNode }) {
             >
               <SheetHeader className="shrink-0 border-b border-border px-5 py-4 text-left">
                 <SheetTitle>CLB-ACEL Demo</SheetTitle>
-                <SheetDescription>{flow.short} protocol walkthrough</SheetDescription>
+                <SheetDescription>{theme.short} protocol walkthrough</SheetDescription>
               </SheetHeader>
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <SidebarNav pathname={pathname} onNavigate={() => setMobileNavOpen(false)} />
@@ -239,15 +260,16 @@ export function DemoLayoutShell({ children }: { children: React.ReactNode }) {
 
           <div className="min-w-0 flex-1">
             <p className="truncate text-base font-semibold">
-              {currentStep ? `${currentStep.step}. ${currentStep.label}` : "CLB-ACEL Demo"}
+              {currentStep ? currentStep.label : "CLB-ACEL Demo"}
             </p>
             <p className="truncate text-sm leading-snug text-muted-foreground">
               {currentStep?.pageDescription ?? "Protocol walkthrough"}
             </p>
           </div>
 
-          <Badge variant="secondary" className="shrink-0 text-xs">
-            {runStatus === "live-trace" ? "Trace" : flow.short}
+          <Badge variant="secondary" className="shrink-0 gap-1.5 text-xs">
+            <span className={cn("size-1.5 rounded-full", theme.solid)} />
+            {runStatus === "live-trace" ? "Trace" : theme.short}
           </Badge>
         </div>
 

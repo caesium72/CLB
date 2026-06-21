@@ -1,0 +1,46 @@
+{
+  "label": "Permit2 Front-Running PoC",
+  "timestamp": "2026-04-17T16:51:59.787Z",
+  "verdict": "VULNERABLE",
+  "network": {
+    "chainId": 84532,
+    "name": "Base Sepolia",
+    "rpc": "https://sepolia.base.org"
+  },
+  "contracts": {
+    "x402ExactPermit2Proxy": "0x402085c248EeA27D92E8b30b2C58ed07f9E20001",
+    "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+    "usdc": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+  },
+  "actors": {
+    "alice_payer": "0xeFe49bb0d034F2d7a2DE20A22Aa25021bDb9ffD3",
+    "bob_attacker": "0xC1072E0A70182857593a1A40Ab4E3f30FB92D46C",
+    "pay_to_merchant": "0xA3669FfBBa16Eb5394fcE56C831cF8C4495c9de6"
+  },
+  "payment": {
+    "amount_units": "100",
+    "amount_usdc": "0.0001",
+    "nonce": "25319518054104393281444163823538191534222163319446369345119561128199016940023",
+    "deadline": "1776445014",
+    "validAfter": "1776444114"
+  },
+  "attack_tx": {
+    "hash": "0x3f3046cb96a738c71a90120445cba03685a6a22fdc3ece6e93883d8bfc5793f1",
+    "explorer": "https://sepolia.basescan.org/tx/0x3f3046cb96a738c71a90120445cba03685a6a22fdc3ece6e93883d8bfc5793f1",
+    "block": 40338214,
+    "gas_used": "98535",
+    "status": "success"
+  },
+  "balances_usdc": {
+    "alice_before": "50.8947",
+    "alice_after": "50.8946",
+    "alice_loss": "0.0001",
+    "pay_to_before": "0.523",
+    "pay_to_after": "0.5231",
+    "pay_to_gain": "0.0001"
+  },
+  "facilitator_replay": {
+    "reverted": true,
+    "revert_reason": "execution reverted (unknown custom error)"
+  }
+}

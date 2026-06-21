@@ -57,6 +57,7 @@ contract PredicatePaymentGuardTest is Test {
             asset: asset,
             payTo: payTo,
             value: "2.00",
+            valueAtomic: 2_000_000,
             validBefore: "2026-12-30T06:00:00.000Z",
             payerAgentId: AGENT_ID
         });
@@ -74,13 +75,14 @@ contract PredicatePaymentGuardTest is Test {
     // Golden vectors from @clb-acel/clb-core (scripts parity) — keep in sync.
     // identity {84532, 0x..8004, "shopping-agent-001"}, mandateDigest 0x11*32,
     // predicateId "predicate-001", params {84532,"base-sepolia","USDC",MERCHANT,
-    // "2.00","2026-12-30T06:00:00.000Z","shopping-agent-001"}, domain CLB-ACEL/0.1/84532.
+    // "2.00",2_000_000,"2026-12-30T06:00:00.000Z","shopping-agent-001"}, domain CLB-ACEL/0.1/84532.
+    // Regenerated for Phase 7A (valueAtomic now bound in the params digest).
     bytes32 private constant GOLDEN_PARAMS_DIGEST =
-        0xdc4dd6a66e545ee162103b9558deb2ef3086f9406a47dac13fe3a5d32c8840ad;
+        0x31c3a08746fb658e8a0b0e70c47cd5cca15a72c6ec13868552188ab7b64474c8;
     bytes32 private constant GOLDEN_COMMITMENT =
-        0x174816074bf608e96be557222abd230153c0f022825e4e67a9108833bd0f5f69;
+        0x817542353e29a304f9fafc79776a97d8081bfcc75bd3468b99ec52027b04db40;
     bytes32 private constant GOLDEN_NONCE =
-        0xddc0da06d241cd257172f60f6b99a184b6b8be9ebe39961951bd3c1cb0d253c6;
+        0xd52605019327eeeb192b754dc3ef8394bba5e38c8d8996ebea2952e94139063a;
 
     function test_ParityWithClbCore() public view {
         PredicatePaymentGuard.SettlementParams memory p = _params(MERCHANT, "USDC", CHAIN_ID);
@@ -95,7 +97,7 @@ contract PredicatePaymentGuardTest is Test {
         (bytes32 commitment, bytes32 nonce) = _commitAndNonce(p);
 
         bytes32 returned =
-            guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce, 2_000_000);
+            guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
 
         assertEq(returned, commitment);
         assertTrue(guard.consumed(nonce));
@@ -105,10 +107,10 @@ contract PredicatePaymentGuardTest is Test {
         PredicatePaymentGuard.SettlementParams memory p = _params(MERCHANT, "USDC", CHAIN_ID);
         (bytes32 commitment, bytes32 nonce) = _commitAndNonce(p);
 
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce, 2_000_000);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
 
         vm.expectRevert(abi.encodeWithSelector(PredicatePaymentGuard.NonceAlreadyConsumed.selector, nonce));
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce, 2_000_000);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
     }
 
     function test_RevertWhen_CommitmentMismatch() public {
@@ -119,7 +121,7 @@ contract PredicatePaymentGuardTest is Test {
         vm.expectRevert(
             abi.encodeWithSelector(PredicatePaymentGuard.CommitmentMismatch.selector, commitment, wrong)
         );
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, wrong, nonce, 2_000_000);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, wrong, nonce);
     }
 
     function test_RevertWhen_NonceMismatch() public {
@@ -132,7 +134,7 @@ contract PredicatePaymentGuardTest is Test {
                 PredicatePaymentGuard.NonceMismatch.selector, keccak256(abi.encodePacked(commitment)), wrongNonce
             )
         );
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, wrongNonce, 2_000_000);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, wrongNonce);
     }
 
     function test_RevertWhen_PayeeNotAllowed() public {
@@ -140,7 +142,7 @@ contract PredicatePaymentGuardTest is Test {
         (bytes32 commitment, bytes32 nonce) = _commitAndNonce(p);
 
         vm.expectRevert(abi.encodeWithSelector(PredicatePaymentGuard.PayeeNotAllowed.selector, ATTACKER));
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce, 2_000_000);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
     }
 
     function test_RevertWhen_AssetNotAllowed() public {
@@ -148,7 +150,7 @@ contract PredicatePaymentGuardTest is Test {
         (bytes32 commitment, bytes32 nonce) = _commitAndNonce(p);
 
         vm.expectRevert(abi.encodeWithSelector(PredicatePaymentGuard.AssetNotAllowed.selector, "WETH"));
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce, 2_000_000);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
     }
 
     function test_RevertWhen_ChainNotAllowed() public {
@@ -156,17 +158,19 @@ contract PredicatePaymentGuardTest is Test {
         (bytes32 commitment, bytes32 nonce) = _commitAndNonce(p);
 
         vm.expectRevert(abi.encodeWithSelector(PredicatePaymentGuard.ChainNotAllowed.selector, 1));
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce, 1);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
     }
 
     function test_RevertWhen_AmountExceedsMax() public {
         PredicatePaymentGuard.SettlementParams memory p = _params(MERCHANT, "USDC", CHAIN_ID);
+        // valueAtomic is now bound in C' — set it (exceeding max) before recomputing the commitment.
+        p.valueAtomic = 10_000_000;
         (bytes32 commitment, bytes32 nonce) = _commitAndNonce(p);
 
         vm.expectRevert(
             abi.encodeWithSelector(PredicatePaymentGuard.AmountExceedsMax.selector, 10_000_000, MAX_VALUE_ATOMIC)
         );
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce, 10_000_000);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
     }
 
     function test_RevertWhen_PredicateExpired() public {
@@ -197,7 +201,7 @@ contract PredicatePaymentGuardTest is Test {
         vm.expectRevert(
             abi.encodeWithSelector(PredicatePaymentGuard.PredicateExpired.selector, uint64(101))
         );
-        guard2.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce, 2_000_000);
+        guard2.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
     }
 
     function test_RevertWhen_PredicateNotRegistered() public {
@@ -208,6 +212,14 @@ contract PredicatePaymentGuardTest is Test {
         vm.expectRevert(
             abi.encodeWithSelector(PredicatePaymentGuard.PredicateNotRegistered.selector, idHash)
         );
-        guard.validateAndConsume(_identity(), MANDATE_DIGEST, "unknown-predicate", p, commitment, nonce, 2_000_000);
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, "unknown-predicate", p, commitment, nonce);
+    }
+
+    function test_GasReport_HappyPath() public {
+        PredicatePaymentGuard.SettlementParams memory p = _params(MERCHANT, "USDC", CHAIN_ID);
+        (bytes32 commitment, bytes32 nonce) = _commitAndNonce(p);
+        uint256 g0 = gasleft();
+        guard.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
+        emit log_named_uint("validateAndConsume_gas", g0 - gasleft());
     }
 }

@@ -1,0 +1,68 @@
+{
+  "experiment": "Attack III live endpoint cache check",
+  "endpoint": "Endpoint-1",
+  "endpointFingerprint": "d438ec5ed59e",
+  "method": "GET",
+  "scenario": "unpaid same-URL requests after a paid request",
+  "summary": {
+    "checks": 5,
+    "unpaidStatus200": 5,
+    "cacheHits": 5,
+    "paymentResponseHeaderPresent": 5,
+    "uniqueBodyHashes": [
+      "56ed0ccaec02"
+    ]
+  },
+  "checks": [
+    {
+      "i": 1,
+      "status": 200,
+      "paymentRequired": false,
+      "paymentResponse": true,
+      "cacheControl": "public, max-age=31536000",
+      "age": "44",
+      "cache": "HIT",
+      "bodyHash": "56ed0ccaec02"
+    },
+    {
+      "i": 2,
+      "status": 200,
+      "paymentRequired": false,
+      "paymentResponse": true,
+      "cacheControl": "public, max-age=31536000",
+      "age": "44",
+      "cache": "HIT",
+      "bodyHash": "56ed0ccaec02"
+    },
+    {
+      "i": 3,
+      "status": 200,
+      "paymentRequired": false,
+      "paymentResponse": true,
+      "cacheControl": "public, max-age=31536000",
+      "age": "44",
+      "cache": "HIT",
+      "bodyHash": "56ed0ccaec02"
+    },
+    {
+      "i": 4,
+      "status": 200,
+      "paymentRequired": false,
+      "paymentResponse": true,
+      "cacheControl": "public, max-age=31536000",
+      "age": "44",
+      "cache": "HIT",
+      "bodyHash": "56ed0ccaec02"
+    },
+    {
+      "i": 5,
+      "status": 200,
+      "paymentRequired": false,
+      "paymentResponse": true,
+      "cacheControl": "public, max-age=31536000",
+      "age": "44",
+      "cache": "HIT",
+      "bodyHash": "56ed0ccaec02"
+    }
+  ]
+}

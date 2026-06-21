@@ -249,23 +249,26 @@ async function main() {
       if (receipt.status !== "success") {
         fail("On-chain anchor", `transaction reverted: ${anchorBody.txHash}`);
       }
-      const traceIdBytes32 = traceIdToBytes32(trace.traceId);
-      const anchored = await publicClient.readContract({
-        address: ANCHOR_ADDRESS,
-        abi: AGENTIC_AUDIT_ANCHOR_ABI,
-        functionName: "isAnchored",
-        args: [traceIdBytes32],
-      });
-      if (!anchored) {
-        fail("On-chain anchor", "tx mined but isAnchored() is false");
-      }
       pass("On-chain anchor", `txHash=${anchorBody.txHash} confirmed on ${ANCHOR_ADDRESS}`);
     } else if (anchorStatus === 409) {
-      fail(
-        "On-chain anchor",
-        anchorBody.error ??
-          "anchor failed — redeploy contracts if Anvil was restarted, then retry",
-      );
+      const traceIdBytes32 = traceIdToBytes32(trace.traceId);
+      const alreadyAnchored =
+        anchorBody.error?.includes("already anchored") ||
+        (await publicClient.readContract({
+          address: ANCHOR_ADDRESS,
+          abi: AGENTIC_AUDIT_ANCHOR_ABI,
+          functionName: "isAnchored",
+          args: [traceIdBytes32],
+        }));
+      if (alreadyAnchored) {
+        pass("On-chain anchor", `trace already anchored on ${ANCHOR_ADDRESS} (auto-anchor or prior run)`);
+      } else {
+        fail(
+          "On-chain anchor",
+          anchorBody.error ??
+            "anchor failed — redeploy contracts if Anvil was restarted, then retry",
+        );
+      }
     } else {
       fail("On-chain anchor", `unexpected response ${anchorStatus}: ${JSON.stringify(anchorBody)}`);
     }

@@ -1,8 +1,10 @@
 import { verifyTrace } from "@clb-acel/verifier-core";
 import type { TraceBundle } from "@clb-acel/verifier-core";
+export { verifyTrace } from "@clb-acel/verifier-core";
 import type { Hex } from "viem";
 import { checkFakeFeedback, checkPromptInjection } from "./audit-checks";
-import { BASELINE_DESCRIPTIONS, BASELINE_LABELS, buildBaselineMatrix, commonOutcomes } from "./baselines";
+import { BASELINE_DESCRIPTIONS, BASELINE_LABELS, buildBaselineMatrix, commonOutcomes, liveBaselineOutcomes } from "./baselines";
+import type { BaselineOutcome } from "./types";
 import {
   appendEvidenceEvent,
   attackerAddress,
@@ -25,6 +27,7 @@ import type {
 
 export * from "./audit-checks";
 export * from "./baselines";
+export * from "./baselines/matrix";
 export * from "./fixtures";
 export * from "./metrics";
 export * from "./mode-b";
@@ -572,9 +575,25 @@ export async function runAttack(id: AttackId, options: { nowMs?: number } = {}):
     },
   } satisfies Omit<AttackRunResult, "baselineComparison">;
 
+  // B0–B2 are computed by ACTUALLY running the three baseline verifiers against
+  // the attacked bundle; B3 is the live CLB-ACEL result. No narrative cells.
+  const b3: BaselineOutcome = {
+    detected: verification.result.status === "FAIL" || auditCheck?.ok === true,
+    prevented: preventionLayer === "x402",
+    failedRules: failedRules as BaselineOutcome["failedRules"],
+    note:
+      preventionLayer === "x402"
+        ? "Prevented at x402 replay enforcement; verifier also flagged it."
+        : verification.result.status === "FAIL"
+          ? `Rejected by the deterministic verifier (${failedRules.join(", ") || "rule"}).`
+          : auditCheck?.ok
+            ? "Caught by the evidence-graph audit check."
+            : "Did not detect this fixture.",
+  };
+
   return {
     ...partialResult,
-    baselineComparison: buildBaselineMatrix([partialResult], [fixture])[id],
+    baselineComparison: await liveBaselineOutcomes(bundle, b3),
   };
 }
 

@@ -14,9 +14,15 @@ export function CartQuoteCard({ quote }: { quote: CartQuote }) {
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">Price</span>
+          <span className="text-muted-foreground">Merchant price</span>
           <span className="font-semibold">
             {quote.price} {quote.asset}
+          </span>
+        </div>
+        <div className="flex justify-between gap-4">
+          <span className="text-muted-foreground">Max authorized</span>
+          <span>
+            {quote.maxAmount} {quote.asset}
           </span>
         </div>
         <div className="flex justify-between gap-4">

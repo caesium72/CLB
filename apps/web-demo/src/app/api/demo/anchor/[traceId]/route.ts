@@ -1,20 +1,23 @@
 import { NextResponse } from "next/server";
-import { proxyJson, serviceUrls } from "../../_lib";
+import { anchorStored } from "@/server/clb/anchor";
 
-/** Anchor on-chain via evidence-service (Anvil RPC stays on Lightsail). */
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 120;
+
+/** Anchor the trace Merkle root on-chain via AgenticAuditAnchor (in-process). */
 export async function POST(_request: Request, context: { params: Promise<{ traceId: string }> }) {
   const { traceId } = await context.params;
-
-  const merkleResponse = await fetch(
-    `${serviceUrls.evidence}/traces/${encodeURIComponent(traceId)}/merkle`,
-    { method: "POST", cache: "no-store" },
-  );
-  if (!merkleResponse.ok) {
-    return NextResponse.json({ error: "Trace evidence is not available yet" }, { status: 404 });
+  try {
+    const result = await anchorStored(traceId);
+    if ("error" in result) {
+      return NextResponse.json({ error: result.error }, { status: 404 });
+    }
+    return NextResponse.json(result);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Anchor failed" },
+      { status: 502 },
+    );
   }
-
-  return proxyJson(`${serviceUrls.evidence}/traces/${encodeURIComponent(traceId)}/anchor`, {
-    method: "POST",
-    body: JSON.stringify({}),
-  });
 }

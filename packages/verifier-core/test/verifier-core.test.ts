@@ -16,7 +16,7 @@ describe("verifyTrace (Mode A)", () => {
     expect(result.status).toBe("PASS");
     expect(result.failedRules).toEqual([]);
     expect(certificate.certificateHash).toMatch(/^0x[0-9a-f]{64}$/);
-    expect(certificate.rulesChecked).toHaveLength(16);
+    expect(certificate.rulesChecked).toHaveLength(17);
     // R17 passes vacuously in Mode A.
     expect(outcomes.R17_PREDICATE_TRUE_FOR_MODE_B.ok).toBe(true);
   });

@@ -8,7 +8,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./flow": "./src/flow.ts",
-    "./http-flow": "./src/http-flow.ts"
+    "./http-flow": "./src/http-flow.ts",
+    "./inproc": "./src/inproc.ts"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
@@ -17,6 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clb-acel/anchor-core": "workspace:*",
     "@clb-acel/ap2-adapter": "workspace:*",
     "@clb-acel/attack-core": "workspace:*",
     "@clb-acel/clb-core": "workspace:*",
@@ -24,6 +26,7 @@
     "@clb-acel/erc8004-adapter": "workspace:*",
     "@clb-acel/evidence-core": "workspace:*",
     "@clb-acel/identity-service": "workspace:*",
+    "@clb-acel/llm-adapter": "workspace:*",
     "@clb-acel/predicate-adapter": "workspace:*",
     "@clb-acel/schemas": "workspace:*",
     "@clb-acel/service-kit": "workspace:*",

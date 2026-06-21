@@ -1,0 +1,100 @@
+theory CLB_ReplayDemo
+
+begin
+
+// Function signature and definition of the equational theory E
+
+functions: fst/1, h/1, pair/2, snd/1
+equations: fst(<x.1, x.2>) = x.1, snd(<x.1, x.2>) = x.2
+
+rule (modulo E) Authorize:
+   [ Fr( ~mandate ) ]
+  --[ Authorized( ~mandate ) ]->
+   [ Out( ~mandate ), NonceUnused( h(~mandate) ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Settle:
+   [ In( mandate ), NonceUnused( h(mandate) ) ]
+  --[ Settled( mandate ) ]->
+   [ ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) AuthorizeNaive:
+   [ Fr( ~mandate ) ] --[ AuthorizedN( ~mandate ) ]-> [ Out( ~mandate ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) SettleNaive:
+   [ In( mandate ) ] --[ SettledN( mandate ) ]-> [ ]
+
+  /* has exactly the trivial AC variant */
+
+lemma sane_settle:
+  exists-trace "∃ m #i. Settled( m ) @ #i"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ m #i. (Settled( m ) @ #i)"
+*/
+simplify
+solve( NonceUnused( h(m) ) ▶₁ #i )
+  case Authorize
+  solve( !KU( ~mandate ) @ #vk )
+    case Authorize
+    SOLVED // trace found
+  qed
+qed
+
+lemma no_replay:
+  all-traces
+  "∀ m #i #j. ((Settled( m ) @ #i) ∧ (Settled( m ) @ #j)) ⇒ (#i = #j)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ m #i #j. (Settled( m ) @ #i) ∧ (Settled( m ) @ #j) ∧ ¬(#i = #j)"
+*/
+simplify
+solve( (#i < #j)  ∥ (#j < #i) )
+  case case_1
+  solve( NonceUnused( h(m) ) ▶₁ #i )
+    case Authorize
+    solve( NonceUnused( h(~mandate) ) ▶₁ #j )
+      case Authorize
+      by contradiction /* cyclic */
+    qed
+  qed
+next
+  case case_2
+  solve( NonceUnused( h(m) ) ▶₁ #i )
+    case Authorize
+    solve( NonceUnused( h(~mandate) ) ▶₁ #j )
+      case Authorize
+      by contradiction /* cyclic */
+    qed
+  qed
+qed
+
+lemma naive_no_replay:
+  all-traces
+  "∀ m #i #j. ((SettledN( m ) @ #i) ∧ (SettledN( m ) @ #j)) ⇒ (#i = #j)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ m #i #j. (SettledN( m ) @ #i) ∧ (SettledN( m ) @ #j) ∧ ¬(#i = #j)"
+*/
+simplify
+solve( (#i < #j)  ∥ (#j < #i) )
+  case case_1
+  SOLVED // trace found
+qed
+
+/* All wellformedness checks were successful. */
+
+/*
+Generated from:
+Tamarin version 1.12.0
+Maude version 3.5.1
+Git revision: UNKNOWN, branch: UNKNOWN
+Compiled at: 2026-03-08 09:49:47.765662 UTC
+*/
+
+end

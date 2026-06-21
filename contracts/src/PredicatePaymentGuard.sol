@@ -31,6 +31,7 @@ contract PredicatePaymentGuard {
         string asset;
         address payTo;
         string value;
+        uint256 valueAtomic; // integer base-units; the quantity enforced on-chain (bound in C')
         string validBefore;
         string payerAgentId;
     }
@@ -107,7 +108,9 @@ contract PredicatePaymentGuard {
     /// @notice keccak256(abi.encode(...)) of the concrete settlement params.
     ///         Byte-identical to clb-core `computeSettlementParamsDigest`.
     function settlementParamsDigest(SettlementParams calldata p) public pure returns (bytes32) {
-        return keccak256(abi.encode(p.chainId, p.network, p.asset, p.payTo, p.value, p.validBefore, p.payerAgentId));
+        return keccak256(
+            abi.encode(p.chainId, p.network, p.asset, p.payTo, p.value, p.valueAtomic, p.validBefore, p.payerAgentId)
+        );
     }
 
     function _identityRefHash(IdentityRef calldata id) internal pure returns (bytes32) {
@@ -160,8 +163,8 @@ contract PredicatePaymentGuard {
     }
 
     /// @notice Validate the binding + predicate and consume the nonce once.
-    /// @param valueAtomic Concrete value in integer atomic units, for the
-    ///        numeric `<= maxValue` check (the decimal `p.value` string is bound in C').
+    /// @dev The amount check uses `p.valueAtomic`, which is bound inside C'
+    ///      (Phase 7A) — so the committed and compared quantities are identical.
     /// @return commitment The recomputed C'.
     function validateAndConsume(
         IdentityRef calldata id,
@@ -169,8 +172,7 @@ contract PredicatePaymentGuard {
         string calldata predicateId,
         SettlementParams calldata p,
         bytes32 commitment,
-        bytes32 nonce,
-        uint256 valueAtomic
+        bytes32 nonce
     ) external returns (bytes32) {
         bytes32 idHash = keccak256(bytes(predicateId));
         PredicateConfig storage cfg = _predicates[idHash];
@@ -189,7 +191,7 @@ contract PredicatePaymentGuard {
         if (!_contains(cfg.allowedPayees, p.payTo)) revert PayeeNotAllowed(p.payTo);
         if (!_contains(cfg.allowedAssetHashes, keccak256(bytes(p.asset)))) revert AssetNotAllowed(p.asset);
         if (!_contains(cfg.allowedChainIds, p.chainId)) revert ChainNotAllowed(p.chainId);
-        if (valueAtomic > cfg.maxValueAtomic) revert AmountExceedsMax(valueAtomic, cfg.maxValueAtomic);
+        if (p.valueAtomic > cfg.maxValueAtomic) revert AmountExceedsMax(p.valueAtomic, cfg.maxValueAtomic);
         if (block.timestamp > cfg.validUntil) revert PredicateExpired(cfg.validUntil);
 
         consumed[nonce] = true;

@@ -1,0 +1,3437 @@
+{
+  "experiment": "Attack I: Facilitator Race",
+  "version": "analytic sweep",
+  "timestamp": "2026-04-23T03:03:27.920Z",
+  "chain": "Hardhat local",
+  "contract": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "parameters": {
+    "defaultRequests": 5000,
+    "controlRequests": 5000,
+    "blockTimeSecondsSweep": [
+      2,
+      4,
+      12
+    ],
+    "requestConcurrency": 32,
+    "clientTimeoutMs": 1800000,
+    "receiptPollConcurrency": 128,
+    "receiptPollIntervalMs": 250,
+    "receiptPollTimeoutMs": 900000,
+    "maxOutstandingSettlements": 32,
+    "schedulerPollIntervalMs": 100,
+    "settlementRelayerCount": 16,
+    "configLimit": "all"
+  },
+  "results": [
+    {
+      "pReorg": 0,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 0,
+      "blockTimeSec": 2,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 1.8,
+      "tgfIqr": 0.8,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4973,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 0,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0 T_b=2s k=0 δ=0ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.01,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 100,
+      "blockTimeSec": 2,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 52,
+      "RGP": 0.0104,
+      "rgpCi95": {
+        "low": 0.0079,
+        "high": 0.0136
+      },
+      "medianTgf": 1.9,
+      "tgfIqr": 0.8,
+      "eeeUsd": 0.52,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4941,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 100,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.01 T_b=2s k=0 δ=100ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 2,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 235,
+      "RGP": 0.047,
+      "rgpCi95": {
+        "low": 0.0415,
+        "high": 0.0532
+      },
+      "medianTgf": 1.6,
+      "tgfIqr": 0.8,
+      "eeeUsd": 2.35,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4782,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.05 T_b=2s k=0 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 400,
+      "blockTimeSec": 2,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 259,
+      "RGP": 0.0518,
+      "rgpCi95": {
+        "low": 0.046,
+        "high": 0.0583
+      },
+      "medianTgf": 1.6,
+      "tgfIqr": 0.9,
+      "eeeUsd": 2.59,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4956,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 400,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.05 T_b=2s k=0 δ=400ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 3,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 2,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 6,
+      "tgfIqr": 0.9,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4787,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 3,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=2s k=3 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 6,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 2,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 12.3,
+      "tgfIqr": 0.9,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4766,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 6,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=2s k=6 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 12,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 2,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 25.1,
+      "tgfIqr": 1,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4774,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 12,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=2s k=12 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 0,
+      "blockTimeSec": 4,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 3.6,
+      "tgfIqr": 1.3,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4928,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 0,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0 T_b=4s k=0 δ=0ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.01,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 100,
+      "blockTimeSec": 4,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 56,
+      "RGP": 0.0112,
+      "rgpCi95": {
+        "low": 0.0086,
+        "high": 0.0145
+      },
+      "medianTgf": 3.5,
+      "tgfIqr": 1.3,
+      "eeeUsd": 0.56,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4918,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 100,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.01 T_b=4s k=0 δ=100ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 4,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 239,
+      "RGP": 0.0478,
+      "rgpCi95": {
+        "low": 0.0422,
+        "high": 0.0541
+      },
+      "medianTgf": 3.4,
+      "tgfIqr": 1.4,
+      "eeeUsd": 2.39,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4865,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.05 T_b=4s k=0 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 400,
+      "blockTimeSec": 4,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 219,
+      "RGP": 0.0438,
+      "rgpCi95": {
+        "low": 0.0385,
+        "high": 0.0498
+      },
+      "medianTgf": 2.8,
+      "tgfIqr": 1.9,
+      "eeeUsd": 2.19,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4855,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 400,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.05 T_b=4s k=0 δ=400ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 3,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 4,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 1,
+      "RGP": 0.0002,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0011
+      },
+      "medianTgf": 11.7,
+      "tgfIqr": 1.7,
+      "eeeUsd": 0.01,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4889,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 3,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=4s k=3 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 6,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 4,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 23.9,
+      "tgfIqr": 1.7,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4819,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 6,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=4s k=6 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 12,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 4,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 48.4,
+      "tgfIqr": 1.8,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4842,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 12,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=4s k=12 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 0,
+      "blockTimeSec": 12,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 10.3,
+      "tgfIqr": 4.7,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4954,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 0,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0 T_b=12s k=0 δ=0ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.01,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 100,
+      "blockTimeSec": 12,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 37,
+      "RGP": 0.0074,
+      "rgpCi95": {
+        "low": 0.0054,
+        "high": 0.0102
+      },
+      "medianTgf": 10,
+      "tgfIqr": 4.8,
+      "eeeUsd": 0.37,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4946,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 100,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.01 T_b=12s k=0 δ=100ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 12,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 246,
+      "RGP": 0.0492,
+      "rgpCi95": {
+        "low": 0.0435,
+        "high": 0.0555
+      },
+      "medianTgf": 9.8,
+      "tgfIqr": 4.7,
+      "eeeUsd": 2.46,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4917,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.05 T_b=12s k=0 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 0,
+      "facilitatorMode": "honest",
+      "networkDelay": 400,
+      "blockTimeSec": 12,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 260,
+      "RGP": 0.052,
+      "rgpCi95": {
+        "low": 0.0462,
+        "high": 0.0585
+      },
+      "medianTgf": 9,
+      "tgfIqr": 4.6,
+      "eeeUsd": 2.6,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4948,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 400,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg",
+      "label": "p=0.05 T_b=12s k=0 δ=400ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 3,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 12,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 34.3,
+      "tgfIqr": 4.8,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4913,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 3,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=12s k=3 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 6,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 12,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 71.5,
+      "tgfIqr": 4.8,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4911,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 6,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=12s k=6 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 12,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 12,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": 144.5,
+      "tgfIqr": 5.1,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 4899,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 12,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "analytic: p_revert = p_reorg^k",
+      "label": "p=0.05 T_b=12s k=12 δ=200ms F=honest P=optimistic"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 3,
+      "facilitatorMode": "honest",
+      "networkDelay": 200,
+      "blockTimeSec": 2,
+      "executionPolicy": "conservative",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 0,
+      "RGP": 0,
+      "rgpCi95": {
+        "low": 0,
+        "high": 0.0008
+      },
+      "medianTgf": null,
+      "tgfIqr": null,
+      "eeeUsd": 0,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 0,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 0,
+        "asyncSettleCompleted": 0,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "conservative",
+        "kRequired": 3,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 5000,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {
+          "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": 313,
+          "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 313,
+          "0x90F79bf6EB2c4f870365E785982E1f101E93b906": 313,
+          "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65": 313,
+          "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc": 313,
+          "0x976EA74026E726554dB657fA54763abd0C3a0aa9": 313,
+          "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955": 313,
+          "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f": 313,
+          "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720": 312,
+          "0xBcd4042DE499D14e55001CcbB24a551F3b954096": 312,
+          "0x71bE63f3384f5fb98995898A86B02Fb2426c5788": 312,
+          "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a": 312,
+          "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec": 312,
+          "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097": 312,
+          "0xcd3B766CCDd6AE721141F452C550Ca635964ce71": 312,
+          "0x2546BcD3c84621e976D8185a91A922aE77ECEc30": 312
+        },
+        "honestyMode": "honest",
+        "verifyResponseDelayMs": 200,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 313
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 312
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 312
+          }
+        ],
+        "settledTxCount": 5000
+      },
+      "reorgModel": "conservative baseline: grant after k confirmations",
+      "label": "conservative-baseline"
+    },
+    {
+      "pReorg": 0.05,
+      "kRequired": 0,
+      "facilitatorMode": "byzantine",
+      "networkDelay": 0,
+      "blockTimeSec": 2,
+      "executionPolicy": "optimistic",
+      "numRequests": 5000,
+      "totalGrants": 5000,
+      "revertGrants": 5000,
+      "RGP": 1,
+      "rgpCi95": {
+        "low": 0.9992,
+        "high": 1
+      },
+      "medianTgf": null,
+      "tgfIqr": null,
+      "eeeUsd": 50,
+      "clientFailures": [],
+      "receiptResolution": {
+        "resolved": 0,
+        "unresolved": 0
+      },
+      "serverStats": {
+        "totalRequests": 5000,
+        "grantCount": 5000,
+        "rejectCount": 0,
+        "rejectKinds": {},
+        "asyncSettleStarted": 5000,
+        "asyncSettleCompleted": 5000,
+        "asyncSettleFailed": 0,
+        "executionPolicy": "optimistic",
+        "kRequired": 0,
+        "pendingSettlements": 0
+      },
+      "facilitatorStats": {
+        "verifyCount": 5000,
+        "settleCount": 5000,
+        "settleSuccess": 0,
+        "settleReverted": 0,
+        "errorKinds": {},
+        "relayerUsage": {},
+        "honestyMode": "byzantine",
+        "verifyResponseDelayMs": 0,
+        "relayerCount": 16,
+        "relayers": [
+          {
+            "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+            "queueDepth": 0,
+            "submitted": 0
+          },
+          {
+            "address": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+            "queueDepth": 0,
+            "submitted": 0
+          }
+        ],
+        "settledTxCount": 0
+      },
+      "reorgModel": "byzantine facilitator: grant without valid settlement",
+      "label": "byzantine"
+    }
+  ]
+}

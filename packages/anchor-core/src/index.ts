@@ -172,12 +172,18 @@ export function createAnchorClient(config: AnchorClientConfig): AnchorClient {
         throw new Error(`anchorTrace transaction reverted: ${txHash}`);
       }
 
-      const anchored = await publicClient.readContract({
-        address: config.contractAddress,
-        abi: AGENTIC_AUDIT_ANCHOR_ABI,
-        functionName: "isAnchored",
-        args: [traceIdBytes32],
-      });
+      // Public RPCs (e.g. sepolia.base.org) can lag state reads right after mining.
+      let anchored = false;
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        anchored = await publicClient.readContract({
+          address: config.contractAddress,
+          abi: AGENTIC_AUDIT_ANCHOR_ABI,
+          functionName: "isAnchored",
+          args: [traceIdBytes32],
+        });
+        if (anchored) break;
+        await new Promise((resolve) => setTimeout(resolve, 400));
+      }
       if (!anchored) {
         throw new Error(
           `anchorTrace tx ${txHash} succeeded but isAnchored() is false — check AUDIT_ANCHOR_ADDRESS matches a live deploy`,

@@ -59,6 +59,19 @@ export class SettlementNonceMismatchError extends Error {
   }
 }
 
+/**
+ * A typed revert from the on-chain `PredicatePaymentGuard.validateAndConsume`.
+ * The viem writer maps a contract revert to this so callers can read the
+ * Solidity error name (`PayeeNotAllowed`, `AmountExceedsMax`, …) without
+ * depending on viem's error shapes.
+ */
+export class PredicateOnChainRevertError extends Error {
+  constructor(public readonly errorName: string) {
+    super(`On-chain predicate revert: ${errorName}`);
+    this.name = "PredicateOnChainRevertError";
+  }
+}
+
 export interface PredicateGuardAdapter {
   readonly kind: "in-memory" | "contract";
   evaluateOffChain(
@@ -131,19 +144,52 @@ export type ContractGuardReader = (input: {
   nonce: Hex;
 }) => Promise<{ consumed: boolean }>;
 
+/**
+ * Broadcasts `PredicatePaymentGuard.validateAndConsume(...)` on-chain. Resolves
+ * with the settlement tx hash on success; on a predicate violation it MUST throw
+ * a {@link PredicateOnChainRevertError} (the viem factory maps the typed revert).
+ * Any other thrown error is treated as an infrastructure failure and propagated.
+ */
+export type ContractGuardWriter = (input: {
+  address: Hex;
+  /** Inputs to recompute C' on-chain: identityRef, mandateDigest, predicateId, settlementParams. */
+  commitment: ModeBSettlementInput;
+  /** Off-chain recomputed C' and nonce = H(C'), passed to validateAndConsume. */
+  cPrime: Hex;
+  nonce: Hex;
+}) => Promise<{ txHash: Hex }>;
+
 export type ContractPredicateGuardOptions = {
   address: Hex;
   reader?: ContractGuardReader;
+  writer?: ContractGuardWriter;
+};
+
+/**
+ * Result of an on-chain settlement attempt. `reverted: true` means the contract
+ * enforced the predicate and reverted *before any transfer* — Mode B prevented
+ * in-protocol rather than merely flagged by the off-chain R17 audit.
+ */
+export type OnChainSettlementResult = {
+  commitment: Hex;
+  nonce: Hex;
+  reverted: boolean;
+  /** Solidity error name when reverted (e.g. "AmountExceedsMax"). */
+  reason?: string;
+  /** Settlement tx hash when it succeeded. */
+  txHash?: Hex;
 };
 
 export class ContractPredicateGuard implements PredicateGuardAdapter {
   readonly kind = "contract" as const;
   readonly address: Hex;
   private readonly reader?: ContractGuardReader;
+  private readonly writer?: ContractGuardWriter;
 
   constructor(options: ContractPredicateGuardOptions) {
     this.address = options.address;
     this.reader = options.reader;
+    this.writer = options.writer;
   }
 
   evaluateOffChain(
@@ -165,6 +211,35 @@ export class ContractPredicateGuard implements PredicateGuardAdapter {
     }
     return { allowed: true, evaluation, commitment, nonce, enforcedBy: "contract" };
   }
+
+  /**
+   * Settle *through the contract* — the on-chain guard is the enforcer. Unlike
+   * {@link assertSettlementAllowed} (which is off-chain-authoritative and throws
+   * before any chain interaction), this always broadcasts `validateAndConsume`
+   * so a predicate-violating Mode B settlement produces a REAL on-chain revert.
+   * A typed revert is captured as `{ reverted: true, reason }`; the happy path
+   * returns `{ reverted: false, txHash }`. Non-revert errors propagate.
+   */
+  async settleOnChain(input: GuardSettlementInput): Promise<OnChainSettlementResult> {
+    if (!this.writer) {
+      throw new Error("ContractPredicateGuard.settleOnChain requires a writer");
+    }
+    const { commitment, nonce } = recompute(input);
+    try {
+      const { txHash } = await this.writer({
+        address: this.address,
+        commitment: input.commitment,
+        cPrime: commitment,
+        nonce,
+      });
+      return { commitment, nonce, reverted: false, txHash };
+    } catch (error) {
+      if (error instanceof PredicateOnChainRevertError) {
+        return { commitment, nonce, reverted: true, reason: error.errorName };
+      }
+      throw error;
+    }
+  }
 }
 
 /**
@@ -172,11 +247,22 @@ export class ContractPredicateGuard implements PredicateGuardAdapter {
  * `PREDICATE_GUARD_ADDRESS` is set, otherwise the in-memory guard.
  */
 export function createPredicateGuard(
-  options: { address?: Hex; reader?: ContractGuardReader } = {},
+  options: { address?: Hex; reader?: ContractGuardReader; writer?: ContractGuardWriter } = {},
 ): PredicateGuardAdapter {
   const address = options.address ?? (process.env.PREDICATE_GUARD_ADDRESS?.trim() as Hex | undefined);
   if (address && /^0x[0-9a-fA-F]{40}$/u.test(address)) {
-    return new ContractPredicateGuard({ address, ...(options.reader ? { reader: options.reader } : {}) });
+    return new ContractPredicateGuard({
+      address,
+      ...(options.reader ? { reader: options.reader } : {}),
+      ...(options.writer ? { writer: options.writer } : {}),
+    });
   }
   return new InMemoryPredicateGuard();
 }
+
+export {
+  PREDICATE_GUARD_ABI,
+  extractRevertName,
+  makeViemGuardWriter,
+  type GuardViemClients,
+} from "./onchain";

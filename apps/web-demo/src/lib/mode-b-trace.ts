@@ -12,8 +12,9 @@ const DEMO_CHAIN_ID = Number(process.env.CHAIN_ID ?? 31337);
 
 const DEMO_INTENT: Intent = {
   intentId: "demo-mode-b",
-  task: "Buy a token-risk report for token XYZ (delegated)",
+  task: "Get me a weather forecast for my trip (delegated)",
   token: "XYZ",
+  input: "Dhaka",
   budget: "2.00",
   asset: "USDC",
   network:

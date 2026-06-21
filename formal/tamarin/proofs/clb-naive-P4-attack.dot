@@ -1,0 +1,73 @@
+digraph "trace_CLB_Naive_SL2-AS0-CL0-A1-C1-NB_exec_modeA-Register_Human-Register_Agent-Authorize_ModeA_naive-Authorize_ModeA_naive-Authorize_ModeA_naive" {
+nodesep="0.3";
+ranksep="0.3";
+node[fontsize="8",fontname="Helvetica",width="0.3",height="0.2"];
+edge[fontsize="8",fontname="Helvetica"];
+n5[shape="record",label="{{<n0> In( \<SI1, ~mandate, $agentId, $asset, \l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$payee, $value\>\l)\l|<n1> !HumanPk( $H,\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pk(~hsk)\l)\l|<n2> !AgentKey( $agentId,\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~sk\l)\l|<n3> NonceUnused( h(H1) )}|{<n4> #s : Settle_ModeA_naive[Eq( true, true ),\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Settled( $H, $agentId, pk(~sk), $payee, $asset, $value, $settleChain )]\l}}",fillcolor="#d5d897",style="filled",fontcolor="black",role="Undefined"];
+n6[label="#vf : isend",shape="ellipse"];
+n7[label="#vk : coerce[!KU( SI1 )]",shape="ellipse"];
+n8[label="#vl : irecv",shape="ellipse"];
+n14[shape="record",label="{{<n9> Fr( ~hsk )}|{<n10> #vr : Register_Human}|{<n11> !HumanSk( $H, ~hsk )|<n12> !HumanPk( $H, pk(~hsk) )|<n13> Out( pk(~hsk) )}}",fillcolor="#bfda99",style="filled",fontcolor="black",role="Undefined"];
+n15[label="#vk.1 : coerce[!KU( ~mandate )]",shape="ellipse"];
+n20[shape="record",label="{{<n16> Fr( ~sk )}|{<n17> #vr.1 : Register_Agent[KeyAuthorized( $agentId, pk(~sk) )]}|{<n18> !AgentKey( $agentId, ~sk )|<n19> Out( pk(~sk) )}}",fillcolor="#b4db99",style="filled",fontcolor="black",role="Undefined"];
+n26[shape="record",label="{{<n21> !HumanSk( $H, ~hsk )|<n22> Fr( ~mandate )}|{<n23> #vr.2 : Authorize_ModeA_naive[Authorized( $H, $agentId, $payee, $asset, $value,\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$intendedChain\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)]\l}|{<n24> Out( \<SI1, ~mandate, $agentId, $asset, $payee, $value\> )|<n25> NonceUnused( h(H1) )}}",fillcolor="#a9dc9a",style="filled",fontcolor="black",role="Undefined"];
+n27[label="#vr.4 : d_0_snd",shape="ellipse"];
+n6 -> n5:n0[color="gray30"];
+n8 -> n7[color="orangered2"];
+n8 -> n27[color="orangered2"];
+n14:n11 -> n26:n21[style="bold",weight="10.0",color="gray50"];
+n14:n12 -> n5:n1[style="bold",weight="10.0",color="gray50"];
+n20:n18 -> n5:n2[style="bold",weight="10.0",color="gray50"];
+n26:n24 -> n8[color="gray30"];
+n26:n25 -> n5:n3[style="bold",weight="10.0"];
+n27 -> n15[color="orangered2"];
+n7 -> n6[color="red",style="dashed"];
+n8 -> n6[color="red",style="dashed"];
+n15 -> n6[color="red",style="dashed"];
+n27 -> n6[color="red",style="dashed"];
+{
+rank="sink";
+n28[shape="plain",label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="3" CELLPADDING="1"><TR><TD ALIGN="LEFT" VALIGN="TOP"><FONT COLOR="#000000">H1</FONT></TD> <TD ALIGN="LEFT" VALIGN="TOP">=</TD> <TD ALIGN="LEFT" VALIGN="TOP">h(&lt;$agentId, ~mandate, $asset, $payee, $value&gt;)</TD></TR>
+                                                                 <TR><TD ALIGN="LEFT" VALIGN="TOP"><FONT COLOR="#000000">SI1</FONT></TD> <TD ALIGN="LEFT" VALIGN="TOP">=</TD> <TD ALIGN="LEFT" VALIGN="TOP">sign(H1, ~hsk)</TD></TR></TABLE>>];
+
+}
+n5:n4 -> n28[style="invis"];
+
+}
+
+digraph "trace_CLB_Naive_SL2-AS0-CL0-A1-C1-NB_P4_non_transferability-Register_Human-Register_Agent-Authorize_ModeA_naive-Authorize_ModeA_naive-Authorize_ModeA_naive" {
+nodesep="0.3";
+ranksep="0.3";
+node[fontsize="8",fontname="Helvetica",width="0.3",height="0.2"];
+edge[fontsize="8",fontname="Helvetica"];
+n5[shape="record",label="{{<n0> In( \<SI1, ~mandate, $agentId, $asset, \l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$payee, $value\>\l)\l|<n1> !HumanPk( $H,\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pk(~hsk)\l)\l|<n2> !AgentKey( $agentId,\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~sk\l)\l|<n3> NonceUnused( h(H1) )}|{<n4> #s : Settle_ModeA_naive[Eq( true, true ),\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Settled( $H, $agentId, pk(~sk), $payee, $asset, $value, $settleChain )]\l}}",fillcolor="#d5d897",style="filled",fontcolor="black",role="Undefined"];
+n6[label="#vf : isend",shape="ellipse"];
+n7[label="#vk : coerce[!KU( SI1 )]",shape="ellipse"];
+n8[label="#vl : irecv",shape="ellipse"];
+n14[shape="record",label="{{<n9> Fr( ~hsk )}|{<n10> #vr : Register_Human}|{<n11> !HumanSk( $H, ~hsk )|<n12> !HumanPk( $H, pk(~hsk) )|<n13> Out( pk(~hsk) )}}",fillcolor="#bfda99",style="filled",fontcolor="black",role="Undefined"];
+n15[label="#vk.1 : coerce[!KU( ~mandate )]",shape="ellipse"];
+n20[shape="record",label="{{<n16> Fr( ~sk )}|{<n17> #vr.1 : Register_Agent[KeyAuthorized( $agentId, pk(~sk) )]}|{<n18> !AgentKey( $agentId, ~sk )|<n19> Out( pk(~sk) )}}",fillcolor="#b4db99",style="filled",fontcolor="black",role="Undefined"];
+n26[shape="record",label="{{<n21> !HumanSk( $H, ~hsk )|<n22> Fr( ~mandate )}|{<n23> #vr.2 : Authorize_ModeA_naive[Authorized( $H, $agentId, $payee, $asset, $value,\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$intendedChain\l&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)]\l}|{<n24> Out( \<SI1, ~mandate, $agentId, $asset, $payee, $value\> )|<n25> NonceUnused( h(H1) )}}",fillcolor="#a9dc9a",style="filled",fontcolor="black",role="Undefined"];
+n27[label="#vr.4 : d_0_snd",shape="ellipse"];
+n6 -> n5:n0[color="gray30"];
+n8 -> n7[color="orangered2"];
+n8 -> n27[color="orangered2"];
+n14:n11 -> n26:n21[style="bold",weight="10.0",color="gray50"];
+n14:n12 -> n5:n1[style="bold",weight="10.0",color="gray50"];
+n20:n18 -> n5:n2[style="bold",weight="10.0",color="gray50"];
+n26:n24 -> n8[color="gray30"];
+n26:n25 -> n5:n3[style="bold",weight="10.0"];
+n27 -> n15[color="orangered2"];
+n7 -> n6[color="red",style="dashed"];
+n8 -> n6[color="red",style="dashed"];
+n15 -> n6[color="red",style="dashed"];
+n27 -> n6[color="red",style="dashed"];
+{
+rank="sink";
+n28[shape="plain",label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="3" CELLPADDING="1"><TR><TD ALIGN="LEFT" VALIGN="TOP"><FONT COLOR="#000000">H1</FONT></TD> <TD ALIGN="LEFT" VALIGN="TOP">=</TD> <TD ALIGN="LEFT" VALIGN="TOP">h(&lt;$agentId, ~mandate, $asset, $payee, $value&gt;)</TD></TR>
+                                                                 <TR><TD ALIGN="LEFT" VALIGN="TOP"><FONT COLOR="#000000">SI1</FONT></TD> <TD ALIGN="LEFT" VALIGN="TOP">=</TD> <TD ALIGN="LEFT" VALIGN="TOP">sign(H1, ~hsk)</TD></TR></TABLE>>];
+
+}
+n5:n4 -> n28[style="invis"];
+
+}

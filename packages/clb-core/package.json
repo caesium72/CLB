@@ -16,6 +16,7 @@
   "dependencies": {
     "@clb-acel/evidence-core": "workspace:*",
     "@clb-acel/schemas": "workspace:*",
+    "@noble/curves": "^1.9.7",
     "viem": "^2.40.0"
   },
   "devDependencies": {

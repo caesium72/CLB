@@ -76,11 +76,11 @@ describe("runHumanPresentOverHttp", () => {
 
       expect(trace.transport).toBe("http");
       expect(trace.verification.result.status).toBe("PASS");
-      expect(trace.events).toHaveLength(7);
+      expect(trace.events).toHaveLength(8);
 
       const stored = await fetch(`${evidenceServer.url}/traces/${trace.traceId}`);
       expect(stored.status).toBe(200);
-      expect((await stored.json()).events).toHaveLength(7);
+      expect((await stored.json()).events).toHaveLength(8);
     } finally {
       await Promise.all(closers.map((server) => server.close()));
     }
@@ -141,7 +141,7 @@ describe("runHumanPresentOverHttp", () => {
       expect(trace.transport).toBe("http");
       expect(trace.verification.result.status).toBe("PASS");
       expect(trace.verification.outcomes.R17_PREDICATE_TRUE_FOR_MODE_B?.ok).toBe(true);
-      expect(trace.events).toHaveLength(7);
+      expect(trace.events).toHaveLength(8);
     } finally {
       await Promise.all(closers.map((server) => server.close()));
     }

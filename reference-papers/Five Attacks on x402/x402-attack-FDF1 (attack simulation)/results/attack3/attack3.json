@@ -1,0 +1,128 @@
+{
+  "experiment": "Attack III: Header/Proxy",
+  "timestamp": "2026-04-28T20:56:13.832Z",
+  "parameters": {
+    "numRequests": 1000,
+    "requestTimeoutMs": 5000,
+    "cacheSettleMs": 500,
+    "cacheTrials": "one paid priming request followed by unpaid same-URL requests",
+    "cacheIsolation": "proxy container restarted before each cache-control condition",
+    "dockerImages": {
+      "nginx": "nginx@sha256:7150b3a39203cb5bee612ff4a9d18774f8c7caf6399d6e8985e97e28eb751c18",
+      "caddy": "caddy@sha256:1e40b251ca9639ead7b5cd2cedcc8765adfbabb99450fe23f130eefabf50f4bc"
+    }
+  },
+  "environment": {
+    "node": "v23.11.0",
+    "dockerServer": "28.3.3",
+    "dockerImageIds": {
+      "nginx": "sha256:7150b3a39203cb5bee612ff4a9d18774f8c7caf6399d6e8985e97e28eb751c18",
+      "caddy": "sha256:1e40b251ca9639ead7b5cd2cedcc8765adfbabb99450fe23f130eefabf50f4bc"
+    }
+  },
+  "results": {
+    "headerMutation": [
+      {
+        "proxyName": "nginx",
+        "total": 1000,
+        "observedByOrigin": 1000,
+        "errors": 0,
+        "mutated": 0,
+        "mutationRate": 0
+      },
+      {
+        "proxyName": "Caddy",
+        "total": 1000,
+        "observedByOrigin": 1000,
+        "errors": 0,
+        "mutated": 0,
+        "mutationRate": 0
+      }
+    ],
+    "cacheLeakage": [
+      {
+        "proxyName": "nginx",
+        "cacheControl": false,
+        "priming": {
+          "status": 200,
+          "cacheStatus": "MISS",
+          "cacheControl": null
+        },
+        "total": 1000,
+        "errors": 0,
+        "statusCounts": {
+          "200": 1000
+        },
+        "cacheStatusCounts": {
+          "HIT": 1000
+        },
+        "leaks": 1000,
+        "leakRate": 1
+      },
+      {
+        "proxyName": "nginx",
+        "cacheControl": true,
+        "priming": {
+          "status": 200,
+          "cacheStatus": "MISS",
+          "cacheControl": "no-store, private"
+        },
+        "total": 1000,
+        "errors": 0,
+        "statusCounts": {
+          "402": 1000
+        },
+        "cacheStatusCounts": {
+          "MISS": 1000
+        },
+        "leaks": 0,
+        "leakRate": 0
+      },
+      {
+        "proxyName": "Caddy",
+        "cacheControl": false,
+        "priming": {
+          "status": 200,
+          "cacheStatus": null,
+          "cacheControl": null
+        },
+        "total": 1000,
+        "errors": 0,
+        "statusCounts": {
+          "402": 1000
+        },
+        "cacheStatusCounts": {},
+        "leaks": 0,
+        "leakRate": 0
+      },
+      {
+        "proxyName": "Caddy",
+        "cacheControl": true,
+        "priming": {
+          "status": 200,
+          "cacheStatus": null,
+          "cacheControl": "no-store, private"
+        },
+        "total": 1000,
+        "errors": 0,
+        "statusCounts": {
+          "402": 1000
+        },
+        "cacheStatusCounts": {},
+        "leaks": 0,
+        "leakRate": 0
+      }
+    ],
+    "multiHeader": {
+      "proxyName": "Custom MitM",
+      "total": 1000,
+      "observedByOrigin": 1000,
+      "errors": 0,
+      "multiHeaderDetected": 1000,
+      "injectionRate": 1,
+      "lastValuePicked": 1000,
+      "concatenated": 0,
+      "firstValuePicked": 0
+    }
+  }
+}

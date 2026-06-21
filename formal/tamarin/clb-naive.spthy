@@ -1,0 +1,91 @@
+theory CLB_Naive
+begin
+
+/*
+  ============================================================================
+  CLB-ACEL — Phase 7C ABLATION model (the "attack-found" half of the
+  attack-found -> patched-model-proven narrative).
+
+  This is clb.spthy with ONE change: the commitment C omits chainId
+  (no EIP-712 domain / chain separation):
+
+      naive:  C = h(<agentId, mandate, asset, payee, value>)     <- NO chainId
+      real :  C = h(<chainId, agentId, mandate, asset, payee, value>)
+
+  Consequence: the human signs and the nonce H(C) is computed without binding
+  the chain, so the SAME signed authorization is redeemable on a chain the
+  human never intended. Tamarin FINDS this cross-chain transplant:
+
+      P2_authorization_integrity   verified    (payee/asset/value still bound)
+      P4_non_transferability       falsified   (chain is NOT bound -> transplant)
+
+  Patching the model (add chainId back -> clb.spthy) makes P4 verify. That
+  pair is the publishable result: the deployed design's chain/domain
+  separation is load-bearing, not decorative.
+
+  Run:  tamarin-prover --prove formal/tamarin/clb-naive.spthy
+  ============================================================================
+*/
+
+builtins: signing, hashing
+
+restriction Equality:
+  "All x y #i. Eq(x, y) @ #i ==> x = y"
+
+rule Register_Agent:
+    [ Fr(~sk) ]
+  --[ KeyAuthorized($agentId, pk(~sk)) ]->
+    [ !AgentKey($agentId, ~sk), Out(pk(~sk)) ]
+
+rule Register_Human:
+    [ Fr(~hsk) ]
+  --[ ]->
+    [ !HumanSk($H, ~hsk), !HumanPk($H, pk(~hsk)), Out(pk(~hsk)) ]
+
+// Human authorizes for an INTENDED chain, but chainId is NOT folded into C.
+rule Authorize_ModeA_naive:
+    let C     = h(<$agentId, ~mandate, $asset, $payee, $value>)   // <-- no chainId
+        nonce = h(C)
+        sig   = sign(C, ~hsk)
+    in
+    [ !HumanSk($H, ~hsk), Fr(~mandate) ]
+  --[ Authorized($H, $agentId, $payee, $asset, $value, $intendedChain) ]->
+    [ Out(<sig, ~mandate, $agentId, $asset, $payee, $value>),
+      NonceUnused(nonce) ]
+
+// Settlement happens on an attacker-chosen chain ($settleChain). Because C does
+// not bind the chain, the human signature verifies and the nonce matches
+// regardless of where the settlement is broadcast.
+rule Settle_ModeA_naive:
+    let C     = h(<agentId, mandate, asset, payee, value>)
+        nonce = h(C)
+    in
+    [ In(<sig, mandate, agentId, asset, payee, value>),
+      !HumanPk($H, pkH),
+      !AgentKey(agentId, ~sk),
+      NonceUnused(nonce) ]
+  --[ Eq(verify(sig, C, pkH), true),
+      Settled($H, agentId, pk(~sk), payee, asset, value, $settleChain) ]->
+    [ ]
+
+lemma exec_modeA:
+  exists-trace
+  "Ex H aid K payee asset val cid #s.
+     Settled(H, aid, K, payee, asset, val, cid) @ #s"
+
+// Payee/asset/value ARE in C, so integrity on those dimensions still holds.
+lemma P2_authorization_integrity:
+  all-traces
+  "All H aid K payee asset val cid #s.
+     Settled(H, aid, K, payee, asset, val, cid) @ #s
+   ==> Ex c2 #a. Authorized(H, aid, payee, asset, val, c2) @ #a"
+
+// Chain is NOT in C -> a settlement can land on a chain never authorized.
+// EXPECT: falsified, with a cross-chain transplant trace.
+lemma P4_non_transferability:
+  all-traces
+  "All H aid K payee asset val cid #s.
+     Settled(H, aid, K, payee, asset, val, cid) @ #s
+   ==> Ex #a. Authorized(H, aid, payee, asset, val, cid) @ #a"
+
+end

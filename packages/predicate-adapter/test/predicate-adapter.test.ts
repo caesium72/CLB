@@ -31,6 +31,7 @@ const params: SettlementParams = {
   asset: "USDC",
   payTo: merchant,
   value: "2.00",
+  valueAtomic: "2000000",
   validBefore: "2026-12-30T06:00:00.000Z",
   payerAgentId: "shopping-agent-001",
 };

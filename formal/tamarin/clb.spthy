@@ -1,0 +1,184 @@
+theory CLB
+begin
+
+/*
+  ============================================================================
+  CLB-ACEL — Phase 7C full model. Machine-checked soundness of the COMPOSED
+  protocol (ERC-8004 identity + AP2 mandate + x402 settlement + Mode-B guard)
+  under a Dolev-Yao attacker with perfect (symbolic) cryptography.
+
+  Properties (PROJECT_OVERVIEW 4.1):
+    P1  identity binding        the key that paid is authorized by the agentId in the mandate
+    P2  authorization integrity settled (asset,payee,value) == what the human authorized
+    P3  freshness / non-replay  each authorization yields <= 1 settlement (nonce = H(C), once)
+    P4  non-transferability     a mandate can't be redeemed under a different identity/chain
+    P5  predicate soundness     (Mode B) no settlement that violates the signed predicate completes
+
+  Faithfulness to the deployed design:
+    Mode A:  C  = h(<chainId, agentId, mandate, asset, payee, value>)   nonce = H(C)
+             (mirrors EIP712(identityRef{chainId,registryAddr,agentId}, mandateDigest,
+              settlementDigest); registryAddr folded into the abstract chain).
+    Mode B:  C' = h(<chainId, agentId, predId, payee, asset, value>)    nonce = H(C')
+             PredicatePaymentGuard modelled as a guarded transition that fires only on an
+             admissible tuple and consumes the single-use nonce once (validateAndConsume).
+
+  Honest abstractions:
+    - keccak is a free, collision-resistant symbol (perfect crypto).
+    - The predicate's value<=max ordering is abstracted as allow-set membership
+      (!Admissible facts minted at delegation): the guard fires only on an admissible
+      tuple, exactly as the on-chain guard rejects out-of-policy params. This proves the
+      GUARD PLACEMENT is sound (no settlement bypasses it), which is the formal content
+      of "predicate soundness"; it does not re-derive integer comparison.
+
+  Run:  tamarin-prover --prove formal/tamarin/clb.spthy
+  ============================================================================
+*/
+
+builtins: signing, hashing
+
+restriction Equality:
+  "All x y #i. Eq(x, y) @ #i ==> x = y"
+
+/* --------------------------------------------------------------------------
+   Setup: ERC-8004 identities and human keys.
+   -------------------------------------------------------------------------- */
+
+// Register an ERC-8004 agent identity with an authorized payment key.
+rule Register_Agent:
+    [ Fr(~sk) ]
+  --[ KeyAuthorized($agentId, pk(~sk)) ]->
+    [ !AgentKey($agentId, ~sk), Out(pk(~sk)) ]
+
+// A human principal with a signing key (publishes the public key).
+rule Register_Human:
+    [ Fr(~hsk) ]
+  --[ ]->
+    [ !HumanSk($H, ~hsk), !HumanPk($H, pk(~hsk)), Out(pk(~hsk)) ]
+
+/* ==========================================================================
+   MODE A — human-present, exact settlement.
+   ========================================================================== */
+
+// Human signs the commitment C over the EXACT settlement params and emits the
+// single-use nonce = H(C). ~mandate makes each authorization unique.
+rule Authorize_ModeA:
+    let C     = h(<$chainId, $agentId, ~mandate, $asset, $payee, $value>)
+        nonce = h(C)
+        sig   = sign(C, ~hsk)
+    in
+    [ !HumanSk($H, ~hsk), Fr(~mandate) ]
+  --[ Authorized($H, $agentId, $payee, $asset, $value, $chainId) ]->
+    [ Out(<sig, ~mandate, $chainId, $agentId, $asset, $payee, $value>),
+      NonceUnused(nonce) ]
+
+// Settlement: a payer key authorized for agentId settles. The verifier
+// RECOMPUTES C from the settled params (R6), checks the human signature over C,
+// and consumes the single-use nonce H(C) (R8/R9). The Dolev-Yao attacker may
+// supply any params+sig it can build from the network.
+rule Settle_ModeA:
+    let C     = h(<chainId, agentId, mandate, asset, payee, value>)
+        nonce = h(C)
+    in
+    [ In(<sig, mandate, chainId, agentId, asset, payee, value>),
+      !HumanPk($H, pkH),
+      !AgentKey(agentId, ~sk),
+      NonceUnused(nonce) ]
+  --[ Eq(verify(sig, C, pkH), true),
+      Paid(agentId, pk(~sk)),
+      Settled($H, agentId, pk(~sk), payee, asset, value, chainId),
+      Consumed(nonce) ]->
+    [ ]
+
+/* ==========================================================================
+   MODE B — delegated; human signs a predicate, guard enforces on-chain.
+   ========================================================================== */
+
+// Human delegates under a predicate ~p, signing the predicate id. Each
+// admissible concrete tuple (agent,payee,asset,value,chain) is minted as an
+// !Admissible fact (allow-set abstraction of allowedPayees/assets/max/chain),
+// and its settlement nonce H(C') is minted single-use up front.
+rule Authorize_ModeB:
+    let psig  = sign(h(<'PRED', ~p>), ~hsk)
+        Cp    = h(<$okChain, $okAgent, ~p, $okPayee, $okAsset, $okValue>)
+        nonce = h(Cp)
+    in
+    [ !HumanSk($H, ~hsk), Fr(~p) ]
+  --[ DelegatedB($H, ~p),
+      AdmitB($H, ~p, $okAgent, $okPayee, $okAsset, $okValue, $okChain) ]->
+    [ Out(<~p, psig>),
+      !PredPk(~p, pk(~hsk)),
+      !Admissible($H, ~p, $okAgent, $okPayee, $okAsset, $okValue, $okChain),
+      NonceUnused(nonce) ]
+
+// Guarded settlement (PredicatePaymentGuard.validateAndConsume): fires ONLY
+// for an admissible tuple, recomputes C', checks the predicate signature, and
+// consumes the single-use nonce H(C'). A non-admissible (violating) tuple has
+// no !Admissible fact and no nonce, so this rule cannot fire for it.
+rule Settle_ModeB:
+    let Cp    = h(<chainId, agentId, p, payee, asset, value>)
+        nonce = h(Cp)
+    in
+    [ In(<p, psig, agentId, payee, asset, value, chainId>),
+      !PredPk(p, pkH),
+      !AgentKey(agentId, ~sk),
+      !Admissible(H, p, agentId, payee, asset, value, chainId),
+      NonceUnused(nonce) ]
+  --[ Eq(verify(psig, h(<'PRED', p>), pkH), true),
+      Paid(agentId, pk(~sk)),
+      GuardPassed(p, payee, asset, value, chainId),
+      SettledB(H, agentId, pk(~sk), payee, asset, value, chainId, p),
+      Consumed(nonce) ]->
+    [ ]
+
+/* ==========================================================================
+   LEMMAS
+   ========================================================================== */
+
+// Sanity (guards against vacuous proofs): each mode can actually settle.
+lemma exec_modeA:
+  exists-trace
+  "Ex H aid K payee asset val cid #s.
+     Settled(H, aid, K, payee, asset, val, cid) @ #s"
+
+lemma exec_modeB:
+  exists-trace
+  "Ex H aid K payee asset val cid p #s.
+     SettledB(H, aid, K, payee, asset, val, cid, p) @ #s"
+
+// P1 — identity binding: the key that paid is an authorized key of the agentId.
+lemma P1_identity_binding:
+  all-traces
+  "All aid K #s. Paid(aid, K) @ #s ==> Ex #r. KeyAuthorized(aid, K) @ #r"
+
+// P2 — authorization integrity (Mode A): settled (payee,asset,value) match an
+// authorization the human actually signed for that agent and chain.
+lemma P2_authorization_integrity:
+  all-traces
+  "All H aid K payee asset val cid #s.
+     Settled(H, aid, K, payee, asset, val, cid) @ #s
+   ==> Ex #a. Authorized(H, aid, payee, asset, val, cid) @ #a"
+
+// P3 — freshness / non-replay: each settlement nonce is consumed at most once
+// (covers Mode A and Mode B, both use the single-use NonceUnused fact).
+lemma P3_no_replay:
+  all-traces
+  "All n #i #j. Consumed(n) @ #i & Consumed(n) @ #j ==> #i = #j"
+
+// P4 — non-transferability: a settlement's identity AND chain equal the
+// authorized ones (no identity swap, no cross-chain transplant). chainId and
+// agentId are inside C, so a transplant changes C, the nonce, and the signature.
+lemma P4_non_transferability:
+  all-traces
+  "All H aid K payee asset val cid #s.
+     Settled(H, aid, K, payee, asset, val, cid) @ #s
+   ==> Ex #a. Authorized(H, aid, payee, asset, val, cid) @ #a"
+
+// P5 — predicate soundness (Mode B): every completed delegated settlement was
+// admissible under a predicate the human signed (the guard lets nothing else through).
+lemma P5_predicate_soundness:
+  all-traces
+  "All H aid K payee asset val cid p #s.
+     SettledB(H, aid, K, payee, asset, val, cid, p) @ #s
+   ==> Ex #d. AdmitB(H, p, aid, payee, asset, val, cid) @ #d"
+
+end

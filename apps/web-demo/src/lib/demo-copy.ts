@@ -54,12 +54,63 @@ export function preventionLayerCopy(layer: string) {
   return PREVENTION_LAYER_COPY[layer] ?? PREVENTION_LAYER_COPY.none;
 }
 
-export const AGENT_ACTIVITY_COPY = {
-  searching: "Searching ERC-8004 identity registry…",
-  comparing: "Comparing merchant agents for x402 support…",
-  rejected: "Skipped — missing verified x402 support",
-  selected: "Selected for token-risk reports over x402",
-  quoteRequest: "Requesting merchant quote…",
+/**
+ * The two real canonical ERC-8004 agents the shopping agent chooses between.
+ * Shown on the Intent page (allowed-agents predicate) BEFORE discovery runs, so
+ * the IDs/names here must match the seeded cards (services/identity-service/seed).
+ */
+export const KNOWN_AGENTS = [
+  {
+    agentId: "6827",
+    name: "Grammar Checker Agent",
+    blurb: "Proofreads and corrects written text — grammar, spelling, punctuation.",
+    example: {
+      task: "Proofread and correct my paragraph",
+      input: "i has two dog and they likes to runs very fast",
+    },
+  },
+  {
+    agentId: "6823",
+    name: "Weather Agent",
+    blurb: "Returns a short weather forecast (conditions + temperature) for a city.",
+    example: { task: "Get me a weather forecast for my trip", input: "Dhaka" },
+  },
+] as const;
+
+export const INTENT_COPY = {
+  title: "Tell your shopping agent what you need",
+  subtitle:
+    "Describe the task and set the rules your agent must respect. Next, the agent reads both on-chain agents' cards and decides — with reasoning — which one fits.",
+  fields: {
+    task: {
+      label: "Task",
+      help: "What you want done. The agent matches this to an on-chain agent's capabilities.",
+    },
+    input: {
+      label: "What should the agent work on?",
+      help: "The text to proofread, or the city to forecast.",
+    },
+    budget: { label: "Max price", help: "The most you will spend (a decision rule)." },
+    asset: { label: "Asset", help: "Currency you will pay in (a decision rule)." },
+    network: { label: "Network", help: "Settlement network (a decision rule)." },
+    allowedAgents: {
+      label: "Allowed agents",
+      help: "Optional. Restrict which on-chain agents qualify. Leave all checked to let the agent choose freely.",
+    },
+  },
+  submit: "Send to shopping agent",
+  submitting: "Sending…",
+} as const;
+
+export const DISCOVERY_COPY = {
+  title: "Your shopping agent is choosing",
+  subtitle:
+    "The agent reads both agents' ERC-8004 cards and decides which one can do the task within your rules. This choice is recorded as evidence — but never trusted by the verifier.",
+  noneTitle: "No agent fits your rules",
+  noneSubtitle:
+    "The shopping agent could not select an on-chain agent for this task under your constraints. Here is its reasoning:",
+  decisionLayerBadge: "Decision layer · not a verifier input",
+  reasoningLabel: "Agent reasoning",
 } as const;
 
 export const QUOTE_COPY = {
@@ -111,8 +162,8 @@ export const MANDATE_FORMULAS = {
 
 /** Baseline (B0–B3) one-line explanations shared by both attack matrices. */
 export const BASELINE_EXPLAINER: Record<string, string> = {
-  B0: "Vanilla x402 — no cross-layer binding, no verifier, no evidence layer.",
-  B1: "AP2 mandate exists, but the payment nonce is not bound to the commitment.",
-  B2: "Evidence + verifier detect attacks after settlement, but cannot prevent them.",
+  B0: "Vanilla x402 — settlement well-formedness only, no cross-layer rules.",
+  B1: "AP2 mandate + x402, but no ERC-8004 identity binding and no commitment recompute.",
+  B2: "eBay-style off-chain monitor — AP2 context-binding + consume-once, single-protocol.",
   B3: "Full stack — binding, evidence, verifier, and in-protocol prevention.",
 };

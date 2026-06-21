@@ -28,7 +28,7 @@ describe("merchant-agent-api", () => {
     const response = await app.inject({ method: "GET", url: "/risk-report?token=XYZ" });
 
     expect(response.statusCode).toBe(402);
-    expect(response.json<PaymentRequirementsResponse>().accepts[0]?.maxAmountRequired).toBe("2.00");
+    expect(response.json<PaymentRequirementsResponse>().accepts[0]?.maxAmountRequired).toBe("0.0000001");
 
     await app.close();
   });

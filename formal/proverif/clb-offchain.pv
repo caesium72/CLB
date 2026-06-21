@@ -1,0 +1,68 @@
+(*
+  ============================================================================
+  CLB-ACEL — Phase 7C ProVerif cross-check of the OFF-CHAIN sub-protocol.
+
+  Independent confirmation (different tool, different semantics: applied
+  pi-calculus, unbounded sessions) of two facts about the off-chain mandate
+  exchange between the human and the settling agent:
+
+    Q1 (authentication / P2):   non-injective correspondence
+        event(Settled(p)) ==> event(Authorized(p))                EXPECT: true
+        -> every settlement's params were authorized by the human (signature
+           over C binds the params).
+
+    Q2 (non-replay / P3):       injective correspondence
+        inj-event(Settled(p)) ==> inj-event(Authorized(p))        EXPECT: false
+        -> the OFF-CHAIN messages alone do NOT prevent replay: a Dolev-Yao
+           attacker can replay one signed mandate into many settlements.
+
+  The Q2 "false" is the point, and it agrees with the Tamarin model: replay
+  resistance (P3) is provided by the ON-CHAIN single-use nonce = H(C)
+  (the NonceUnused linear fact / PredicatePaymentGuard consume-once), NOT by
+  the off-chain protocol. Two tools, one consistent story.
+
+  Run:  proverif formal/proverif/clb-offchain.pv
+  ============================================================================
+*)
+
+free c:channel.
+
+type skey.
+type pkey.
+fun pk(skey):pkey.
+fun sign(bitstring, skey):bitstring.
+reduc forall m:bitstring, k:skey; checksign(sign(m,k), pk(k)) = m.
+fun h(bitstring):bitstring.
+
+event Authorized(bitstring).
+event Settled(bitstring).
+
+(* Q1 — authentication (P2): expect TRUE *)
+query p:bitstring; event(Settled(p)) ==> event(Authorized(p)).
+
+(* Q2 — injective non-replay (P3) off-chain only: expect FALSE *)
+query p:bitstring; inj-event(Settled(p)) ==> inj-event(Authorized(p)).
+
+(* Human: forms commitment C over the exact settlement params + a fresh mandate,
+   signs it, and publishes (params, mandate, signature). *)
+let human(skH:skey) =
+    new mandate:bitstring;
+    new agentId:bitstring; new payee:bitstring; new asset:bitstring;
+    new value:bitstring; new chainId:bitstring;
+    let params = (agentId, payee, asset, value, chainId) in
+    let C = h((params, mandate)) in
+    event Authorized(params);
+    out(c, (params, mandate, sign(C, skH))).
+
+(* Settler: recomputes C, verifies the human signature, then settles. There is
+   NO nonce store here (that lives on-chain), so a replayed message settles again. *)
+let settler(pkH:pkey) =
+    in(c, (params:bitstring, mandate:bitstring, s:bitstring));
+    let C = h((params, mandate)) in
+    if checksign(s, pkH) = C then
+        event Settled(params).
+
+process
+    new skH:skey;
+    out(c, pk(skH));
+    ( (!human(skH)) | (!settler(pk(skH))) )

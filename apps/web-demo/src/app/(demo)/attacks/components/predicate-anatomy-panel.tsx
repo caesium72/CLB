@@ -144,8 +144,13 @@ export function PredicateAnatomyPanel({
   const changedCount = diffRows.filter((row) => row.changed).length;
 
   return (
-    <DemoSection title="Attack anatomy">
+    <DemoSection title="Attack anatomy — how it works">
       <div className="@container/anatomy space-y-4 rounded-lg border border-border p-4">
+        <p className="rounded-md border border-border/70 bg-muted/40 p-2 text-xs leading-relaxed text-muted-foreground">
+          Deterministic structural breakdown — fixed example values showing exactly which signed rule the
+          agent broke and which check fires. It is <span className="font-medium">not</span> the live figures;
+          the real on-chain proof (a mined, reverted tx) is the BaseScan link in the card above.
+        </p>
         <p className="text-sm leading-relaxed text-muted-foreground">{anatomy.summary}</p>
 
         <div className="grid gap-4 @2xl/anatomy:grid-cols-2">

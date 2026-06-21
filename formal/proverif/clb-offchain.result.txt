@@ -1,0 +1,209 @@
+Process 0 (that is, the initial process):
+{1}new skH: skey;
+{2}out(c, pk(skH));
+(
+    {3}!
+    {4}let skH_1: skey = skH in
+    {5}new mandate: bitstring;
+    {6}new agentId: bitstring;
+    {7}new payee: bitstring;
+    {8}new asset: bitstring;
+    {9}new value: bitstring;
+    {10}new chainId: bitstring;
+    {11}let params: bitstring = (agentId,payee,asset,value,chainId) in
+    {12}let C: bitstring = h((params,mandate)) in
+    {13}event Authorized(params);
+    {14}out(c, (params,mandate,sign(C,skH_1)))
+) | (
+    {15}!
+    {16}let pkH: pkey = pk(skH) in
+    {17}in(c, (params_1: bitstring,mandate_1: bitstring,s: bitstring));
+    {18}let C_1: bitstring = h((params_1,mandate_1)) in
+    {19}if (checksign(s,pkH) = C_1) then
+    {20}event Settled(params_1)
+)
+
+--  Process 1 (that is, process 0, with let moved downwards):
+{1}new skH: skey;
+{2}out(c, pk(skH));
+(
+    {3}!
+    {5}new mandate: bitstring;
+    {6}new agentId: bitstring;
+    {7}new payee: bitstring;
+    {8}new asset: bitstring;
+    {9}new value: bitstring;
+    {10}new chainId: bitstring;
+    {11}let params: bitstring = (agentId,payee,asset,value,chainId) in
+    {13}event Authorized(params);
+    {12}let C: bitstring = h((params,mandate)) in
+    {4}let skH_1: skey = skH in
+    {14}out(c, (params,mandate,sign(C,skH_1)))
+) | (
+    {15}!
+    {17}in(c, (params_1: bitstring,mandate_1: bitstring,s: bitstring));
+    {18}let C_1: bitstring = h((params_1,mandate_1)) in
+    {16}let pkH: pkey = pk(skH) in
+    {19}if (checksign(s,pkH) = C_1) then
+    {20}event Settled(params_1)
+)
+
+-- Query event(Settled(p)) ==> event(Authorized(p)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query event(Settled(p)) ==> event(Authorized(p))
+goal reachable: b-event(Authorized((agentId_1,payee_1,asset_1,value_1,chainId_1))) -> event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)))
+Abbreviations:
+agentId_1 = agentId[!1 = @sid]
+payee_1 = payee[!1 = @sid]
+asset_1 = asset[!1 = @sid]
+value_1 = value[!1 = @sid]
+chainId_1 = chainId[!1 = @sid]
+RESULT event(Settled(p)) ==> event(Authorized(p)) is true.
+-- Query inj-event(Settled(p)) ==> inj-event(Authorized(p)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query inj-event(Settled(p)) ==> inj-event(Authorized(p))
+goal reachable: @sid ≠ @sid_1 && b-inj-event(Authorized((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ13_1) -> inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_1) && inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_2)
+Abbreviations:
+agentId_1 = agentId[!1 = @sid_2]
+payee_1 = payee[!1 = @sid_2]
+asset_1 = asset[!1 = @sid_2]
+value_1 = value[!1 = @sid_2]
+chainId_1 = chainId[!1 = @sid_2]
+mandate_2 = mandate[!1 = @sid_2]
+@occ20_1 = @occ20[s = sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[]),mandate_1 = mandate_2,params_1 = (agentId_1,payee_1,asset_1,value_1,chainId_1),!1 = @sid]
+@occ20_2 = @occ20[s = sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[]),mandate_1 = mandate_2,params_1 = (agentId_1,payee_1,asset_1,value_1,chainId_1),!1 = @sid_1]
+@occ13_1 = @occ13[!1 = @sid_2]
+
+Derivation:
+Abbreviations:
+agentId_1 = agentId[!1 = @sid]
+payee_1 = payee[!1 = @sid]
+asset_1 = asset[!1 = @sid]
+value_1 = value[!1 = @sid]
+chainId_1 = chainId[!1 = @sid]
+mandate_2 = mandate[!1 = @sid]
+@occ20_1 = @occ20[s = sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[]),mandate_1 = mandate_2,params_1 = (agentId_1,payee_1,asset_1,value_1,chainId_1),!1 = @sid_1]
+@occ20_2 = @occ20[s = sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[]),mandate_1 = mandate_2,params_1 = (agentId_1,payee_1,asset_1,value_1,chainId_1),!1 = @sid_2]
+@occ13_1 = @occ13[!1 = @sid]
+
+1. The event Authorized((agentId_1,payee_1,asset_1,value_1,chainId_1)) (with occurrence name @occ13_1) may be executed at {13}.
+So the message ((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[])) may be sent to the attacker at output {14}.
+attacker(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[]))).
+
+2. By 1, the attacker may know ((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[])).
+Using the function 3-proj-3-tuple the attacker may obtain sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[]).
+attacker(sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[])).
+
+3. By 1, the attacker may know ((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[])).
+Using the function 2-proj-3-tuple the attacker may obtain mandate_2.
+attacker(mandate_2).
+
+4. By 1, the attacker may know ((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[])).
+Using the function 1-proj-3-tuple the attacker may obtain (agentId_1,payee_1,asset_1,value_1,chainId_1).
+attacker((agentId_1,payee_1,asset_1,value_1,chainId_1)).
+
+5. By 4, the attacker may know (agentId_1,payee_1,asset_1,value_1,chainId_1).
+Using the function 5-proj-5-tuple the attacker may obtain chainId_1.
+attacker(chainId_1).
+
+6. By 4, the attacker may know (agentId_1,payee_1,asset_1,value_1,chainId_1).
+Using the function 4-proj-5-tuple the attacker may obtain value_1.
+attacker(value_1).
+
+7. By 4, the attacker may know (agentId_1,payee_1,asset_1,value_1,chainId_1).
+Using the function 3-proj-5-tuple the attacker may obtain asset_1.
+attacker(asset_1).
+
+8. By 4, the attacker may know (agentId_1,payee_1,asset_1,value_1,chainId_1).
+Using the function 2-proj-5-tuple the attacker may obtain payee_1.
+attacker(payee_1).
+
+9. By 4, the attacker may know (agentId_1,payee_1,asset_1,value_1,chainId_1).
+Using the function 1-proj-5-tuple the attacker may obtain agentId_1.
+attacker(agentId_1).
+
+10. By 9, the attacker may know agentId_1.
+By 8, the attacker may know payee_1.
+By 7, the attacker may know asset_1.
+By 6, the attacker may know value_1.
+By 5, the attacker may know chainId_1.
+Using the function 5-tuple the attacker may obtain (agentId_1,payee_1,asset_1,value_1,chainId_1).
+attacker((agentId_1,payee_1,asset_1,value_1,chainId_1)).
+
+11. By 10, the attacker may know (agentId_1,payee_1,asset_1,value_1,chainId_1).
+By 3, the attacker may know mandate_2.
+By 2, the attacker may know sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[]).
+Using the function 3-tuple the attacker may obtain ((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[])).
+attacker(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[]))).
+
+12. The message ((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[])) that the attacker may have by 11 may be received at input {17}.
+So event Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)) may be executed at {20} in session @sid_2.
+inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_2).
+
+13. By 12, inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_2).
+The goal is reached, represented in the following fact:
+inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_2).
+
+14. The message ((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2,sign(h(((agentId_1,payee_1,asset_1,value_1,chainId_1),mandate_2)),skH[])) that the attacker may have by 11 may be received at input {17}.
+So event Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)) may be executed at {20} in session @sid_1.
+inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_1).
+
+15. By 14, inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_1).
+The goal is reached, represented in the following fact:
+inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_1).
+
+16. By 15, inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_1).
+By 13, inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_2).
+We have @occ20_1 ≠ @occ20_2.
+The goals for injectivity are reached, combined in the following fact:
+inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_1) && inj-event(Settled((agentId_1,payee_1,asset_1,value_1,chainId_1)),@occ20_2).
+
+
+A more detailed output of the traces is available with
+  set traceDisplay = long.
+
+new skH: skey creating skH_2 at {1}
+
+out(c, ~M) with ~M = pk(skH_2) at {2}
+
+new mandate: bitstring creating mandate_3 at {5} in copy a
+
+new agentId: bitstring creating agentId_2 at {6} in copy a
+
+new payee: bitstring creating payee_2 at {7} in copy a
+
+new asset: bitstring creating asset_2 at {8} in copy a
+
+new value: bitstring creating value_2 at {9} in copy a
+
+new chainId: bitstring creating chainId_2 at {10} in copy a
+
+event Authorized((agentId_2,payee_2,asset_2,value_2,chainId_2)) at {13} in copy a
+
+out(c, ((~M_1,~M_2,~M_3,~M_4,~M_5),~M_6,~M_7)) with ~M_1 = agentId_2, ~M_2 = payee_2, ~M_3 = asset_2, ~M_4 = value_2, ~M_5 = chainId_2, ~M_6 = mandate_3, ~M_7 = sign(h(((agentId_2,payee_2,asset_2,value_2,chainId_2),mandate_3)),skH_2) at {14} in copy a
+
+in(c, ((~M_1,~M_2,~M_3,~M_4,~M_5),~M_6,~M_7)) with ~M_1 = agentId_2, ~M_2 = payee_2, ~M_3 = asset_2, ~M_4 = value_2, ~M_5 = chainId_2, ~M_6 = mandate_3, ~M_7 = sign(h(((agentId_2,payee_2,asset_2,value_2,chainId_2),mandate_3)),skH_2) at {17} in copy a_1
+
+event Settled((agentId_2,payee_2,asset_2,value_2,chainId_2)) at {20} in copy a_1 (goal)
+
+in(c, ((~M_1,~M_2,~M_3,~M_4,~M_5),~M_6,~M_7)) with ~M_1 = agentId_2, ~M_2 = payee_2, ~M_3 = asset_2, ~M_4 = value_2, ~M_5 = chainId_2, ~M_6 = mandate_3, ~M_7 = sign(h(((agentId_2,payee_2,asset_2,value_2,chainId_2),mandate_3)),skH_2) at {17} in copy a_2
+
+event Settled((agentId_2,payee_2,asset_2,value_2,chainId_2)) at {20} in copy a_2 (goal)
+
+The event Settled((agentId_2,payee_2,asset_2,value_2,chainId_2)) is executed at {20} in copy a_1.
+The event Settled((agentId_2,payee_2,asset_2,value_2,chainId_2)) is executed at {20} in copy a_2.
+A trace has been found.
+RESULT inj-event(Settled(p)) ==> inj-event(Authorized(p)) is false.
+RESULT (but event(Settled(p)) ==> event(Authorized(p)) is true.)
+
+--------------------------------------------------------------
+Verification summary:
+
+Query event(Settled(p)) ==> event(Authorized(p)) is true.
+
+Query inj-event(Settled(p)) ==> inj-event(Authorized(p)) is false.
+
+--------------------------------------------------------------
+

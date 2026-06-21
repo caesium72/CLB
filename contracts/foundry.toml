@@ -6,6 +6,10 @@ test = "test"
 solc_version = "0.8.28"
 optimizer = true
 optimizer_runs = 200
+# Phase 7A: valueAtomic added an 8th SettlementParams field, tipping
+# validateAndConsume / settlementParamsDigest over the legacy stack limit.
+# via_ir resolves "stack too deep" without changing runtime keccak digests.
+via_ir = true
 
 [fmt]
 line_length = 100

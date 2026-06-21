@@ -1076,6 +1076,15 @@ The fixed CLB commitment blocks it.
 
 ## 21. Development phases
 
+**v1 (Phases 0–6) — complete.** A working but largely mock / in-process demo: verifier R1–R17,
+`PredicatePaymentGuard.sol` with C′ parity but in-process Mode B settlement, mock ERC-8004 identity,
+timestamp-only R14, narrative baselines, no formal model.
+
+**v2 (Phase 7) — real work for a conference paper.** Decomposed into 7 sub-phases (7A–7G); see
+`docs/superpowers/specs/2026-06-04-phase-7-sub-phases-design.md` and the per-sub-phase plans
+`plans/phase_7a_*` … `plans/phase_7g_*`. The umbrella overview is
+`plans/phase_7_research_contribution_hardening_3f3rdfgdf3.plan.md`.
+
 ### Phase 0 — Decisions and repo bootstrap
 
 Deliverables:
@@ -1188,6 +1197,31 @@ encrypted evidence payloads
 public demo script
 paper outline
 ```
+
+### Phase 7 (v2) — Research contribution hardening
+
+Convert the v1 demo into a defensible conference paper. Decomposed into 7 sub-phases (full plans in
+`plans/phase_7a_*` … `plans/phase_7g_*`; decomposition spec in `docs/superpowers/specs/`):
+
+```txt
+7A  On-chain predicate enforcement (HEADLINE) — Mode B settlement reverts on-chain, not just R17 audit;
+    real ERC-7710 caveat seam; valueAtomic folded into C'.            [must-have]
+7B  Real identity + evidentiary delivery — live ERC-8004 Base Sepolia card (R3/R4); R14b binds
+    delivery to THIS settlement (accountability, not atomicity).      [must-have]
+7C  Tamarin proofs P1–P5 of the composed protocol — runs in parallel; answers "Five-Attacks has
+    proofs and you don't"; attack-found→patched-model degrade path.   [stretch, parallel]
+7D  Composition evaluation — runnable baselines (vanilla-x402 / AP2+x402 / eBay-monitor) MISS what
+    CLB catches; Five-Attacks reproduction; decision-layer instrumentation (audit, not enforce). [must-have]
+7E  Economic loop — verifier certificate → ERC-8004 Validation Registry entry (new
+    CrossLayerBindingValidator type); adapter-isolated (ABI in flux). [high-value stretch]
+7F  Confidential commit-and-prove — on-chain digest + range proof (value ≤ max); encrypted
+    selective-disclosure evidence. OPTIONAL; degrade to selective-disclosure-only. [optional]
+7G  Paper consolidation — composition-theorem framing; related work vs Five-Attacks / eBay / A402 /
+    SoK (+ new SoK 2604.15367); threat-model alignment; artifact index. [must-have, final]
+```
+
+Ordering: spine 7A→7B→7D→7E; 7C parallel from day 1; 7F optional; 7G last. Philosophy: real core +
+swappable adapters; every sub-phase strengthens a claim and emits a checked-in artifact.
 
 ---
 

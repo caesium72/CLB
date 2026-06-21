@@ -6,7 +6,7 @@ import {
   settlementParamsFromExact,
   type ModeBSettlementInput,
 } from "@clb-acel/clb-core";
-import { signReport } from "@clb-acel/delivery-core";
+import { signDeliveryBinding, signReport } from "@clb-acel/delivery-core";
 import { buildMerkleRoot, hashEvidenceEvent, linkEvidenceEvents } from "@clb-acel/evidence-core";
 import { PredicateViolationError, createPredicateGuard } from "@clb-acel/predicate-adapter";
 import type {
@@ -33,6 +33,7 @@ import {
   shopperAddress,
 } from "./fixtures";
 import { estimateStorageBytes } from "./metrics";
+import { liveBaselineOutcomes } from "./baselines";
 import type {
   AttackMutation,
   BaselineId,
@@ -164,7 +165,7 @@ export async function buildValidModeBBundle(options: ModeBBundleOptions = {}): P
   const settledReceipt = await facilitator.settle(paymentPayload);
   const settlement = { ...settledReceipt, settledAt: new Date(baseTime + 5000).toISOString() };
 
-  const report = await signReport(TEST_KEYS.merchantKey, {
+  const signedReport = await signReport(TEST_KEYS.merchantKey, {
     token: options.token ?? "XYZ",
     chain: concrete.network,
     riskScore: 0.42,
@@ -178,6 +179,12 @@ export async function buildValidModeBBundle(options: ModeBBundleOptions = {}): P
     inputDataHash: options.observedTaskHash ?? `0x${"a".repeat(64)}`,
     generatedAt: new Date(baseTime + 6000).toISOString(),
   });
+  const deliveryBinding = await signDeliveryBinding({
+    settlementTxHash: settlement.txHash,
+    reportHash: signedReport.reportHash,
+    merchantKey: TEST_KEYS.merchantKey,
+  });
+  const report = { ...signedReport, deliveryBinding };
 
   const events = modeBEvidenceEvents(traceId, settlement.settledAt);
   const eventHashes = events.map(hashEvidenceEvent);
@@ -491,6 +498,18 @@ export async function runPredicateAttack(id: PredicateAttackId): Promise<Predica
       ? "verifier"
       : "none";
 
+  // B0–B2 from the real baseline verifiers; B3 = live guard + verifier result.
+  const b3: BaselineOutcome = {
+    detected: guardPrevented || verification.result.status === "FAIL",
+    prevented: guardPrevented,
+    failedRules: failedRules as BaselineOutcome["failedRules"],
+    note: guardPrevented
+      ? "Prevented by the predicate guard before any transfer (R17)."
+      : verification.result.status === "FAIL"
+        ? `Rejected by the deterministic verifier (${failedRules.join(", ") || "R17"}).`
+        : "Valid delegated settlement — nothing to detect.",
+  };
+
   return {
     attackId: id,
     label: PREDICATE_ATTACK_LABELS[id],
@@ -502,7 +521,7 @@ export async function runPredicateAttack(id: PredicateAttackId): Promise<Predica
     preventionLayer,
     guardPrevented,
     anatomy,
-    baselineComparison: buildP5Matrix([{ attackId: id, guardPrevented, verification }], [fixture])[id],
+    baselineComparison: await liveBaselineOutcomes(bundle, b3),
     metrics: {
       verifyLatencyMs,
       eventCount: bundle.events.length,

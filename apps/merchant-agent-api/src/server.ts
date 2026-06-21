@@ -9,7 +9,7 @@ import {
   type Facilitator,
   type PaymentPayload,
 } from "@clb-acel/x402-adapter";
-import { buildSignedReport } from "@clb-acel/delivery-core";
+import { buildSignedReport, signDeliveryBinding } from "@clb-acel/delivery-core";
 import { explainRiskReport } from "@clb-acel/llm-adapter";
 import Fastify, { type FastifyBaseLogger } from "fastify";
 import { type Address, type Hex, getAddress } from "viem";
@@ -211,8 +211,18 @@ export async function buildMerchantServer(options: BuildMerchantServerOptions = 
       },
       scorer ? { scorer, modelVersion: "python-heuristic-v1" } : undefined,
     );
-    const explanation = await explainRiskReport({ report });
-    return reply.code(200).send({ report, settlementTxHash: settlement.txHash, explanation });
+    const deliveryBinding = await signDeliveryBinding({
+      settlementTxHash: settlement.txHash,
+      reportHash: report.reportHash,
+      merchantKey: config.merchantPrivateKey,
+    });
+    const boundReport = { ...report, deliveryBinding };
+    const explanation = await explainRiskReport({ report: boundReport });
+    return reply.code(200).send({
+      report: boundReport,
+      settlementTxHash: settlement.txHash,
+      explanation,
+    });
   }
 
   app.get(

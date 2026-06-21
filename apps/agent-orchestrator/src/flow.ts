@@ -8,26 +8,47 @@ import {
   keccakCanonical,
   settlementParamsFromExact,
 } from "@clb-acel/clb-core";
-import { createPredicateGuard, type GuardResult } from "@clb-acel/predicate-adapter";
-import { buildSignedReport } from "@clb-acel/delivery-core";
+import {
+  createPredicateGuard,
+  type GuardResult,
+  type OnChainSettlementResult,
+} from "@clb-acel/predicate-adapter";
+import {
+  deliverServiceReport,
+  merchantIdForKind,
+  serviceKindForIntent,
+  servicePaymentFraming,
+  type ServiceKind,
+} from "./merchant";
+import { appendProofNodes, assessFeedback, deliverySummary, type FeedbackAssessment } from "./feedback";
 import {
   createInMemoryErc8004Registry,
   identityRefFor,
   type AgentRecord,
   type Erc8004Registry,
 } from "@clb-acel/erc8004-adapter";
-import { buildEvidenceGraph, buildMerkleRoot, hashEvidenceEvent, linkEvidenceEvents } from "@clb-acel/evidence-core";
-import { defaultAgents, DEFAULT_ANALYSIS_AGENT_ID, DEFAULT_SHOPPING_AGENT_ID } from "@clb-acel/identity-service/seed";
+import {
+  buildEvidenceGraph,
+  buildMerkleRoot,
+  hashEvidenceEvent,
+  linkEvidenceEvents,
+} from "@clb-acel/evidence-core";
+import { defaultAgents, DEFAULT_SHOPPING_AGENT_ID } from "@clb-acel/identity-service/seed";
 import type {
+  DeliveryReport,
   EvidenceEvent,
   EvidenceGraph,
   Mandate,
   PredicateDescriptor,
   SettlementDescriptorExact,
   SpendingPredicate,
-  TokenRiskReport,
 } from "@clb-acel/schemas";
-import { verifyTrace, type TraceBundle, type VerifierAgentView, type VerifyTraceOutput } from "@clb-acel/verifier-core";
+import {
+  verifyTrace,
+  type TraceBundle,
+  type VerifierAgentView,
+  type VerifyTraceOutput,
+} from "@clb-acel/verifier-core";
 import {
   buildPaymentAuthorization,
   buildPaymentRequirements,
@@ -70,8 +91,10 @@ export type OrchestratorConfig = {
 export function resolveConfig(overrides: Partial<OrchestratorConfig> = {}): OrchestratorConfig {
   return {
     userPrivateKey: overrides.userPrivateKey ?? envKey("USER_TEST_PRIVATE_KEY", ANVIL.user),
-    shopperPrivateKey: overrides.shopperPrivateKey ?? envKey("SHOPPING_AGENT_PRIVATE_KEY", ANVIL.shopper),
-    merchantPrivateKey: overrides.merchantPrivateKey ?? envKey("MERCHANT_AGENT_PRIVATE_KEY", ANVIL.merchant),
+    shopperPrivateKey:
+      overrides.shopperPrivateKey ?? envKey("SHOPPING_AGENT_PRIVATE_KEY", ANVIL.shopper),
+    merchantPrivateKey:
+      overrides.merchantPrivateKey ?? envKey("MERCHANT_AGENT_PRIVATE_KEY", ANVIL.merchant),
     chainId: overrides.chainId ?? Number(process.env.CHAIN_ID ?? 84532),
     network: overrides.network ?? process.env.X402_NETWORK?.trim() ?? "base-sepolia",
     asset: overrides.asset ?? process.env.X402_ASSET?.trim() ?? "USDC",
@@ -85,30 +108,61 @@ export type Intent = {
   intentId: string;
   task: string;
   token: string;
+  /** Service subject the agent operates on: the text to proofread, or the city. */
+  input: string;
   budget: string;
   asset: string;
   network: string;
+  /** Optional discovery predicate: restrict which agent IDs the shopper may select. */
+  allowedAgentIds?: string[];
+  /** Mode B only: how long the spending predicate stays valid (ISO 8601). */
+  validUntil?: string;
   createdAt: string;
 };
 
 export function createIntent(input: {
   task?: string;
   token: string;
+  input?: string;
   budget?: string;
   asset?: string;
   network?: string;
+  allowedAgentIds?: string[];
+  validUntil?: string;
   intentId?: string;
 }): Intent {
   const config = resolveConfig();
+  const allowed = (input.allowedAgentIds ?? []).map((id) => id.trim()).filter(Boolean);
+  const validUntil =
+    input.validUntil && !Number.isNaN(Date.parse(input.validUntil))
+      ? new Date(input.validUntil).toISOString()
+      : undefined;
   return {
     intentId: input.intentId ?? `intent-${crypto.randomUUID()}`,
-    task: input.task ?? `Buy a token-risk report for token ${input.token}`,
+    task: input.task ?? "Proofread and correct my text",
     token: input.token,
+    input: input.input ?? input.token,
     budget: input.budget ?? config.price,
     asset: input.asset ?? config.asset,
     network: input.network ?? config.network,
+    ...(allowed.length ? { allowedAgentIds: allowed } : {}),
+    ...(validUntil ? { validUntil } : {}),
     createdAt: new Date().toISOString(),
   };
+}
+
+/**
+ * The spending predicate's validity window (Mode B). Uses the human's chosen
+ * `intent.validUntil` when set, else defaults to 24h from `baseMs`. Keeping the
+ * default `baseMs`-relative preserves deterministic commitments in tests (which
+ * never set `validUntil`).
+ */
+export function resolvePredicateValidUntil(intent: Intent, baseMs: number): string {
+  if (intent.validUntil) {
+    const parsed = Date.parse(intent.validUntil);
+    if (!Number.isNaN(parsed)) return new Date(parsed).toISOString();
+  }
+  return new Date(baseMs + 24 * 60 * 60 * 1000).toISOString();
 }
 
 export type TraceResult = {
@@ -123,12 +177,14 @@ export type TraceResult = {
   paymentRequirements: ReturnType<typeof buildPaymentRequirements>;
   paymentPayload: PaymentPayload;
   settlement: SettlementReceipt;
-  report: TokenRiskReport;
+  report: DeliveryReport;
   events: EvidenceEvent[];
   eventHashes: Hex[];
   merkleRoot: Hex;
   graph: EvidenceGraph;
   verification: VerifyTraceOutput;
+  /** Grounded feedback score derived from the verifier outcome (not a magic number). */
+  recommendedFeedback: FeedbackAssessment;
 };
 
 function agentView(record: AgentRecord): VerifierAgentView {
@@ -158,6 +214,7 @@ function evidenceEvent(
   actor: string,
   object: unknown,
   baseTime: number,
+  publicFields?: Record<string, unknown>,
 ): EvidenceEvent {
   return {
     traceId,
@@ -167,8 +224,42 @@ function evidenceEvent(
     actor,
     timestamp: new Date(baseTime + index * 1000).toISOString(),
     objectHash: keccakCanonical(object),
-    publicFields: { objectType },
+    publicFields: publicFields ?? { objectType },
     signature: `0x${"1".repeat(130)}`,
+  };
+}
+
+/**
+ * Audit-only decision-context evidence: which merchants the agent considered and
+ * which it selected for this task. The binding selection is capability-driven
+ * (serviceKindForIntent); the deterministic verifier never reads this node.
+ */
+async function decisionPublicFields(
+  registry: Erc8004Registry,
+  intent: Intent,
+  selected: AgentRecord,
+): Promise<Record<string, unknown>> {
+  const kinds: ServiceKind[] = ["grammar", "weather"];
+  const considered = await Promise.all(
+    kinds.map(async (kind) => {
+      const agent = await registry.getAgent(merchantIdForKind(kind));
+      return { agentId: agent?.agentId, name: agent?.card?.name ?? `${kind} agent` };
+    }),
+  );
+  const selectedName = selected.card?.name ?? "the selected agent";
+  return {
+    objectType: "DECISION_CONTEXT",
+    candidates: considered.map((candidate) => ({
+      agentId: candidate.agentId,
+      name: candidate.name,
+      rejected: candidate.agentId !== selected.agentId,
+      reason:
+        candidate.agentId === selected.agentId
+          ? null
+          : `Capability mismatch for task "${intent.task}"`,
+    })),
+    selected: selected.agentId,
+    rationale: `Task "${intent.task}" matches ${selectedName}'s capability; the other registered agent was not selected (capability mismatch).`,
   };
 }
 
@@ -187,9 +278,9 @@ export async function runHumanPresent(
 
   const registry = await seededRegistry();
   const payerAgent = await registry.getAgent(DEFAULT_SHOPPING_AGENT_ID);
-  const merchantAgent = await registry.getAgent(DEFAULT_ANALYSIS_AGENT_ID);
+  const merchantAgent = await registry.getAgent(merchantIdForKind(serviceKindForIntent(intent)));
   if (!payerAgent || !merchantAgent) {
-    throw new Error("Default agents are not registered");
+    throw new Error("Merchant agents are not registered");
   }
 
   const shopperAddress = privateKeyToAccount(config.shopperPrivateKey).address;
@@ -206,10 +297,11 @@ export async function runHumanPresent(
     x402Scheme: "exact",
   };
 
+  const framing = servicePaymentFraming(serviceKindForIntent(intent), intent);
   const paymentRequirements = buildPaymentRequirements({
     descriptor: settlementDescriptor,
-    resource: `${merchantAgent.card.serviceEndpoints[0]}/risk-report?token=${intent.token}`,
-    description: `Token-risk report for ${intent.token}`,
+    resource: `${merchantAgent.card.serviceEndpoints[0]}/${framing.resourcePath}`,
+    description: framing.description,
   });
 
   const identityRef = identityRefFor(payerAgent);
@@ -245,25 +337,72 @@ export async function runHumanPresent(
     buildPaymentAuthorization({ from: shopperAddress, descriptor: settlementDescriptor, nonce }),
   );
 
-  const facilitator = createFacilitator();
+  // Live runs settle on-chain; deterministic runs (pinned clock / tests) stay local
+  // for reproducible, network-free hashes. Mirrors Mode B (runDelegated).
+  const facilitator = config.nowMs !== undefined ? createLocalFacilitator() : createFacilitator();
   const settledReceipt = await facilitator.settle(paymentPayload);
   // Deterministic settlement/delivery ordering (R14) anchored to baseTime.
   const settlement = { ...settledReceipt, settledAt: new Date(baseTime + 5000).toISOString() };
 
-  const report = await buildSignedReport(config.merchantPrivateKey, {
-    token: intent.token,
-    chain: intent.network,
+  const { report } = await deliverServiceReport(serviceKindForIntent(intent), {
+    input: intent.input,
+    settlementTxHash: settlement.txHash,
     generatedAt: new Date(baseTime + 6000).toISOString(),
+    deterministic: config.nowMs !== undefined,
   });
 
+  const decisionFields = await decisionPublicFields(registry, intent, merchantAgent);
   const events = linkEvidenceEvents([
     evidenceEvent(traceId, 1, "USER", "USER_INTENT", "user:browser-wallet", intent, baseTime),
-    evidenceEvent(traceId, 2, "ERC8004", "ERC8004_AGENT_IDENTITY", "identity-service", payerAgent.card, baseTime),
+    evidenceEvent(
+      traceId,
+      2,
+      "ERC8004",
+      "ERC8004_AGENT_IDENTITY",
+      "identity-service",
+      payerAgent.card,
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      2.5,
+      "USER",
+      "DECISION_CONTEXT",
+      "shopping-agent",
+      decisionFields,
+      baseTime,
+      decisionFields,
+    ),
     evidenceEvent(traceId, 3, "AP2", "AP2_CART_MANDATE", "mandate-service", mandate, baseTime),
-    evidenceEvent(traceId, 4, "X402", "X402_PAYMENT_REQUIREMENT", "merchant-agent", paymentRequirements, baseTime),
-    evidenceEvent(traceId, 5, "X402", "X402_PAYMENT_PAYLOAD", "shopping-agent", paymentPayload, baseTime),
+    evidenceEvent(
+      traceId,
+      4,
+      "X402",
+      "X402_PAYMENT_REQUIREMENT",
+      "merchant-agent",
+      paymentRequirements,
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      5,
+      "X402",
+      "X402_PAYMENT_PAYLOAD",
+      "shopping-agent",
+      paymentPayload,
+      baseTime,
+    ),
     evidenceEvent(traceId, 6, "CHAIN", "CHAIN_SETTLEMENT", "facilitator", settlement, baseTime),
-    evidenceEvent(traceId, 7, "DELIVERY", "DELIVERY_PROOF", "merchant-agent", report, baseTime),
+    evidenceEvent(
+      traceId,
+      7,
+      "DELIVERY",
+      "DELIVERY_PROOF",
+      "merchant-agent",
+      report,
+      baseTime,
+      deliverySummary(report),
+    ),
   ]);
   const eventHashes = events.map(hashEvidenceEvent);
   const merkleRoot = buildMerkleRoot(eventHashes);
@@ -284,6 +423,7 @@ export async function runHumanPresent(
   };
 
   const verification = await verifyTrace(bundle);
+  const recommendedFeedback = assessFeedback(verification);
 
   return {
     traceId,
@@ -301,8 +441,9 @@ export async function runHumanPresent(
     events,
     eventHashes,
     merkleRoot,
-    graph: buildEvidenceGraph(events),
+    graph: appendProofNodes(buildEvidenceGraph(events), { verification, assessment: recommendedFeedback }),
     verification,
+    recommendedFeedback,
   };
 }
 
@@ -326,12 +467,20 @@ export type ModeBTraceResult = {
   paymentPayload: PaymentPayload;
   settlement: SettlementReceipt;
   guardResult: GuardResult;
-  report: TokenRiskReport;
+  /**
+   * Real on-chain settlement outcome when the run is settled through the
+   * deployed `PredicatePaymentGuard` (Phase 7A). Absent for the in-process /
+   * off-chain-only flow. `reverted: true` means Mode B was prevented in-protocol.
+   */
+  onchain?: OnChainSettlementResult;
+  report: DeliveryReport;
   events: EvidenceEvent[];
   eventHashes: Hex[];
   merkleRoot: Hex;
   graph: EvidenceGraph;
   verification: VerifyTraceOutput;
+  /** Grounded feedback score derived from the verifier outcome (not a magic number). */
+  recommendedFeedback: FeedbackAssessment;
 };
 
 /**
@@ -351,9 +500,9 @@ export async function runDelegated(
 
   const registry = await seededRegistry();
   const payerAgent = await registry.getAgent(DEFAULT_SHOPPING_AGENT_ID);
-  const merchantAgent = await registry.getAgent(DEFAULT_ANALYSIS_AGENT_ID);
+  const merchantAgent = await registry.getAgent(merchantIdForKind(serviceKindForIntent(intent)));
   if (!payerAgent || !merchantAgent) {
-    throw new Error("Default agents are not registered");
+    throw new Error("Merchant agents are not registered");
   }
 
   const shopperAddress = privateKeyToAccount(config.shopperPrivateKey).address;
@@ -364,7 +513,7 @@ export async function runDelegated(
   const domain = { name: "CLB-ACEL", version: "0.1", chainId: config.chainId } as const;
   // Payment authorization expiry (short) vs predicate authorization window (longer).
   const validBefore = new Date(baseTime + config.paymentTimeoutSeconds * 1000).toISOString();
-  const predicateValidUntil = new Date(baseTime + 24 * 60 * 60 * 1000).toISOString();
+  const predicateValidUntil = resolvePredicateValidUntil(intent, baseTime);
 
   // 1. Human authorizes a spending predicate (not an exact descriptor).
   const predicate: SpendingPredicate = {
@@ -414,12 +563,13 @@ export async function runDelegated(
   const modeBCommitment = computeModeBSettlementCommitment(modeBInput);
   const nonce = deriveSettlementNonce(modeBCommitment);
 
+  const framing = servicePaymentFraming(serviceKindForIntent(intent), intent);
   const paymentRequirements = buildPredicatePaymentRequirements({
     predicate,
     predicateId: predicateDescriptor.predicateId,
-    resource: `${merchantAgent.card.serviceEndpoints[0]}/risk-report?token=${intent.token}`,
+    resource: `${merchantAgent.card.serviceEndpoints[0]}/${framing.resourcePath}`,
     concreteSettlement,
-    description: `Token-risk report for ${intent.token} (predicate-authorized)`,
+    description: `${framing.description} (predicate-authorized)`,
   });
 
   const paymentPayload = await signPaymentPayload(
@@ -440,25 +590,82 @@ export async function runDelegated(
       expectedNonce: nonce,
       now: new Date(baseTime),
     },
-    facilitator: createLocalFacilitator(),
+    // Live runs settle through the env-driven facilitator so a configured chain run
+    // produces a REAL Base Sepolia tx (like Mode A). Deterministic runs (pinned clock,
+    // i.e. tests) stay on the local facilitator to avoid network + keep reproducible
+    // hashes. Previously hard-wired local → synthetic txHash even on live runs.
+    facilitator: config.nowMs !== undefined ? createLocalFacilitator() : createFacilitator(),
   });
   const settlement = { ...receipt, settledAt: new Date(baseTime + 5000).toISOString() };
 
-  const report = await buildSignedReport(config.merchantPrivateKey, {
-    token: intent.token,
-    chain: intent.network,
+  const { report } = await deliverServiceReport(serviceKindForIntent(intent), {
+    input: intent.input,
+    settlementTxHash: settlement.txHash,
     generatedAt: new Date(baseTime + 6000).toISOString(),
+    deterministic: config.nowMs !== undefined,
   });
 
   // 6. Evidence graph uses AP2_INTENT_MANDATE (no CART / PAYMENT mandates).
+  const decisionFields = await decisionPublicFields(registry, intent, merchantAgent);
   const events = linkEvidenceEvents([
     evidenceEvent(traceId, 1, "USER", "USER_INTENT", "user:browser-wallet", intent, baseTime),
-    evidenceEvent(traceId, 2, "ERC8004", "ERC8004_AGENT_IDENTITY", "identity-service", payerAgent.card, baseTime),
-    evidenceEvent(traceId, 3, "AP2", "AP2_INTENT_MANDATE", "mandate-service", { mandate, predicate: predicateDescriptor }, baseTime),
-    evidenceEvent(traceId, 4, "X402", "X402_PAYMENT_REQUIREMENT", "merchant-agent", paymentRequirements, baseTime),
-    evidenceEvent(traceId, 5, "X402", "X402_PAYMENT_PAYLOAD", "shopping-agent", paymentPayload, baseTime),
+    evidenceEvent(
+      traceId,
+      2,
+      "ERC8004",
+      "ERC8004_AGENT_IDENTITY",
+      "identity-service",
+      payerAgent.card,
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      2.5,
+      "USER",
+      "DECISION_CONTEXT",
+      "shopping-agent",
+      decisionFields,
+      baseTime,
+      decisionFields,
+    ),
+    evidenceEvent(
+      traceId,
+      3,
+      "AP2",
+      "AP2_INTENT_MANDATE",
+      "mandate-service",
+      { mandate, predicate: predicateDescriptor },
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      4,
+      "X402",
+      "X402_PAYMENT_REQUIREMENT",
+      "merchant-agent",
+      paymentRequirements,
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      5,
+      "X402",
+      "X402_PAYMENT_PAYLOAD",
+      "shopping-agent",
+      paymentPayload,
+      baseTime,
+    ),
     evidenceEvent(traceId, 6, "CHAIN", "CHAIN_SETTLEMENT", "facilitator", settlement, baseTime),
-    evidenceEvent(traceId, 7, "DELIVERY", "DELIVERY_PROOF", "merchant-agent", report, baseTime),
+    evidenceEvent(
+      traceId,
+      7,
+      "DELIVERY",
+      "DELIVERY_PROOF",
+      "merchant-agent",
+      report,
+      baseTime,
+      deliverySummary(report),
+    ),
   ]);
   const eventHashes = events.map(hashEvidenceEvent);
   const merkleRoot = buildMerkleRoot(eventHashes);
@@ -481,6 +688,7 @@ export async function runDelegated(
   };
 
   const verification = await verifyTrace(bundle);
+  const recommendedFeedback = assessFeedback(verification);
 
   return {
     traceId,
@@ -501,7 +709,8 @@ export async function runDelegated(
     events,
     eventHashes,
     merkleRoot,
-    graph: buildEvidenceGraph(events),
+    graph: appendProofNodes(buildEvidenceGraph(events), { verification, assessment: recommendedFeedback }),
     verification,
+    recommendedFeedback,
   };
 }

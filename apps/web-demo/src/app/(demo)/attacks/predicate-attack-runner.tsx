@@ -1,11 +1,12 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, ShieldAlert } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ExternalLink, Radio, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PREDICATE_ATTACK_LABELS } from "@clb-acel/attack-core";
 import { DemoSection, ProtocolPanel } from "@/components/demo-shell";
 import { useResearchMode } from "@/components/research-mode-provider";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
@@ -51,15 +52,30 @@ const FIXTURES: Array<{ id: PredicateAttackId; description: string }> = [
   { id: "PREDICATE_EXPIRED", description: "The agent settles after your authorization deadline." },
 ];
 
+type LiveRejection = {
+  available: boolean;
+  attackId?: PredicateAttackId;
+  reverted?: boolean;
+  asExpected?: boolean;
+  txHash?: string;
+  reason?: string;
+  url?: string;
+  detail?: string;
+  note?: string;
+  error?: string;
+};
+
 export function PredicateAttackRunner({ serviceUrl }: { serviceUrl: string }) {
   const { enabled: research } = useResearchMode();
   const [selected, setSelected] = useState<PredicateAttackId>("PREDICATE_AMOUNT_VIOLATION");
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<PredicateAttackRunResult | null>(null);
+  const [onchain, setOnchain] = useState<LiveRejection | null>(null);
+  const [onchainRunning, setOnchainRunning] = useState(false);
   const [matrix, setMatrix] = useState<Partial<
     Record<PredicateAttackId, Record<BaselineId, BaselineOutcome>>
   > | null>(null);
-  const [status, setStatus] = useState("Loading simulator metadata...");
+  const [status, setStatus] = useState("Scenarios run in-process — deterministic, fixed seed.");
 
   useEffect(() => {
     let cancelled = false;
@@ -69,12 +85,12 @@ export function PredicateAttackRunner({ serviceUrl }: { serviceUrl: string }) {
       )
       .then(() => {
         if (!cancelled) {
-          setStatus("Connected to attack-simulator :4006");
+          setStatus("Scenarios run in-process — deterministic, fixed seed.");
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setStatus("Start the attack-simulator (port 4006) to run delegated-flow scenarios live.");
+          setStatus("Using fixture metadata fallback.");
         }
       });
     return () => {
@@ -127,13 +143,29 @@ export function PredicateAttackRunner({ serviceUrl }: { serviceUrl: string }) {
       });
       setStatus(payload.matched ? "Result matched expectation" : "Result did not match expectation");
     } catch (error) {
-      setStatus(
-        error instanceof Error
-          ? `${error.message}. Start the attack-simulator (port 4006) to run P5 fixtures live.`
-          : "Attack run failed",
-      );
+      setStatus(error instanceof Error ? error.message : "Scenario run failed");
     } finally {
       setRunning(false);
+    }
+  }
+
+  async function runOnChain() {
+    setOnchainRunning(true);
+    setOnchain(null);
+    try {
+      const response = await fetch(`${serviceUrl}/attacks/predicate/run-onchain`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attackId: selected }),
+      });
+      setOnchain((await response.json()) as LiveRejection);
+    } catch (error) {
+      setOnchain({
+        available: true,
+        error: error instanceof Error ? error.message : "live rejection failed",
+      });
+    } finally {
+      setOnchainRunning(false);
     }
   }
 
@@ -236,6 +268,81 @@ export function PredicateAttackRunner({ serviceUrl }: { serviceUrl: string }) {
         </CardContent>
       </Card>
 
+      <Card className="border-emerald-600/40">
+        <CardHeader>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <CardTitle className="flex items-center gap-2">
+                <ShieldCheck className="size-5 text-emerald-600" />
+                Prevented in-protocol — on Base Sepolia
+              </CardTitle>
+              <CardDescription>
+                Not a simulation: this force-broadcasts the selected scenario through the deployed{" "}
+                <span className="font-mono">PredicatePaymentGuard</span>. A rule violation is mined and{" "}
+                <span className="font-medium">reverts</span> with its own error; the happy path is allowed —
+                either way a real tx you can open on BaseScan.
+              </CardDescription>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="shrink-0 gap-1.5"
+              disabled={onchainRunning}
+              onClick={() => void runOnChain()}
+            >
+              <Radio className="size-4" />
+              {onchainRunning ? "Settling on-chain…" : "Settle this scenario on-chain"}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {!onchain ? (
+            <p className="text-sm text-muted-foreground">
+              Selected: <span className="font-medium">{PREDICATE_ATTACK_LABELS[selected]}</span>. Click to
+              settle it through the on-chain guard and see the real tx.
+            </p>
+          ) : onchain.available === false ? (
+            <p className="text-sm text-muted-foreground">
+              {onchain.note ?? "On-chain guard not configured in this environment."}
+            </p>
+          ) : onchain.error ? (
+            <p className="text-sm text-destructive">{onchain.error}</p>
+          ) : (
+            <div className="space-y-3 text-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">
+                  {onchain.attackId ? PREDICATE_ATTACK_LABELS[onchain.attackId] : "scenario"}
+                </Badge>
+                <Badge
+                  className={cn(
+                    onchain.reverted
+                      ? "bg-emerald-600 hover:bg-emerald-600"
+                      : "bg-sky-600 hover:bg-sky-600",
+                  )}
+                >
+                  {onchain.reverted ? "REVERTED on-chain" : "Allowed on-chain"}
+                </Badge>
+                {onchain.reason ? <Badge variant="outline">{onchain.reason}</Badge> : null}
+              </div>
+              {onchain.detail ? <p className="text-muted-foreground">{onchain.detail}</p> : null}
+              <p className="text-muted-foreground">{onchain.note}</p>
+              {onchain.url ? (
+                <a
+                  href={onchain.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 font-mono text-xs text-emerald-700 underline underline-offset-2 dark:text-emerald-400"
+                >
+                  {onchain.txHash?.slice(0, 18)}… — view the {onchain.reverted ? "rejected" : "settled"} tx
+                  on BaseScan
+                  <ExternalLink className="size-3.5" />
+                </a>
+              ) : null}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <div id="predicate-attack-anatomy" className="scroll-mt-6">
         <PredicateAnatomyPanel
           anatomy={result?.anatomy ?? null}
@@ -245,7 +352,7 @@ export function PredicateAttackRunner({ serviceUrl }: { serviceUrl: string }) {
 
       <BaselineMatrixSection
         title="Predicate soundness (P5) baseline matrix"
-        description="Rows update as you run scenarios. B2 (audit-only) should detect violations after settlement; B3 (full CLB + guard) should prevent them at settlement."
+        description="Rows update as you run scenarios. Each baseline cell is computed by actually running that weaker verifier; only the full stack (B3) prevents violations at settlement."
         rows={matrixRows}
         matrix={matrix}
       />

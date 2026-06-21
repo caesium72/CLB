@@ -57,6 +57,18 @@ export const EDGE_THEME: Record<
     label: "RATES",
     description: "Feedback rates the agent after verification",
   },
+  CONSIDERED: {
+    stroke: "#64748b",
+    dash: "2 3",
+    label: "CONSIDERED",
+    description: "Agent considered candidate merchants (audit-only)",
+  },
+  SELECTED: {
+    stroke: "#64748b",
+    dash: "2 3",
+    label: "SELECTED",
+    description: "Agent selected a merchant (audit-only, not enforced)",
+  },
 };
 
 export function protocolColors(protocol: string) {

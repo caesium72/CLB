@@ -1,7 +1,6 @@
 import { AttacksTabs } from "./attacks-tabs";
 
 export default function AttacksPage() {
-  const serviceUrl = process.env.ATTACK_SIMULATOR_URL ?? "http://localhost:4006";
-
-  return <AttacksTabs serviceUrl={serviceUrl} />;
+  // Attacks run in-process via /api/demo/attacks (attack-core); no Fastify service.
+  return <AttacksTabs serviceUrl="/api/demo" />;
 }

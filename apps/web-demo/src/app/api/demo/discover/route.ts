@@ -1,12 +1,20 @@
-import { jsonError, proxyJson, readJson, serviceUrls } from "../_lib";
+import { NextResponse } from "next/server";
+import { discover, resolveIntent } from "@/server/clb/orchestrator";
+import { readJson } from "../_lib";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   const body = await readJson(request);
-  const intentId = typeof body.intentId === "string" ? body.intentId : undefined;
-  if (!intentId) return jsonError("intentId is required");
-
-  return proxyJson(`${serviceUrls.orchestrator}/agent/discover`, {
-    method: "POST",
-    body: JSON.stringify({ intentId }),
-  });
+  try {
+    const intent = await resolveIntent(body);
+    const result = await discover(intent);
+    return NextResponse.json(result);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Discovery failed" },
+      { status: 502 },
+    );
+  }
 }

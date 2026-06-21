@@ -36,10 +36,10 @@ export function canAccessStep(step: DemoStepId, state: DemoRunState): boolean {
     case "discovery":
       return Boolean(state.intentId);
     case "quote":
-      return Boolean(state.discovery?.selectedMerchantId);
+      return Boolean(state.discovery?.selectedMerchantId) && state.discovery?.selectable !== false;
     case "mandate":
       if (state.mode === "a") return Boolean(state.quote);
-      return Boolean(state.discovery?.selectedMerchantId);
+      return Boolean(state.discovery?.selectedMerchantId) && state.discovery?.selectable !== false;
     case "checkout":
       return Boolean(state.mandateId);
     case "payment":
@@ -67,6 +67,13 @@ export function gateMessage(step: DemoStepId, state: DemoRunState): { title: str
         href: "/intent",
       };
     case "quote":
+      if (state.discovery && state.discovery.selectable === false) {
+        return {
+          title: "No agent was selected",
+          description: "Adjust your task or rules so an on-chain agent qualifies, then try again.",
+          href: "/intent",
+        };
+      }
       return {
         title: "Finish agent discovery",
         description: "Let the shopping agent find a merchant before requesting a quote.",

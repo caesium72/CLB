@@ -7,10 +7,32 @@ import {
   keccakCanonical,
   settlementParamsFromExact,
 } from "@clb-acel/clb-core";
-import { buildEvidenceGraph, buildMerkleRoot, hashEvidenceEvent, linkEvidenceEvents } from "@clb-acel/evidence-core";
+import {
+  computeTraceHash,
+  createAnchorClientFromEnv,
+  metadataUriForTrace,
+  type AnchorClient,
+} from "@clb-acel/anchor-core";
+import {
+  buildEvidenceGraph,
+  buildMerkleRoot,
+  hashEvidenceEvent,
+  linkEvidenceEvents,
+} from "@clb-acel/evidence-core";
 import { identityRefFor, type AgentRecord } from "@clb-acel/erc8004-adapter";
-import { DEFAULT_ANALYSIS_AGENT_ID, DEFAULT_DECOY_AGENT_ID, DEFAULT_SHOPPING_AGENT_ID } from "@clb-acel/identity-service/seed";
-import { createPredicateGuard, type GuardResult } from "@clb-acel/predicate-adapter";
+import { selectMerchantWithRationale, type LlmProvider } from "@clb-acel/llm-adapter";
+import {
+  DEFAULT_ANALYSIS_AGENT_ID,
+  DEFAULT_DECOY_AGENT_ID,
+  DEFAULT_SHOPPING_AGENT_ID,
+  defaultAgents,
+} from "@clb-acel/identity-service/seed";
+import {
+  createPredicateGuard,
+  type ContractPredicateGuard,
+  type GuardResult,
+  type OnChainSettlementResult,
+} from "@clb-acel/predicate-adapter";
 import type {
   EvidenceEvent,
   Mandate,
@@ -19,7 +41,12 @@ import type {
   SpendingPredicate,
   TokenRiskReport,
 } from "@clb-acel/schemas";
-import { verifyTrace, type TraceBundle, type VerifierAgentView, type VerifyTraceOutput } from "@clb-acel/verifier-core";
+import {
+  verifyTrace,
+  type TraceBundle,
+  type VerifierAgentView,
+  type VerifyTraceOutput,
+} from "@clb-acel/verifier-core";
 import {
   buildPaymentAuthorization,
   buildPaymentRequirements,
@@ -39,6 +66,7 @@ import {
   type OrchestratorConfig,
   type TraceResult,
 } from "./flow";
+import { appendProofNodes, assessFeedback } from "./feedback";
 import type { MandateAuthorization } from "@clb-acel/ap2-adapter";
 
 export type ServiceUrls = {
@@ -51,11 +79,16 @@ export type ServiceUrls = {
 
 export function resolveServiceUrls(overrides: Partial<ServiceUrls> = {}): ServiceUrls {
   return {
-    evidence: overrides.evidence ?? process.env.EVIDENCE_SERVICE_URL?.trim() ?? "http://localhost:4001",
-    identity: overrides.identity ?? process.env.IDENTITY_SERVICE_URL?.trim() ?? "http://localhost:4002",
-    mandate: overrides.mandate ?? process.env.MANDATE_SERVICE_URL?.trim() ?? "http://localhost:4003",
-    merchant: overrides.merchant ?? process.env.MERCHANT_AGENT_URL?.trim() ?? "http://localhost:4004",
-    verifier: overrides.verifier ?? process.env.VERIFIER_SERVICE_URL?.trim() ?? "http://localhost:4005",
+    evidence:
+      overrides.evidence ?? process.env.EVIDENCE_SERVICE_URL?.trim() ?? "http://localhost:4001",
+    identity:
+      overrides.identity ?? process.env.IDENTITY_SERVICE_URL?.trim() ?? "http://localhost:4002",
+    mandate:
+      overrides.mandate ?? process.env.MANDATE_SERVICE_URL?.trim() ?? "http://localhost:4003",
+    merchant:
+      overrides.merchant ?? process.env.MERCHANT_AGENT_URL?.trim() ?? "http://localhost:4004",
+    verifier:
+      overrides.verifier ?? process.env.VERIFIER_SERVICE_URL?.trim() ?? "http://localhost:4005",
   };
 }
 
@@ -107,6 +140,7 @@ function evidenceEvent(
   actor: string,
   object: unknown,
   baseTime: number,
+  extraPublicFields?: Record<string, unknown>,
 ): EvidenceEvent {
   return {
     traceId,
@@ -116,20 +150,34 @@ function evidenceEvent(
     actor,
     timestamp: new Date(baseTime + index * 1000).toISOString(),
     objectHash: keccakCanonical(object),
-    publicFields: { objectType },
+    publicFields: { objectType, ...extraPublicFields },
     signature: `0x${"1".repeat(130)}`,
   };
 }
 
 async function fetchDefaultAgents(urls: ServiceUrls) {
-  const payerAgent = await fetchJson<AgentRecord>(
-    `${urls.identity}/agents/${DEFAULT_SHOPPING_AGENT_ID}`,
-    { headers: { Accept: "application/json" } },
-  );
-  const merchantAgent = await fetchJson<AgentRecord>(
-    `${urls.identity}/agents/${DEFAULT_ANALYSIS_AGENT_ID}`,
-    { headers: { Accept: "application/json" } },
-  );
+  // Fall back to the seeded mock record when the identity-service can't resolve (e.g. canonical mode
+  // where string IDs are unknown, or onchain mode before setup:register-agents has run).
+  function seedFallback(agentId: string): AgentRecord {
+    const seeds = defaultAgents();
+    const match = seeds.find((s) => s.card.agentId === agentId);
+    if (!match) throw new Error(`No seed fallback for agentId ${agentId}`);
+    return {
+      agentId: match.card.agentId,
+      owner: match.card.owner,
+      registryAddr: match.registryAddr,
+      chainId: match.chainId,
+      agentURI: match.agentURI ?? "",
+      card: match.card,
+      status: "ACTIVE",
+      registeredAt: new Date(0).toISOString(),
+    };
+  }
+
+  const payerAgent =
+    (await fetchAgent(urls, DEFAULT_SHOPPING_AGENT_ID)) ?? seedFallback(DEFAULT_SHOPPING_AGENT_ID);
+  const merchantAgent =
+    (await fetchAgent(urls, DEFAULT_ANALYSIS_AGENT_ID)) ?? seedFallback(DEFAULT_ANALYSIS_AGENT_ID);
   return { payerAgent, merchantAgent };
 }
 
@@ -165,6 +213,11 @@ export type DiscoveryResult = {
   candidates: DiscoveryCandidate[];
   activity: AgentActivityEvent[];
   rationale: string;
+  llmProvider: LlmProvider;
+  /** False when the LLM found no agent able to fulfil the task within constraints. */
+  selectable?: boolean;
+  /** Per-agent eligibility verdicts from the LLM decision (decision-layer evidence). */
+  perAgent?: { agentId: string; eligible: boolean; reason: string }[];
 };
 
 export type CartQuoteResult = {
@@ -173,6 +226,8 @@ export type CartQuoteResult = {
   merchantName: string;
   merchantAgentId: string;
   price: string;
+  /** Human's authorized spending cap (mandate maxAmount); the exact `price` settles ≤ this. */
+  maxAmount: string;
   asset: string;
   payee: string;
   network: string;
@@ -261,13 +316,32 @@ export async function discoverAgentsForIntent(
     tone: "success",
   });
 
+  const selection = await selectMerchantWithRationale({
+    intent: {
+      task: intent.task,
+      token: intent.token,
+      budget: intent.budget,
+      asset: intent.asset,
+    },
+    candidates: candidates.map((c) => ({
+      agentId: c.agentId,
+      name: c.card.name,
+      description: c.card.description ?? "",
+      supportedProtocols: c.card.supportedProtocols ?? [],
+      rejected: !!c.rejectedReason,
+      rejectedReason: c.rejectedReason,
+    })),
+    selectedAgentId: merchantAgent.agentId,
+  });
+
   return {
     payerAgent,
     selectedMerchant: merchantAgent,
     selectedMerchantId: merchantAgent.agentId,
     candidates,
     activity,
-    rationale: `${merchantAgent.card.name} supports x402 and matches the token-risk report use case for ${intent.token}.`,
+    rationale: selection.rationale,
+    llmProvider: selection.provider,
   };
 }
 
@@ -307,6 +381,7 @@ export async function quoteForIntent(
     merchantName: merchantAgent.card.name,
     merchantAgentId: merchantAgent.agentId,
     price: settlementDescriptor.value,
+    maxAmount: intent.budget,
     asset: settlementDescriptor.asset,
     payee,
     network: settlementDescriptor.network,
@@ -327,7 +402,10 @@ export async function prepareHumanPresentOverHttp(
     nowMs?: number;
   } = {},
 ): Promise<PreparedHumanPresent> {
-  const config = resolveConfig({ ...(input.config ?? {}), ...(input.nowMs ? { nowMs: input.nowMs } : {}) });
+  const config = resolveConfig({
+    ...(input.config ?? {}),
+    ...(input.nowMs ? { nowMs: input.nowMs } : {}),
+  });
   const urls = resolveServiceUrls(input.urls);
   const baseTime = config.nowMs ?? Date.now();
   const { payerAgent, merchantAgent } = await fetchDefaultAgents(urls);
@@ -388,7 +466,10 @@ export async function prepareDelegatedOverHttp(
     nowMs?: number;
   } = {},
 ): Promise<PreparedDelegated> {
-  const config = resolveConfig({ ...(input.config ?? {}), ...(input.nowMs ? { nowMs: input.nowMs } : {}) });
+  const config = resolveConfig({
+    ...(input.config ?? {}),
+    ...(input.nowMs ? { nowMs: input.nowMs } : {}),
+  });
   const urls = resolveServiceUrls(input.urls);
   const baseTime = config.nowMs ?? Date.now();
   const { payerAgent, merchantAgent } = await fetchDefaultAgents(urls);
@@ -436,6 +517,33 @@ export async function prepareDelegatedOverHttp(
  * Execute Mode A by calling live HTTP services instead of in-process adapters.
  * Evidence events are persisted through evidence-service; verification uses verifier-service.
  */
+async function maybeAutoAnchor(
+  input: {
+    traceId: string;
+    merkleRoot: Hex;
+    eventHashes: Hex[];
+    verificationStatus: VerifyTraceOutput["result"]["status"];
+  },
+  anchorClient: AnchorClient | null | undefined,
+): Promise<void> {
+  const client = anchorClient ?? createAnchorClientFromEnv();
+  if (!client || input.verificationStatus === "FAIL") {
+    return;
+  }
+  await client
+    .anchorTrace({
+      traceId: input.traceId,
+      merkleRoot: input.merkleRoot,
+      traceHash: computeTraceHash({
+        traceId: input.traceId,
+        merkleRoot: input.merkleRoot,
+        eventHashes: input.eventHashes,
+      }),
+      metadataURI: metadataUriForTrace(input.traceId),
+    })
+    .catch(() => {});
+}
+
 export async function runHumanPresentOverHttp(
   intent: Intent,
   options: {
@@ -443,6 +551,7 @@ export async function runHumanPresentOverHttp(
     config?: Partial<OrchestratorConfig>;
     fetchImpl?: typeof fetch;
     mandateId?: string;
+    anchorClient?: AnchorClient | null;
   } = {},
 ): Promise<TraceResult & { transport: "http" }> {
   const config = resolveConfig(options.config ?? {});
@@ -451,7 +560,9 @@ export async function runHumanPresentOverHttp(
   const traceId = `trace-${intent.intentId}`;
   const baseTime = config.nowMs ?? Date.now();
 
-  const { payerAgent, merchantAgent } = await fetchDefaultAgents(urls);
+  const discovery = await discoverAgentsForIntent(intent, { urls });
+  const payerAgent = discovery.payerAgent;
+  const merchantAgent = discovery.selectedMerchant;
 
   const shopperAddress = privateKeyToAccount(config.shopperPrivateKey).address;
   const merchantAddress = (merchantAgent.card.authorizedPaymentKeys[0] ??
@@ -531,15 +642,18 @@ export async function runHumanPresentOverHttp(
     : settledReceipt;
 
   const delivery = usePinnedClock
-    ? await fetchJson<{ report: TokenRiskReport; settlementTxHash: Hex }>(`${urls.merchant}/risk-report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token: intent.token,
-          nonce,
-          generatedAt: new Date(baseTime + 6000).toISOString(),
-        }),
-      })
+    ? await fetchJson<{ report: TokenRiskReport; settlementTxHash: Hex }>(
+        `${urls.merchant}/risk-report`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: intent.token,
+            nonce,
+            generatedAt: new Date(baseTime + 6000).toISOString(),
+          }),
+        },
+      )
     : await fetchJson<{ report: TokenRiskReport; settlementTxHash: Hex }>(
         `${urls.merchant}/risk-report?token=${encodeURIComponent(intent.token)}&nonce=${nonce}`,
       );
@@ -547,10 +661,66 @@ export async function runHumanPresentOverHttp(
 
   const events = linkEvidenceEvents([
     evidenceEvent(traceId, 1, "USER", "USER_INTENT", "user:browser-wallet", intent, baseTime),
-    evidenceEvent(traceId, 2, "ERC8004", "ERC8004_AGENT_IDENTITY", "identity-service", payerAgent.card, baseTime),
+    evidenceEvent(
+      traceId,
+      2,
+      "ERC8004",
+      "ERC8004_AGENT_IDENTITY",
+      "identity-service",
+      payerAgent.card,
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      2.5,
+      "USER",
+      "DECISION_CONTEXT",
+      "shopping-agent",
+      {
+        candidates: discovery.candidates.map((c) => ({
+          agentId: c.agentId,
+          name: c.card.name,
+          rejected: !!c.rejectedReason,
+          reason: c.rejectedReason ?? null,
+        })),
+        selected: discovery.selectedMerchantId,
+        rationale: discovery.rationale,
+        llmProvider: discovery.llmProvider,
+        promptInjectionScan: "NONE_DETECTED",
+      },
+      baseTime,
+      {
+        candidates: discovery.candidates.map((c) => ({
+          agentId: c.agentId,
+          name: c.card.name,
+          rejected: !!c.rejectedReason,
+          reason: c.rejectedReason ?? null,
+        })),
+        selected: discovery.selectedMerchantId,
+        rationale: discovery.rationale,
+        llmProvider: discovery.llmProvider,
+        promptInjectionScan: "NONE_DETECTED",
+      },
+    ),
     evidenceEvent(traceId, 3, "AP2", "AP2_CART_MANDATE", "mandate-service", mandate, baseTime),
-    evidenceEvent(traceId, 4, "X402", "X402_PAYMENT_REQUIREMENT", "merchant-agent", paymentRequirements, baseTime),
-    evidenceEvent(traceId, 5, "X402", "X402_PAYMENT_PAYLOAD", "shopping-agent", paymentPayload, baseTime),
+    evidenceEvent(
+      traceId,
+      4,
+      "X402",
+      "X402_PAYMENT_REQUIREMENT",
+      "merchant-agent",
+      paymentRequirements,
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      5,
+      "X402",
+      "X402_PAYMENT_PAYLOAD",
+      "shopping-agent",
+      paymentPayload,
+      baseTime,
+    ),
     evidenceEvent(traceId, 6, "CHAIN", "CHAIN_SETTLEMENT", "facilitator", settlement, baseTime),
     evidenceEvent(traceId, 7, "DELIVERY", "DELIVERY_PROOF", "merchant-agent", report, baseTime),
   ]);
@@ -581,13 +751,33 @@ export async function runHumanPresentOverHttp(
     report,
   };
 
-  const verificationResponse = await fetchJson<VerifyTraceOutput>(`${urls.verifier}/verify/${traceId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(bundle),
-  });
+  const verificationResponse = await fetchJson<VerifyTraceOutput>(
+    `${urls.verifier}/verify/${traceId}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bundle),
+    },
+  );
 
   const verification = await verifyTrace(bundle);
+
+  const mergedVerification = {
+    ...verification,
+    certificate: verificationResponse.certificate ?? verification.certificate,
+    result: verificationResponse.result ?? verification.result,
+    outcomes: verificationResponse.outcomes ?? verification.outcomes,
+  };
+
+  await maybeAutoAnchor(
+    {
+      traceId,
+      merkleRoot,
+      eventHashes,
+      verificationStatus: mergedVerification.result.status,
+    },
+    options.anchorClient,
+  );
 
   return {
     traceId,
@@ -605,13 +795,12 @@ export async function runHumanPresentOverHttp(
     events,
     eventHashes,
     merkleRoot,
-    graph: buildEvidenceGraph(events),
-    verification: {
-      ...verification,
-      certificate: verificationResponse.certificate ?? verification.certificate,
-      result: verificationResponse.result ?? verification.result,
-      outcomes: verificationResponse.outcomes ?? verification.outcomes,
-    },
+    graph: appendProofNodes(buildEvidenceGraph(events), {
+      verification: mergedVerification,
+      assessment: assessFeedback(mergedVerification),
+    }),
+    verification: mergedVerification,
+    recommendedFeedback: assessFeedback(mergedVerification),
     transport: "http",
   };
 }
@@ -627,13 +816,22 @@ export async function runDelegatedOverHttp(
     urls?: Partial<ServiceUrls>;
     config?: Partial<OrchestratorConfig>;
     mandateId?: string;
+    anchorClient?: AnchorClient | null;
+    /**
+     * When provided, the run settles through the deployed on-chain
+     * `PredicatePaymentGuard` (Phase 7A): a predicate-violating settlement
+     * reverts on-chain and is surfaced as `onchain.reverted`.
+     */
+    onchainGuard?: ContractPredicateGuard;
   } = {},
 ): Promise<ModeBTraceResult & { transport: "http" }> {
   const config = resolveConfig(options.config ?? {});
   const urls = resolveServiceUrls(options.urls);
   const traceId = `trace-delegated-${intent.intentId}`;
   const baseTime = config.nowMs ?? Date.now();
-  const { payerAgent, merchantAgent } = await fetchDefaultAgents(urls);
+  const discovery = await discoverAgentsForIntent(intent, { urls });
+  const payerAgent = discovery.payerAgent;
+  const merchantAgent = discovery.selectedMerchant;
   const shopperAddress = privateKeyToAccount(config.shopperPrivateKey).address;
   const merchantAddress = (merchantAgent.card.authorizedPaymentKeys[0] ??
     privateKeyToAccount(config.merchantPrivateKey).address) as Address;
@@ -649,7 +847,9 @@ export async function runDelegatedOverHttp(
   const predicate = predicateDescriptor.predicate;
   const mandate =
     options.mandateId !== undefined
-      ? await fetchJson<Mandate>(`${urls.mandate}/mandates/${encodeURIComponent(options.mandateId)}`)
+      ? await fetchJson<Mandate>(
+          `${urls.mandate}/mandates/${encodeURIComponent(options.mandateId)}`,
+        )
       : await fetchJson<Mandate>(`${urls.mandate}/mandates/intent`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -705,6 +905,19 @@ export async function runDelegatedOverHttp(
     now: new Date(baseTime),
   });
 
+  // Phase 7A: when an on-chain guard is wired, settle THROUGH it so the
+  // committed C' (incl. valueAtomic) is enforced on-chain before any transfer.
+  let onchain: OnChainSettlementResult | undefined;
+  if (options.onchainGuard) {
+    onchain = await options.onchainGuard.settleOnChain({
+      predicate,
+      params: settlementParams,
+      commitment: modeBInput,
+      expectedNonce: nonce,
+      now: new Date(baseTime),
+    });
+  }
+
   const settledReceipt = await fetchJson<SettlementReceipt>(`${urls.merchant}/x402/settle`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -716,15 +929,18 @@ export async function runDelegatedOverHttp(
     : settledReceipt;
 
   const delivery = usePinnedClock
-    ? await fetchJson<{ report: TokenRiskReport; settlementTxHash: Hex }>(`${urls.merchant}/risk-report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token: intent.token,
-          nonce,
-          generatedAt: new Date(baseTime + 6000).toISOString(),
-        }),
-      })
+    ? await fetchJson<{ report: TokenRiskReport; settlementTxHash: Hex }>(
+        `${urls.merchant}/risk-report`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: intent.token,
+            nonce,
+            generatedAt: new Date(baseTime + 6000).toISOString(),
+          }),
+        },
+      )
     : await fetchJson<{ report: TokenRiskReport; settlementTxHash: Hex }>(
         `${urls.merchant}/risk-report?token=${encodeURIComponent(intent.token)}&nonce=${nonce}`,
       );
@@ -732,10 +948,74 @@ export async function runDelegatedOverHttp(
 
   const events = linkEvidenceEvents([
     evidenceEvent(traceId, 1, "USER", "USER_INTENT", "user:browser-wallet", intent, baseTime),
-    evidenceEvent(traceId, 2, "ERC8004", "ERC8004_AGENT_IDENTITY", "identity-service", payerAgent.card, baseTime),
-    evidenceEvent(traceId, 3, "AP2", "AP2_INTENT_MANDATE", "mandate-service", { mandate, predicate: predicateDescriptor }, baseTime),
-    evidenceEvent(traceId, 4, "X402", "X402_PAYMENT_REQUIREMENT", "merchant-agent", paymentRequirements, baseTime),
-    evidenceEvent(traceId, 5, "X402", "X402_PAYMENT_PAYLOAD", "shopping-agent", paymentPayload, baseTime),
+    evidenceEvent(
+      traceId,
+      2,
+      "ERC8004",
+      "ERC8004_AGENT_IDENTITY",
+      "identity-service",
+      payerAgent.card,
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      2.5,
+      "USER",
+      "DECISION_CONTEXT",
+      "shopping-agent",
+      {
+        candidates: discovery.candidates.map((c) => ({
+          agentId: c.agentId,
+          name: c.card.name,
+          rejected: !!c.rejectedReason,
+          reason: c.rejectedReason ?? null,
+        })),
+        selected: discovery.selectedMerchantId,
+        rationale: discovery.rationale,
+        llmProvider: discovery.llmProvider,
+        promptInjectionScan: "NONE_DETECTED",
+      },
+      baseTime,
+      {
+        candidates: discovery.candidates.map((c) => ({
+          agentId: c.agentId,
+          name: c.card.name,
+          rejected: !!c.rejectedReason,
+          reason: c.rejectedReason ?? null,
+        })),
+        selected: discovery.selectedMerchantId,
+        rationale: discovery.rationale,
+        llmProvider: discovery.llmProvider,
+        promptInjectionScan: "NONE_DETECTED",
+      },
+    ),
+    evidenceEvent(
+      traceId,
+      3,
+      "AP2",
+      "AP2_INTENT_MANDATE",
+      "mandate-service",
+      { mandate, predicate: predicateDescriptor },
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      4,
+      "X402",
+      "X402_PAYMENT_REQUIREMENT",
+      "merchant-agent",
+      paymentRequirements,
+      baseTime,
+    ),
+    evidenceEvent(
+      traceId,
+      5,
+      "X402",
+      "X402_PAYMENT_PAYLOAD",
+      "shopping-agent",
+      paymentPayload,
+      baseTime,
+    ),
     evidenceEvent(traceId, 6, "CHAIN", "CHAIN_SETTLEMENT", "facilitator", settlement, baseTime),
     evidenceEvent(traceId, 7, "DELIVERY", "DELIVERY_PROOF", "merchant-agent", report, baseTime),
   ]);
@@ -767,12 +1047,32 @@ export async function runDelegatedOverHttp(
     modeBCommitment,
   };
 
-  const verificationResponse = await fetchJson<VerifyTraceOutput>(`${urls.verifier}/verify/${traceId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(bundle),
-  });
+  const verificationResponse = await fetchJson<VerifyTraceOutput>(
+    `${urls.verifier}/verify/${traceId}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bundle),
+    },
+  );
   const verification = await verifyTrace(bundle);
+
+  const mergedVerification = {
+    ...verification,
+    certificate: verificationResponse.certificate ?? verification.certificate,
+    result: verificationResponse.result ?? verification.result,
+    outcomes: verificationResponse.outcomes ?? verification.outcomes,
+  };
+
+  await maybeAutoAnchor(
+    {
+      traceId,
+      merkleRoot,
+      eventHashes,
+      verificationStatus: mergedVerification.result.status,
+    },
+    options.anchorClient,
+  );
 
   return {
     traceId,
@@ -789,17 +1089,17 @@ export async function runDelegatedOverHttp(
     paymentPayload,
     settlement,
     guardResult,
+    ...(onchain ? { onchain } : {}),
     report,
     events,
     eventHashes,
     merkleRoot,
-    graph: buildEvidenceGraph(events),
-    verification: {
-      ...verification,
-      certificate: verificationResponse.certificate ?? verification.certificate,
-      result: verificationResponse.result ?? verification.result,
-      outcomes: verificationResponse.outcomes ?? verification.outcomes,
-    },
+    graph: appendProofNodes(buildEvidenceGraph(events), {
+      verification: mergedVerification,
+      assessment: assessFeedback(mergedVerification),
+    }),
+    verification: mergedVerification,
+    recommendedFeedback: assessFeedback(mergedVerification),
     transport: "http",
   };
 }

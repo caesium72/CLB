@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useId } from "react";
 import { useDemoRun, type DemoMode } from "@/components/demo-run-provider";
+import { MODE_THEME } from "@/lib/mode-theme";
 import { cn } from "@/lib/utils";
 
 export function ModeSwitch({
@@ -41,15 +42,13 @@ export function ModeSwitch({
             className={cn(
               "relative min-h-8 rounded-md px-3 py-1.5 text-sm font-semibold outline-none transition-colors",
               "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              active
-                ? "text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground",
+              active ? "text-white" : "text-muted-foreground hover:text-foreground",
             )}
           >
             {active ? (
               <motion.span
                 layoutId={`demo-mode-indicator-${switchId}`}
-                className="absolute inset-0 rounded-md bg-primary"
+                className={cn("absolute inset-0 rounded-md", MODE_THEME[option.value].solid)}
                 transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }}
               />
             ) : null}

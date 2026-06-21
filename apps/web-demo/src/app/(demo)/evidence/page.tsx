@@ -91,7 +91,7 @@ export default function EvidencePage() {
             </CardContent>
           </Card>
 
-          <EvidenceNodeDetail node={selectedNode} />
+          <EvidenceNodeDetail node={selectedNode} traceId={traceId} />
         </div>
 
         <div className="mt-6">

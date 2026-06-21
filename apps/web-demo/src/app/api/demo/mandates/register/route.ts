@@ -1,42 +1,19 @@
-import { computeCommitment, computeMandateDigest } from "@clb-acel/clb-core";
-import type { CLBCommitmentInput, Mandate } from "@clb-acel/schemas";
-import { MandateSchema } from "@clb-acel/schemas";
-import type { Hex } from "viem";
-import { jsonError, proxyJson, readJson, serviceUrls } from "../../_lib";
+import { NextResponse } from "next/server";
+import { registerMandate } from "@/server/clb/orchestrator";
+import { readJson } from "../../_lib";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   const body = await readJson(request);
-  const signature = body.signature;
-  const mandateDraft = body.mandateDraft;
-
-  if (typeof signature !== "string" || !signature.startsWith("0x")) {
-    return jsonError("signature is required");
+  try {
+    const result = registerMandate(body);
+    return NextResponse.json(result, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Mandate registration failed" },
+      { status: 502 },
+    );
   }
-  if (!mandateDraft || typeof mandateDraft !== "object") {
-    return jsonError("mandateDraft is required");
-  }
-
-  const clb = body.clb as Omit<CLBCommitmentInput, "mandateDigest"> | undefined;
-  const clbCommitment = body.clbCommitment
-    ? (body.clbCommitment as Hex)
-    : clb
-      ? computeCommitment({
-          ...clb,
-          mandateDigest: computeMandateDigest(mandateDraft as Mandate),
-        })
-      : undefined;
-  const mandate: Mandate = MandateSchema.parse({
-    ...(mandateDraft as Omit<Mandate, "signature" | "clbCommitment">),
-    ...(clbCommitment ? { clbCommitment } : {}),
-    signature,
-  });
-
-  return proxyJson(`${serviceUrls.mandate}/mandates/register`, {
-    method: "POST",
-    body: JSON.stringify({
-      mandate,
-      ...(body.clb ? { clb: body.clb } : {}),
-      ...(body.expectedSigner ? { expectedSigner: body.expectedSigner } : {}),
-    }),
-  });
 }

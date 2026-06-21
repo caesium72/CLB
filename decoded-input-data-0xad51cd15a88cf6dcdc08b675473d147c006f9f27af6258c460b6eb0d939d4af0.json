@@ -1,0 +1,10 @@
+{
+  "agentId": "6827",
+  "value": "90",
+  "valueDecimals": "0",
+  "tag1": "clb-acel",
+  "tag2": "verified",
+  "endpoint": "",
+  "feedbackURI": "acel://traces/demo-verify",
+  "feedbackHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+}

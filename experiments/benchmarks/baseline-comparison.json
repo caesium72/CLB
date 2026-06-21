@@ -1,0 +1,155 @@
+{
+  "generatedAt": "2026-05-30T05:00:00.000Z",
+  "rows": [
+    {
+      "id": "PAYEE_SUBSTITUTION",
+      "label": "Settlement payee is swapped to an attacker address.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "REJECT",
+      "ebay": "REJECT",
+      "clbacel": "REJECT",
+      "clbDetection": "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+    },
+    {
+      "id": "AMOUNT_ESCALATION",
+      "label": "Settlement amount exceeds the human mandate max amount.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "REJECT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "R11_AMOUNT_WITHIN_MANDATE"
+    },
+    {
+      "id": "ASSET_SWITCH",
+      "label": "Settlement asset changes from the allowed USDC asset.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "REJECT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "R13_ASSET_ALLOWED"
+    },
+    {
+      "id": "CHAIN_TRANSPLANT",
+      "label": "Settlement receipt is transplanted to the wrong chain domain.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR, R10_CHAIN_DOMAIN_MATCHES"
+    },
+    {
+      "id": "AGENT_IDENTITY_SWAP",
+      "label": "Payer settlement key is not authorized by the bound ERC-8004 agent card.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "R4_AGENT_PAYMENT_KEY_AUTHORIZED"
+    },
+    {
+      "id": "MANDATE_REPLAY",
+      "label": "The same CLB-derived x402 nonce is submitted twice.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "REJECT",
+      "clbacel": "REJECT",
+      "clbDetection": "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+    },
+    {
+      "id": "CART_OR_TASK_SWITCH",
+      "label": "Mandate taskHash and delivered report inputDataHash diverge.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "R15_TASK_HASH_MATCHES"
+    },
+    {
+      "id": "PAYMENT_WITHOUT_DELIVERY",
+      "label": "Delivery proof is invalid after payment settlement.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "R2_SIGNATURES_VALID, R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+    },
+    {
+      "id": "FAKE_FEEDBACK",
+      "label": "ERC-8004 feedback appears without a verifier certificate predecessor.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "audit: Feedback event has no prior VERIFICATION_CERTIFICATE evidence"
+    },
+    {
+      "id": "PROMPT_INJECTION_SELECTION",
+      "label": "Discovery is steered to a merchant outside the mandate allowedPayees constraint.",
+      "mode": "A",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "audit: Discovery selected a merchant outside allowedPayees"
+    },
+    {
+      "id": "PREDICATE_HAPPY_PATH",
+      "label": "Agent stays within your limits",
+      "mode": "B",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "ACCEPT",
+      "clbacel": "ACCEPT",
+      "clbDetection": "—"
+    },
+    {
+      "id": "PREDICATE_PAYEE_VIOLATION",
+      "label": "Pay an unapproved merchant",
+      "mode": "B",
+      "vanilla": "ACCEPT",
+      "ap2x402": "REJECT",
+      "ebay": "REJECT",
+      "clbacel": "REJECT",
+      "clbDetection": "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK, R17_PREDICATE_TRUE_FOR_MODE_B"
+    },
+    {
+      "id": "PREDICATE_AMOUNT_VIOLATION",
+      "label": "Spend above your limit",
+      "mode": "B",
+      "vanilla": "ACCEPT",
+      "ap2x402": "REJECT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "R11_AMOUNT_WITHIN_MANDATE, R17_PREDICATE_TRUE_FOR_MODE_B"
+    },
+    {
+      "id": "PREDICATE_ASSET_VIOLATION",
+      "label": "Pay with the wrong token",
+      "mode": "B",
+      "vanilla": "ACCEPT",
+      "ap2x402": "REJECT",
+      "ebay": "ACCEPT",
+      "clbacel": "REJECT",
+      "clbDetection": "R13_ASSET_ALLOWED, R17_PREDICATE_TRUE_FOR_MODE_B"
+    },
+    {
+      "id": "PREDICATE_EXPIRED",
+      "label": "Settle after your deadline",
+      "mode": "B",
+      "vanilla": "ACCEPT",
+      "ap2x402": "ACCEPT",
+      "ebay": "REJECT",
+      "clbacel": "REJECT",
+      "clbDetection": "R17_PREDICATE_TRUE_FOR_MODE_B"
+    }
+  ]
+}

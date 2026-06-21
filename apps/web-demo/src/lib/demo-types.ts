@@ -8,9 +8,22 @@ export type AgentActivityEvent = {
   tone?: "info" | "success" | "reject";
 };
 
+export type AgentVerdict = {
+  agentId: string;
+  eligible: boolean;
+  reason: string;
+};
+
 export type DiscoveryResult = {
   selectedMerchantId: string;
+  /** Whether the LLM found ANY eligible agent for the task + constraints. */
+  selectable: boolean;
+  /** Plain-language LLM rationale for the overall decision. */
   rationale: string;
+  /** Which decision layer produced the rationale ("grok" | "heuristic" | …). */
+  llmProvider?: string;
+  /** Per-agent eligibility verdict + reason from the decision layer. */
+  perAgent?: AgentVerdict[];
   activity: AgentActivityEvent[];
   payerAgent: {
     agentId: string;
@@ -30,6 +43,8 @@ export type CartQuote = {
   merchantName: string;
   merchantAgentId: string;
   price: string;
+  /** Human's authorized spending cap; the exact `price` settles ≤ this. */
+  maxAmount: string;
   asset: string;
   payee: string;
   network: string;

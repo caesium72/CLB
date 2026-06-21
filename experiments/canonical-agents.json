@@ -1,0 +1,24 @@
+{
+  "weather-agent-001": {
+    "agentId": "6823",
+    "wallet": "0x1028D6B0baD36b48CA3840F4495483170f64b9B1",
+    "registerTx": "0xe5f68e548ea0330d3708e62aee1602f30c17b6a4f92343ed58249d614bf48a0b",
+    "setWalletTx": "0x2885d1a55e72b43968d219a0ad2aeac0e13742a79b9e9c89121376dbf4394203",
+    "done": true
+  },
+  "grammar-agent-001": {
+    "agentId": "6827",
+    "wallet": "0x54Db78Db972b6e153d918e49758CB0D0265b5e4E",
+    "registerTx": "0x4273d5423c58fd1c804b8f2217ab4594f250b9032f09959b498ee89a9557948b",
+    "setWalletTx": "0xa2f8a3ac12c2bca43fda49dc3afe33d9470d87656fd6924f53a5b6b22bc89e64",
+    "done": true
+  },
+  "orchestrator-agent-001": {
+    "agentId": "6861",
+    "wallet": "0x59509b7CEFD9d9266CE89fA074f7d9a24E68541C",
+    "registerTx": "0xcf32d5418faa123ff0c83f85e27ec8352bed28067a8abadb3715cf7acbf165f4",
+    "setWalletTx": "0x22cb1e0955eebbd48bba3dce064ef0bb62b7b1a3371e9181aed5ee1e255aae95",
+    "metadata": "data:application/json;base64",
+    "done": true
+  }
+}

@@ -6,6 +6,7 @@ import { useResearchMode } from "@/components/research-mode-provider";
 import { AttackFlowTablist, type AttackFlowTab } from "./components/attack-flow-tablist";
 import { AttackRunner } from "./attack-runner";
 import { AttackPageIntro } from "./components/attack-page-intro";
+import { FiveAttacksTable } from "./components/five-attacks-table";
 import { PredicateAttackRunner } from "./predicate-attack-runner";
 
 export function AttacksTabs({ serviceUrl }: { serviceUrl: string }) {
@@ -42,6 +43,8 @@ export function AttacksTabs({ serviceUrl }: { serviceUrl: string }) {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <FiveAttacksTable />
     </div>
   );
 }

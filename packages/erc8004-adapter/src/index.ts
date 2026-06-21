@@ -1,43 +1,33 @@
-import { canonicalJson } from "@clb-acel/evidence-core";
-import type { AgentCard, Address, HexString, IdentityRef } from "@clb-acel/schemas";
-import { getAddress, keccak256, toBytes } from "viem";
+import type { AgentCard, Address, IdentityRef } from "@clb-acel/schemas";
+import { getAddress } from "viem";
+import { computeMetadataHash, finalizeAgentCard, type AgentCardInput } from "./card";
+import { createCanonicalErc8004Registry } from "./canonical-reader";
+import { createOnchainErc8004Registry } from "./onchain-reader";
+import type {
+  AgentRecord,
+  AgentStatus,
+  Erc8004Registry,
+  RegisterAgentInput,
+} from "./types";
 
-export type AgentStatus = "ACTIVE" | "SUSPENDED" | "REVOKED";
-
-/** Agent card fields excluding the derived integrity hash. */
-export type AgentCardInput = Omit<AgentCard, "metadataHash">;
-
-/**
- * On-registry record. Mirrors the fields of `MockERC8004IdentityRegistry.sol`
- * (agentId / owner / agentURI / authorizedSigningKeys / authorizedPaymentKeys /
- * status) plus the resolved agent card and registry coordinates.
- */
-export type AgentRecord = {
-  agentId: string;
-  owner: Address;
-  registryAddr: Address;
-  chainId: number;
-  agentURI: string;
-  card: AgentCard;
-  status: AgentStatus;
-  registeredAt: string;
-};
-
-/** keccak256 over the canonical JSON of the card minus its own metadataHash. */
-export function computeMetadataHash(card: AgentCardInput | AgentCard): HexString {
-  const { metadataHash: _metadataHash, ...rest } = card as AgentCard;
-  void _metadataHash;
-  return keccak256(toBytes(canonicalJson(rest)));
-}
-
-/** Attach a deterministic `metadataHash` to a card input. */
-export function finalizeAgentCard(input: AgentCardInput): AgentCard {
-  return { ...input, metadataHash: computeMetadataHash(input) };
-}
-
-function normalizeKey(key: string): Address {
-  return getAddress(key);
-}
+export * from "./types";
+export { computeMetadataHash, finalizeAgentCard, type AgentCardInput } from "./card";
+export { createOnchainErc8004Registry, fetchAgentCard } from "./onchain-reader";
+export {
+  createCanonicalErc8004Registry,
+  mapCanonicalToCard,
+  type CanonicalIdentityRegistry,
+  type CanonicalMapInput,
+  type CanonicalRegistryConfig,
+} from "./canonical-reader";
+export {
+  createValidationRegistry,
+  CLB_VALIDATOR_TAG,
+  type ValidationEnv,
+  type ValidationInput,
+  type ValidationRecord,
+  type ValidationRegistry,
+} from "./validation-registry";
 
 export function isPaymentKeyAuthorized(record: AgentRecord, key: string): boolean {
   const target = normalizeKey(key);
@@ -57,40 +47,12 @@ export function identityRefFor(record: AgentRecord): IdentityRef {
   };
 }
 
-export type RegisterAgentInput = {
-  card: AgentCard;
-  registryAddr: Address;
-  chainId: number;
-  agentURI?: string;
-};
-
-/**
- * Adapter interface for an ERC-8004 identity registry. The in-memory
- * implementation backs the demo; a viem contract-backed implementation can be
- * dropped in later without changing service code.
- */
-export interface Erc8004Registry {
-  register(input: RegisterAgentInput): Promise<AgentRecord>;
-  getAgent(agentId: string): Promise<AgentRecord | null>;
-  authorizePaymentKey(agentId: string, key: Address): Promise<AgentRecord>;
-  authorizeSigningKey(agentId: string, key: Address): Promise<AgentRecord>;
-  setStatus(agentId: string, status: AgentStatus): Promise<AgentRecord>;
-  list(): Promise<AgentRecord[]>;
+function normalizeKey(key: string): Address {
+  return getAddress(key);
 }
 
-export class AgentNotFoundError extends Error {
-  constructor(agentId: string) {
-    super(`Agent ${agentId} is not registered`);
-    this.name = "AgentNotFoundError";
-  }
-}
-
-export class MetadataHashMismatchError extends Error {
-  constructor(agentId: string) {
-    super(`Agent ${agentId} card metadataHash does not match its contents`);
-    this.name = "MetadataHashMismatchError";
-  }
-}
+export { AgentNotFoundError, MetadataHashMismatchError } from "./types";
+import { AgentNotFoundError, MetadataHashMismatchError } from "./types";
 
 export function createInMemoryErc8004Registry(): Erc8004Registry {
   const agents = new Map<string, AgentRecord>();
@@ -171,4 +133,77 @@ export function createInMemoryErc8004Registry(): Erc8004Registry {
       return [...agents.values()];
     },
   };
+}
+
+export type IdentityRegistryEnv = {
+  rpcUrl?: string;
+  registryAddr?: Address;
+  chainId?: number;
+};
+
+export type IdentityRegistry = Erc8004Registry & {
+  kind: "mock" | "onchain" | "canonical";
+  getCard(agentId: string): Promise<AgentCard>;
+};
+
+/** Select an on-chain reader when RPC + registry are configured; otherwise in-memory mock. */
+export function createIdentityRegistry(env: IdentityRegistryEnv = {}): IdentityRegistry {
+  const rpcUrl = env.rpcUrl?.trim();
+  const registryAddr = env.registryAddr;
+  const chainId = env.chainId ?? 84532;
+
+  if (rpcUrl && registryAddr) {
+    return createOnchainErc8004Registry({ rpcUrl, registryAddr, chainId });
+  }
+
+  const mock = createInMemoryErc8004Registry();
+  return {
+    ...mock,
+    kind: "mock" as const,
+    async getCard(agentId: string) {
+      const record = await mock.getAgent(agentId);
+      if (!record) {
+        throw new AgentNotFoundError(agentId);
+      }
+      return record.card;
+    },
+  };
+}
+
+export function createIdentityRegistryFromEnv(): IdentityRegistry {
+  const mode = process.env.ERC8004_IDENTITY_MODE?.trim();
+  const rpcUrl =
+    process.env.RPC_URL_BASE_SEPOLIA?.trim() ?? process.env.RPC_URL?.trim();
+  const chainId = Number(process.env.CHAIN_ID ?? 84532);
+
+  if (mode === "canonical") {
+    const registryAddr = process.env.ERC8004_IDENTITY_REGISTRY_CANONICAL?.trim() as
+      | Address
+      | undefined;
+    if (!rpcUrl || !registryAddr) {
+      throw new Error(
+        "canonical identity mode requires RPC_URL_BASE_SEPOLIA + ERC8004_IDENTITY_REGISTRY_CANONICAL",
+      );
+    }
+    const canonical = createCanonicalErc8004Registry({ rpcUrl, registryAddr, chainId });
+    const readOnly = (method: string): Promise<never> =>
+      Promise.reject(
+        new Error(
+          `canonical identity registry is read-only; ${method} is not supported (use setup:register-canonical)`,
+        ),
+      );
+    return {
+      kind: "canonical",
+      getCard: (agentId) => canonical.getCard(agentId),
+      getAgent: (agentId) => canonical.getAgent(agentId),
+      register: () => readOnly("register"),
+      authorizePaymentKey: () => readOnly("authorizePaymentKey"),
+      authorizeSigningKey: () => readOnly("authorizeSigningKey"),
+      setStatus: () => readOnly("setStatus"),
+      list: () => readOnly("list"),
+    };
+  }
+
+  const registryAddr = process.env.ERC8004_REGISTRY_ADDRESS?.trim() as Address | undefined;
+  return createIdentityRegistry({ rpcUrl, registryAddr, chainId });
 }

@@ -60,6 +60,7 @@ test.beforeEach(async ({ page }) => {
         merchantName: "Token Risk Analysis Agent",
         merchantAgentId: "analysis-agent-001",
         price: "2.00",
+        maxAmount: "2.00",
         asset: "USDC",
         payee: "0x2222222222222222222222222222222222222222",
         network: "base-sepolia",

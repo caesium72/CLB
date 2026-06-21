@@ -118,6 +118,12 @@ export const SettlementParamsSchema = z.object({
   asset: z.string().min(1),
   payTo: AddressSchema,
   value: z.string().min(1),
+  /**
+   * Integer base-units of `value` (e.g. 6-decimal USDC: "2.00" -> "2000000"),
+   * as a decimal string. Bound into the C' settlement digest so the committed
+   * amount and the on-chain `validateAndConsume` comparison are the same quantity.
+   */
+  valueAtomic: z.string().regex(/^\d+$/, "valueAtomic must be integer base-units"),
   validBefore: z.string().datetime(),
   payerAgentId: z.string().min(1),
 });
@@ -181,6 +187,7 @@ export const EvidenceNodeSchema = z.enum([
   "DELIVERY_PROOF",
   "VERIFICATION_CERTIFICATE",
   "ERC8004_FEEDBACK",
+  "DECISION_CONTEXT",
 ]);
 
 export type EvidenceNode = z.infer<typeof EvidenceNodeSchema>;
@@ -193,6 +200,8 @@ export const EvidenceEdgeSchema = z.enum([
   "DELIVERS",
   "VALIDATES",
   "RATES",
+  "CONSIDERED",
+  "SELECTED",
 ]);
 
 export type EvidenceEdge = z.infer<typeof EvidenceEdgeSchema>;
@@ -280,10 +289,50 @@ export const TokenRiskReportSchema = z.object({
   inputDataHash: HexStringSchema,
   reportHash: HexStringSchema,
   merchantAgentSignature: HexStringSchema,
+  /** Merchant signature over keccak256(settlementTxHash, reportHash) — R14b evidence. */
+  deliveryBinding: HexStringSchema.optional(),
   generatedAt: z.string().datetime(),
 });
 
 export type TokenRiskReport = z.infer<typeof TokenRiskReportSchema>;
+
+/**
+ * Generic signed delivery artifact produced by any merchant agent (grammar,
+ * weather, …). Structurally compatible with the verifier's report checks
+ * (`reportHash`, `merchantAgentSignature`, `inputDataHash`, `generatedAt`,
+ * `deliveryBinding`) so it can flow through the same binding rules as the
+ * legacy token-risk report.
+ */
+export const ServiceKindSchema = z.enum(["grammar", "weather"]);
+export type ServiceKind = z.infer<typeof ServiceKindSchema>;
+
+export const ServiceReportSchema = z.object({
+  /** Which agent capability produced this artifact. */
+  service: ServiceKindSchema,
+  /** Human-readable task this artifact fulfils (e.g. "Proofread paragraph"). */
+  task: z.string().min(1),
+  /** Structured service result (corrected text + issues, forecast, …). */
+  result: z.record(z.unknown()),
+  modelVersion: z.string().min(1),
+  /** keccak over the canonical service input (the text / the city). */
+  inputDataHash: HexStringSchema,
+  /** keccak over the unsigned report content — binds delivery to the paid task. */
+  reportHash: HexStringSchema,
+  merchantAgentSignature: HexStringSchema,
+  /** Merchant signature over keccak256(settlementTxHash, reportHash) — R14b evidence. */
+  deliveryBinding: HexStringSchema.optional(),
+  generatedAt: z.string().datetime(),
+});
+
+export type ServiceReport = z.infer<typeof ServiceReportSchema>;
+
+/**
+ * Any signed delivery artifact the verifier can bind to a settlement. Both the
+ * legacy token-risk report and the generic service report satisfy the verifier's
+ * structural checks (reportHash / merchantAgentSignature / inputDataHash /
+ * generatedAt / deliveryBinding).
+ */
+export type DeliveryReport = TokenRiskReport | ServiceReport;
 
 export const EvidenceGraphNodeSchema = z.object({
   id: z.string().min(1),

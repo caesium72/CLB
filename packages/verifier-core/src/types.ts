@@ -1,12 +1,13 @@
 import type {
   CLBCommitmentInput,
+  DeliveryReport,
   EvidenceEvent,
   Mandate,
   SettlementDescriptorExact,
-  TokenRiskReport,
   VerificationCertificate,
   VerificationResult,
 } from "@clb-acel/schemas";
+import type { RangeProof } from "@clb-acel/clb-core";
 import type { PaymentPayload, SettlementReceipt } from "@clb-acel/x402-adapter";
 import type { Address, Hex } from "viem";
 
@@ -45,7 +46,8 @@ export type TraceBundle = {
   settlement: SettlementReceipt;
   /** True when a second settlement with the same nonce was attempted. */
   nonceReplayAttempt?: boolean;
-  report: TokenRiskReport;
+  /** Signed delivery artifact (token-risk report or any generic ServiceReport). */
+  report: DeliveryReport;
   /**
    * Concrete settlement params the agent committed to at settlement time.
    * Required when `mode === MODE_B_PREDICATE` — R17 evaluates the predicate
@@ -54,6 +56,18 @@ export type TraceBundle = {
   concreteSettlement?: SettlementDescriptorExact;
   /** Settlement-time commitment C' bound in Mode B (nonce = H(C')). */
   modeBCommitment?: Hex;
+  /**
+   * Confidential commit-and-prove inputs (Phase 7F). When present and the
+   * verifier runs in confidential mode, R11 is discharged by checking the range
+   * proof against the (public) maxValue instead of reading a plaintext amount.
+   */
+  confidential?: {
+    /** Pedersen commitment to the settlement value. */
+    valueCommitment: Hex;
+    rangeProof: RangeProof;
+    /** Public, human-signed spending cap the proof attests `value <= maxValue`. */
+    maxValueAtomic: string | bigint;
+  };
 };
 
 export type RuleId =
@@ -71,6 +85,7 @@ export type RuleId =
   | "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
   | "R13_ASSET_ALLOWED"
   | "R14_DELIVERY_AFTER_SETTLEMENT"
+  | "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
   | "R15_TASK_HASH_MATCHES"
   | "R17_PREDICATE_TRUE_FOR_MODE_B";
 
@@ -83,4 +98,15 @@ export type VerifyTraceOutput = {
   result: VerificationResult;
   certificate: VerificationCertificate;
   outcomes: Record<RuleId, RuleOutcome>;
+  /**
+   * `true` when R11 read a plaintext amount (standard path); `undefined` when the
+   * confidential range-proof path discharged R11 without ever seeing the value.
+   */
+  readPlaintextAmount?: boolean;
+};
+
+/** Options controlling how a trace is verified. */
+export type VerifyTraceOptions = {
+  /** Discharge R11 via the confidential range proof in `bundle.confidential`. */
+  confidential?: boolean;
 };

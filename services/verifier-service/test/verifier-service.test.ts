@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { issueMandate } from "@clb-acel/ap2-adapter";
 import { computeCommitment, computeMandateDigest, deriveNonce } from "@clb-acel/clb-core";
-import { signReport } from "@clb-acel/delivery-core";
+import { signDeliveryBinding, signReport } from "@clb-acel/delivery-core";
 import { buildMerkleRoot, hashEvidenceEvent, linkEvidenceEvents } from "@clb-acel/evidence-core";
 import type { EvidenceEvent, SettlementDescriptorExact } from "@clb-acel/schemas";
 import {
@@ -58,7 +58,7 @@ async function validBundle(traceId: string): Promise<TraceBundle> {
     buildPaymentAuthorization({ from: shopperAddress, descriptor: settlementDescriptor, nonce }),
   );
   const settlement = await createLocalFacilitator().settle(paymentPayload);
-  const report = await signReport(merchantKey, {
+  const signedReport = await signReport(merchantKey, {
     token: "XYZ",
     chain: "base-sepolia",
     riskScore: 0.42,
@@ -72,6 +72,13 @@ async function validBundle(traceId: string): Promise<TraceBundle> {
     inputDataHash: `0x${"a".repeat(64)}`,
     generatedAt: new Date(Date.parse(settlement.settledAt) + 1000).toISOString(),
   });
+  // R14b binds delivery to this settlement; the report must carry a deliveryBinding signature.
+  const deliveryBinding = await signDeliveryBinding({
+    settlementTxHash: settlement.txHash,
+    reportHash: signedReport.reportHash,
+    merchantKey,
+  });
+  const report = { ...signedReport, deliveryBinding };
   const events: EvidenceEvent[] = linkEvidenceEvents(
     ["USER_INTENT", "CHAIN_SETTLEMENT", "DELIVERY_PROOF"].map((objectType, index) => ({
       traceId,

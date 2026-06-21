@@ -14,7 +14,8 @@ import { friendlyDemoError } from "@/lib/demo-errors";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { mode, intentId, mandateId, traceId, intentToken, checkoutStage, updateRun } = useDemoRun();
+  const { mode, intentId, intent, mandateId, traceId, intentToken, checkoutStage, updateRun } =
+    useDemoRun();
   const [probe402, setProbe402] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -28,7 +29,10 @@ export default function CheckoutPage() {
     updateRun({ checkoutStage: "probing_402", runStatus: "running", error: undefined });
 
     try {
-      const probeResponse = await fetch(`/api/demo/probe-402?token=${encodeURIComponent(token)}`);
+      const probeQuery = intentId
+        ? `intentId=${encodeURIComponent(intentId)}`
+        : `token=${encodeURIComponent(token)}`;
+      const probeResponse = await fetch(`/api/demo/probe-402?${probeQuery}`);
       const probePayload = await probeResponse.json();
       if (!probeResponse.ok) throw new Error(probePayload.error ?? "402 probe failed");
       setProbe402(probePayload.paymentRequired as Record<string, unknown>);
@@ -38,7 +42,7 @@ export default function CheckoutPage() {
       const runResponse = await fetch("/api/demo/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ intentId, mandateId, mode }),
+        body: JSON.stringify({ intentId, intent, mandateId, mode }),
       });
       const trace = await runResponse.json();
       if (!runResponse.ok) throw new Error(trace.error ?? "Payment run failed");
@@ -105,7 +109,14 @@ export default function CheckoutPage() {
         <DemoSection title="Checkout state">
           <ProtocolPanel
             label="Session"
-            data={{ intentId, mandateId, traceId, checkoutStage, token }}
+            data={{
+              intentId,
+              mandateId,
+              traceId,
+              checkoutStage,
+              task: intent?.task,
+              subject: intent?.input,
+            }}
           />
         </DemoSection>
       </div>

@@ -1,0 +1,28 @@
+{
+  "phase": "7F",
+  "mode": "confidential-commit-and-prove",
+  "traceId": "trace-phase7f-confidential",
+  "verifier": {
+    "status": "PASS",
+    "failedRules": [],
+    "readPlaintextAmount": null,
+    "r11DischargedBy": "range-proof"
+  },
+  "privacy": {
+    "payeeRevealedOnChain": false,
+    "amountRevealedOnChain": false,
+    "valueCommitment": "0x032aeafb5733d7f8849815520eeb768e9a8bf12a1fd2795790f218f90fc67f354a",
+    "payeeCommitment": "0x9bbdc065be353184b4f7bd55cc9c1d94835a9ce71b10d3270e81be3081477939",
+    "rangeProofVersion": "CLB-ACEL/confidential/v1",
+    "rangeProofBits": 64,
+    "rangeProofByteSize": 23934,
+    "evidenceObjectHash": "0x9fd6ac0250bec0f1be385be9026c8546ee8ad2c37bbeac010ace18062a3d2605",
+    "encryptedBlobByteSize": 262,
+    "selectiveDisclosureDecrypts": true
+  },
+  "soundness": {
+    "inRangeAccepted": true,
+    "overBudgetRejected": true
+  },
+  "generatedAt": "2026-06-06T00:00:00.000Z"
+}

@@ -1,0 +1,118 @@
+{
+  "experiment": "Attack II live duplicate-grant evidence (sanitized)",
+  "timestamp": "2026-04-26T01:11:02.579Z",
+  "sourceTraceCommitments": {
+    "fullRunSha256": "770a2c48b65f9c9f807cebc37f06dcbdfa66bfaaa45bdf4acc4712e4e72911bd",
+    "positiveRoundSha256": "2f8166e18f2f7ebf3bbe38ad9432513d018b61854aa8f2e880ebee286894fd52"
+  },
+  "fingerprintMethods": {
+    "endpointFingerprint": "sha256(endpoint_url)[0:16]",
+    "payToFingerprint": "sha256(lowercase_pay_to_address)[0:16]",
+    "requestBodyFingerprint": "sha256(canonical_json_rpc_body)[0:12]",
+    "addressFingerprint": "sha256(lowercase_address)[0:16]",
+    "traceSha256": "sha256(json_file)"
+  },
+  "anonymization": {
+    "endpointLabel": "Endpoint-2",
+    "endpointFingerprint": "c38ec7c547a91439",
+    "payToFingerprint": "778fd74500db64d6"
+  },
+  "protocol": {
+    "x402Version": 2,
+    "network": "eip155:84532",
+    "asset": "USDC",
+    "selectedAmount": "1000",
+    "paymentHeader": "PAYMENT-SIGNATURE"
+  },
+  "method": {
+    "client": "official @x402/core + @x402/evm SDK",
+    "transport": "undici Agent, 1000 connections, pipelining=0, barrier release",
+    "concurrency": 1000,
+    "samePaymentHeaderAcrossRequests": true,
+    "samePaymentHeaderScope": "one reused payment signature for the 1000-request round",
+    "requestBodies": [
+      {
+        "rpc": "rpc1",
+        "requestBodyFingerprint": "e9fe48cb1f05"
+      },
+      {
+        "rpc": "rpc2",
+        "requestBodyFingerprint": "6e32966af65d"
+      },
+      {
+        "rpc": "rpc3",
+        "requestBodyFingerprint": "ab41cc9c1bab"
+      },
+      {
+        "rpc": "rpc4",
+        "requestBodyFingerprint": "534173431fe9"
+      },
+      {
+        "rpc": "rpc5",
+        "requestBodyFingerprint": "b2d334c75f94"
+      },
+      {
+        "rpc": "rpc6",
+        "requestBodyFingerprint": "48f815b7b3d4",
+        "addressFingerprint": "52f46522d197a06e"
+      }
+    ],
+    "settlementDefinition": "USDC balance delta divided by selectedAmount"
+  },
+  "positiveObservation": {
+    "round": 5,
+    "grants": 248,
+    "settlements": 1,
+    "dgr": true,
+    "statusCounts": {
+      "200": 248,
+      "402": 752
+    },
+    "balanceBefore": "49746200",
+    "balanceAfter": "49745200",
+    "balanceDeltaComputedFromObservedBalances": "1000",
+    "returnedResults": [
+      {
+        "rpc": "rpc1",
+        "result": "0x2b183e2",
+        "requestBodyFingerprint": "e9fe48cb1f05"
+      },
+      {
+        "rpc": "rpc2",
+        "result": "0x2105",
+        "requestBodyFingerprint": "6e32966af65d"
+      },
+      {
+        "rpc": "rpc3",
+        "result": "0x5b8d80",
+        "requestBodyFingerprint": "ab41cc9c1bab"
+      },
+      {
+        "rpc": "rpc4",
+        "result": "reth/v1.10.2-8e3b5e6/x86_64-unknown-linux-gnu/base/v0.5.1",
+        "requestBodyFingerprint": "534173431fe9"
+      },
+      {
+        "rpc": "rpc5",
+        "result": "8453",
+        "requestBodyFingerprint": "b2d334c75f94"
+      },
+      {
+        "rpc": "rpc6",
+        "result": "0x0",
+        "requestBodyFingerprint": "48f815b7b3d4"
+      },
+      {
+        "rpc": "rpc4",
+        "result": "Geth/v1.101701.0-stable-d0734fd5/linux-amd64/go1.24.13",
+        "requestBodyFingerprint": "534173431fe9"
+      },
+      {
+        "rpc": "rpc1",
+        "result": "0x2b183e3",
+        "requestBodyFingerprint": "e9fe48cb1f05"
+      }
+    ],
+    "grantSampleCount": 50
+  }
+}

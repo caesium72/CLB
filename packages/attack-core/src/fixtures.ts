@@ -1,8 +1,9 @@
 import { issueMandate } from "@clb-acel/ap2-adapter";
 import { computeCommitment, computeMandateDigest, deriveNonce } from "@clb-acel/clb-core";
-import { signReport } from "@clb-acel/delivery-core";
+import { signDeliveryBinding, signReport } from "@clb-acel/delivery-core";
 import { buildMerkleRoot, hashEvidenceEvent, linkEvidenceEvents } from "@clb-acel/evidence-core";
 import type {
+  DeliveryReport,
   EvidenceEvent,
   IdentityRef,
   MandateConstraints,
@@ -144,7 +145,7 @@ export async function buildValidBundle(options: BuildValidBundleOptions = {}): P
   const facilitator = createLocalFacilitator();
   const settlement = await facilitator.settle(paymentPayload);
 
-  const report = await signReport(TEST_KEYS.merchantKey, {
+  const signedReport = await signReport(TEST_KEYS.merchantKey, {
     token: options.token ?? "XYZ",
     chain: settlementDescriptor.network,
     riskScore: 0.42,
@@ -160,6 +161,12 @@ export async function buildValidBundle(options: BuildValidBundleOptions = {}): P
       options.reportGeneratedAt?.(settlement.settledAt) ??
       new Date(Date.parse(settlement.settledAt) + 1000).toISOString(),
   });
+  const deliveryBinding = await signDeliveryBinding({
+    settlementTxHash: settlement.txHash,
+    reportHash: signedReport.reportHash,
+    merchantKey: TEST_KEYS.merchantKey,
+  });
+  const report: TokenRiskReport = { ...signedReport, deliveryBinding };
 
   const events = evidenceEvents(traceId, settlement.settledAt);
   const eventHashes = events.map(hashEvidenceEvent);
@@ -185,7 +192,7 @@ export function appendEvidenceEvent(bundle: TraceBundle, event: Omit<EvidenceEve
 }
 
 export function breakReportHash(bundle: TraceBundle): TraceBundle {
-  const report: TokenRiskReport = { ...bundle.report, reportHash: `0x${"f".repeat(64)}` };
+  const report: DeliveryReport = { ...bundle.report, reportHash: `0x${"f".repeat(64)}` };
   return { ...bundle, report };
 }
 

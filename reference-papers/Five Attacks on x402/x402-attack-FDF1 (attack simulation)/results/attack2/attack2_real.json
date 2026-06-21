@@ -1,0 +1,96 @@
+{
+  "experiment": "Attack II Replay — Real Chain",
+  "timestamp": "2026-04-08T05:00:24.181Z",
+  "chain": "Hardhat local",
+  "contract": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+  "results": [
+    {
+      "n": 1,
+      "idempotency": false,
+      "grantsIssued": 1,
+      "settleSuccess": 1,
+      "settleReverted": 0,
+      "settleDuplicate": 0,
+      "DSR": 1,
+      "DGR": 1,
+      "elapsed_ms": 5
+    },
+    {
+      "n": 5,
+      "idempotency": false,
+      "grantsIssued": 5,
+      "settleSuccess": 1,
+      "settleReverted": 4,
+      "settleDuplicate": 0,
+      "DSR": 1,
+      "DGR": 5,
+      "elapsed_ms": 19
+    },
+    {
+      "n": 10,
+      "idempotency": false,
+      "grantsIssued": 10,
+      "settleSuccess": 1,
+      "settleReverted": 9,
+      "settleDuplicate": 0,
+      "DSR": 1,
+      "DGR": 10,
+      "elapsed_ms": 37
+    },
+    {
+      "n": 50,
+      "idempotency": false,
+      "grantsIssued": 50,
+      "settleSuccess": 1,
+      "settleReverted": 49,
+      "settleDuplicate": 0,
+      "DSR": 1,
+      "DGR": 50,
+      "elapsed_ms": 162
+    },
+    {
+      "n": 1,
+      "idempotency": true,
+      "grantsIssued": 1,
+      "settleSuccess": 1,
+      "settleReverted": 0,
+      "settleDuplicate": 0,
+      "DSR": 1,
+      "DGR": 1,
+      "elapsed_ms": 3
+    },
+    {
+      "n": 5,
+      "idempotency": true,
+      "grantsIssued": 1,
+      "settleSuccess": 1,
+      "settleReverted": 0,
+      "settleDuplicate": 0,
+      "DSR": 1,
+      "DGR": 1,
+      "elapsed_ms": 14
+    },
+    {
+      "n": 10,
+      "idempotency": true,
+      "grantsIssued": 1,
+      "settleSuccess": 1,
+      "settleReverted": 0,
+      "settleDuplicate": 0,
+      "DSR": 1,
+      "DGR": 1,
+      "elapsed_ms": 23
+    },
+    {
+      "n": 50,
+      "idempotency": true,
+      "grantsIssued": 1,
+      "settleSuccess": 1,
+      "settleReverted": 0,
+      "settleDuplicate": 0,
+      "DSR": 1,
+      "DGR": 1,
+      "elapsed_ms": 111
+    }
+  ]
+}

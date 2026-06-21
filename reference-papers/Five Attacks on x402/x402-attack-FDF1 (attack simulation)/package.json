@@ -1,0 +1,40 @@
+{
+  "name": "x402-attack",
+  "version": "1.0.0",
+  "description": "Reproducible testbed for x402 web-payment protocol security analysis",
+  "type": "module",
+  "scripts": {
+    "attack": "node src/attack2/run-experiment.js",
+    "chain": "npx hardhat node --config hardhat.config.cjs",
+    "attack1": "node src/attack1/attack1a/run-experiment.js",
+    "attack1a": "node src/attack1/attack1a/run-experiment.js",
+    "attack1b:permit2": "node src/attack1/attack1b/run-permit2-frontrun.js",
+    "attack1b:eip3009": "node src/attack1/attack1b/run-eip3009-frontrun.js",
+    "attack2": "node src/attack2/run-experiment.js",
+    "attack3": "node src/attack3/run-experiment.js",
+    "attack4:e1": "node src/attack4/run-e1-metadata.js",
+    "attack4:e2": "node src/attack4/run-e2-sybil.js",
+    "attack4:bazaar": "python3 src/attack4/bazaar-concentration.py",
+    "permit2-frontrun": "node src/attack1/attack1b/run-permit2-frontrun.js",
+    "eip3009-frontrun": "node src/attack1/attack1b/run-eip3009-frontrun.js",
+    "start": "node src/attack2/run-experiment.js"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.14",
+    "@solana/web3.js": "^1.98.4",
+    "@x402/core": "^2.8.0",
+    "@x402/evm": "^2.8.0",
+    "@x402/express": "^2.8.0",
+    "@x402/svm": "^2.8.0",
+    "axios": "^1.7.0",
+    "bs58": "^6.0.0",
+    "cli-table3": "^0.6.5",
+    "dotenv": "^17.4.1",
+    "ethers": "^6.13.0",
+    "express": "^4.21.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "hardhat": "^2.28.6"
+  }
+}

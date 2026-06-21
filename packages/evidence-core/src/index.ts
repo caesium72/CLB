@@ -133,6 +133,7 @@ const nodeTypeByObjectType: Record<string, EvidenceNode> = {
   DELIVERY_PROOF: "DELIVERY_PROOF",
   VERIFICATION_CERTIFICATE: "VERIFICATION_CERTIFICATE",
   ERC8004_FEEDBACK: "ERC8004_FEEDBACK",
+  DECISION_CONTEXT: "DECISION_CONTEXT",
 };
 
 function nodeTypeFor(event: EvidenceEvent): EvidenceNode {
@@ -176,6 +177,18 @@ function semanticEdgeBetween(
   }
   if (from === "VERIFICATION_CERTIFICATE" && to === "ERC8004_FEEDBACK") {
     return { edgeType: "RATES", label: "rates agent" };
+  }
+  if (from === "ERC8004_AGENT_IDENTITY" && to === "DECISION_CONTEXT") {
+    return { edgeType: "CONSIDERED", label: "considers candidates" };
+  }
+  if (
+    from === "DECISION_CONTEXT" &&
+    (to === "AP2_CART_MANDATE" ||
+      to === "AP2_INTENT_MANDATE" ||
+      to === "AP2_PAYMENT_MANDATE" ||
+      to === "ACP_CHECKOUT_OR_TASK")
+  ) {
+    return { edgeType: "SELECTED", label: "selected merchant" };
   }
   return null;
 }

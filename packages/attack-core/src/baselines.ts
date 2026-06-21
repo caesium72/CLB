@@ -1,6 +1,41 @@
 import type { AttackRunResult, BaselineId, BaselineMatrix, BaselineOutcome } from "./types";
 import type { AttackFixture } from "./types";
-import type { RuleId } from "@clb-acel/verifier-core";
+import type { RuleId, TraceBundle } from "@clb-acel/verifier-core";
+import { bVanillaX402 } from "./baselines/vanilla-x402";
+import { bAp2X402 } from "./baselines/ap2-x402";
+import { bEbayMonitor } from "./baselines/ebay-monitor";
+import type { BaselineVerdict } from "./baselines/types";
+
+/**
+ * Map a real baseline verifier's ACCEPT/REJECT verdict to a matrix outcome.
+ * These three baselines are off-chain *verifiers* (not enforcers): a REJECT means
+ * the weaker stack would DETECT the attack; none of them PREVENT it in-protocol.
+ * ACCEPT means it missed the attack entirely — the cell the paper's thesis hinges on.
+ */
+function verdictToOutcome(verdict: BaselineVerdict): BaselineOutcome {
+  return verdict.accepted
+    ? { detected: false, prevented: false, note: "Accepted the attacked trace — attack missed." }
+    : { detected: true, prevented: false, note: `Rejected: ${verdict.reasons[0] ?? "cross-layer check"}` };
+}
+
+/**
+ * Compute the B0–B2 baseline cells by ACTUALLY RUNNING the three baseline
+ * verifiers against the attacked bundle (no narrative). B3 (full CLB-ACEL) is
+ * supplied by the caller from the live verifier/guard result.
+ */
+export async function liveBaselineOutcomes(
+  bundle: TraceBundle,
+  b3: BaselineOutcome,
+): Promise<Record<BaselineId, BaselineOutcome>> {
+  const [vanilla, ap2] = await Promise.all([bVanillaX402(bundle), bAp2X402(bundle)]);
+  const ebay = bEbayMonitor(bundle);
+  return {
+    B0: verdictToOutcome(vanilla),
+    B1: verdictToOutcome(ap2),
+    B2: verdictToOutcome(ebay),
+    B3: b3,
+  };
+}
 
 type BaselineResultInput = Pick<
   AttackRunResult,
@@ -29,15 +64,15 @@ export const LOGICAL_BASELINE_OUTCOMES: Record<BaselineId, BaselineOutcome> = {
 export const BASELINE_LABELS: Record<BaselineId, string> = {
   B0: "Vanilla x402",
   B1: "AP2 + x402",
-  B2: "ACEL audit-only",
+  B2: "eBay monitor",
   B3: "Full CLB + ACEL",
 };
 
 export const BASELINE_DESCRIPTIONS: Record<BaselineId, string> = {
-  B0: "No CLB binding, no verifier, no evidence layer enforcement.",
-  B1: "AP2 mandate exists, but nonce is not bound to C.",
-  B2: "Evidence + verifier detect attacks after settlement, but do not prevent them in-protocol.",
-  B3: "Current full stack: CLB, ACEL evidence, verifier, and x402 replay prevention.",
+  B0: "Vanilla x402: settlement well-formedness only, no cross-layer rules.",
+  B1: "AP2 mandate + x402, but no ERC-8004 identity binding and no C recompute.",
+  B2: "eBay-style off-chain monitor: AP2 context-binding + consume-once, single-protocol.",
+  B3: "Full stack: CLB binding, ACEL evidence, deterministic verifier, on-chain prevention.",
 };
 
 export function buildBaselineMatrix(

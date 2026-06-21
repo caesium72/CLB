@@ -16,11 +16,16 @@ import {
   getAddress,
   hashTypedData,
   keccak256,
+  parseUnits,
   recoverTypedDataAddress,
   toBytes,
   verifyTypedData,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+
+// Confidential commit-and-prove (Phase 7F). The curve library is isolated in
+// `./confidential`; consumers reach it through this package re-export.
+export * from "./confidential";
 
 /**
  * EIP-712 type definitions for the Cross-Layer Binding commitment.
@@ -73,9 +78,7 @@ function toTypedDataDomain(domain: CLBCommitmentInput["domain"]): TypedDataDomai
     name: domain.name,
     version: domain.version,
     chainId: domain.chainId,
-    ...(domain.verifyingContract
-      ? { verifyingContract: domain.verifyingContract as Address }
-      : {}),
+    ...(domain.verifyingContract ? { verifyingContract: domain.verifyingContract as Address } : {}),
   };
 }
 
@@ -108,10 +111,7 @@ export function deriveNonce(commitment: Hex): Hex {
 }
 
 /** Sign the commitment as EIP-712 typed data with a raw private key. */
-export async function signCommitment(
-  privateKey: Hex,
-  input: CLBCommitmentInput,
-): Promise<Hex> {
+export async function signCommitment(privateKey: Hex, input: CLBCommitmentInput): Promise<Hex> {
   const account = privateKeyToAccount(privateKey);
   return account.signTypedData(buildClbTypedData(input));
 }
@@ -189,20 +189,25 @@ export const CLB_SETTLEMENT_PRIMARY_TYPE = "CLBSettlementCommitment" as const;
 
 /**
  * ABI-encoded digest of the concrete settlement params. Mirrors
- * `keccak256(abi.encode(chainId, network, asset, payTo, value, validBefore, payerAgentId))`
+ * `keccak256(abi.encode(chainId, network, asset, payTo, value, valueAtomic, validBefore, payerAgentId))`
  * in Solidity, giving byte-exact parity with the on-chain guard.
+ *
+ * `valueAtomic` (uint256 base-units) is bound here so the on-chain
+ * `PredicatePaymentGuard` compares the SAME quantity it commits to — the
+ * human-readable `value` decimal string stays for display/off-chain parity.
  */
 export function computeSettlementParamsDigest(params: SettlementParams): Hex {
   return keccak256(
     encodeAbiParameters(
       [
-        { type: "uint256" },
-        { type: "string" },
-        { type: "string" },
-        { type: "address" },
-        { type: "string" },
-        { type: "string" },
-        { type: "string" },
+        { type: "uint256" }, // chainId
+        { type: "string" }, // network
+        { type: "string" }, // asset
+        { type: "address" }, // payTo
+        { type: "string" }, // value (decimal display)
+        { type: "uint256" }, // valueAtomic (enforced quantity)
+        { type: "string" }, // validBefore
+        { type: "string" }, // payerAgentId
       ],
       [
         BigInt(params.chainId),
@@ -210,6 +215,7 @@ export function computeSettlementParamsDigest(params: SettlementParams): Hex {
         params.asset,
         getAddress(params.payTo),
         params.value,
+        BigInt(params.valueAtomic),
         params.validBefore,
         params.payerAgentId,
       ],
@@ -254,10 +260,16 @@ export function deriveSettlementNonce(commitment: Hex): Hex {
   return deriveNonce(commitment);
 }
 
-/** Lift an exact settlement descriptor into the concrete params R17 evaluates. */
+/**
+ * Lift an exact settlement descriptor into the concrete params R17 evaluates.
+ * `valueAtomic` is derived deterministically from the decimal `value` via
+ * `parseUnits(value, decimals)` (default 6 — USDC/EURC base units) so payer and
+ * verifier commit to the same integer quantity.
+ */
 export function settlementParamsFromExact(
   descriptor: SettlementDescriptorExact,
   payerAgentId: string,
+  decimals = 6,
 ): SettlementParams {
   return {
     chainId: descriptor.chainId,
@@ -265,6 +277,7 @@ export function settlementParamsFromExact(
     asset: descriptor.asset,
     payTo: descriptor.payTo,
     value: descriptor.value,
+    valueAtomic: parseUnits(descriptor.value, decimals).toString(),
     validBefore: descriptor.validBefore,
     payerAgentId,
   };
@@ -312,7 +325,9 @@ export function evaluatePredicate(
 
   if (!predicate.allowedAssets.includes(params.asset)) {
     violations.push("ASSET_NOT_ALLOWED");
-    details.push(`Asset ${params.asset} not in allowedAssets [${predicate.allowedAssets.join(", ")}]`);
+    details.push(
+      `Asset ${params.asset} not in allowedAssets [${predicate.allowedAssets.join(", ")}]`,
+    );
   }
 
   if (!predicate.allowedPayees.some((payee) => sameAddr(payee, params.payTo))) {
@@ -330,12 +345,16 @@ export function evaluatePredicate(
   const validUntil = Date.parse(predicate.validUntil);
   if (Number.isNaN(validUntil) || now.getTime() > validUntil) {
     violations.push("PREDICATE_EXPIRED");
-    details.push(`Settlement time ${now.toISOString()} is after validUntil ${predicate.validUntil}`);
+    details.push(
+      `Settlement time ${now.toISOString()} is after validUntil ${predicate.validUntil}`,
+    );
   }
 
   if (!predicate.allowedChainIds.includes(params.chainId)) {
     violations.push("CHAIN_NOT_ALLOWED");
-    details.push(`Chain ${params.chainId} not in allowedChainIds [${predicate.allowedChainIds.join(", ")}]`);
+    details.push(
+      `Chain ${params.chainId} not in allowedChainIds [${predicate.allowedChainIds.join(", ")}]`,
+    );
   }
 
   if (!predicate.allowedAgentIds.includes(params.payerAgentId)) {

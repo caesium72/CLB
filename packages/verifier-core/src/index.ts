@@ -7,9 +7,14 @@ import {
   deriveSettlementNonce,
   evaluatePredicate,
   settlementParamsFromExact,
+  verifyConfidential,
   type ModeBSettlementInput,
 } from "@clb-acel/clb-core";
-import { recoverReportSigner, reportHashMatchesContent } from "@clb-acel/delivery-core";
+import {
+  recoverReportSigner,
+  reportHashMatchesContent,
+  verifyDeliveryBinding,
+} from "@clb-acel/delivery-core";
 import { buildMerkleRoot, hashEvidenceEvent } from "@clb-acel/evidence-core";
 import { canonicalJson } from "@clb-acel/evidence-core";
 import type {
@@ -20,7 +25,13 @@ import type {
 } from "@clb-acel/schemas";
 import { verifyPaymentPayload } from "@clb-acel/x402-adapter";
 import { type Hex, getAddress, keccak256, toBytes } from "viem";
-import type { RuleId, RuleOutcome, TraceBundle, VerifyTraceOutput } from "./types";
+import type {
+  RuleId,
+  RuleOutcome,
+  TraceBundle,
+  VerifyTraceOptions,
+  VerifyTraceOutput,
+} from "./types";
 
 export * from "./types";
 
@@ -41,6 +52,7 @@ export const RULE_ORDER: RuleId[] = [
   "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
   "R13_ASSET_ALLOWED",
   "R14_DELIVERY_AFTER_SETTLEMENT",
+  "R14b_DELIVERY_BOUND_TO_SETTLEMENT",
   "R15_TASK_HASH_MATCHES",
   "R17_PREDICATE_TRUE_FOR_MODE_B",
 ];
@@ -337,6 +349,23 @@ function checkAmountWithinMandate(bundle: TraceBundle): RuleOutcome {
     : { ok: false, detail: `Settled ${settled} exceeds max ${max}` };
 }
 
+/**
+ * R11 (confidential): discharge the amount-within-mandate predicate via the
+ * range proof — `value <= maxValue` — without ever reading a plaintext amount.
+ */
+function checkAmountConfidential(bundle: TraceBundle): RuleOutcome {
+  const confidential = bundle.confidential;
+  if (!confidential) {
+    return { ok: false, detail: "Confidential mode requires bundle.confidential (commitment + range proof)" };
+  }
+  const ok = verifyConfidential(confidential.valueCommitment, confidential.rangeProof, {
+    maxValueAtomic: confidential.maxValueAtomic,
+  });
+  return ok
+    ? { ok: true }
+    : { ok: false, detail: "Range proof does not attest value <= maxValue" };
+}
+
 function checkPayeeMatches(bundle: TraceBundle): RuleOutcome {
   const payTo = bundle.settlement.payTo;
   const predicate = isModeB(bundle) ? predicateOf(bundle) : null;
@@ -395,6 +424,26 @@ function checkDeliveryAfterSettlement(bundle: TraceBundle): RuleOutcome {
     : { ok: false, detail: "Delivery occurred before settlement" };
 }
 
+async function checkDeliveryBoundToSettlement(bundle: TraceBundle): Promise<RuleOutcome> {
+  const binding = bundle.report.deliveryBinding;
+  if (!binding) {
+    return { ok: false, detail: "Report is missing deliveryBinding signature" };
+  }
+  const merchantSigner = bundle.merchantAgent.authorizedSigningKeys[0];
+  if (!merchantSigner) {
+    return { ok: false, detail: "Merchant agent has no authorized signing key" };
+  }
+  const ok = await verifyDeliveryBinding({
+    settlementTxHash: bundle.settlement.txHash,
+    reportHash: bundle.report.reportHash,
+    signature: binding,
+    merchant: merchantSigner,
+  });
+  return ok
+    ? { ok: true }
+    : { ok: false, detail: "Delivery binding does not match this settlement txHash" };
+}
+
 function checkTaskHashMatches(bundle: TraceBundle): RuleOutcome {
   const taskHash = bundle.mandate.constraints.taskHash;
   if (!taskHash) {
@@ -414,8 +463,13 @@ function certificateHash(certificate: Omit<VerificationCertificate, "certificate
  * mode-aware (Mode A exact descriptor vs Mode B predicate/C'); R17 enforces the
  * spending predicate in Mode B and passes vacuously in Mode A.
  */
-export async function verifyTrace(bundle: TraceBundle): Promise<VerifyTraceOutput> {
+export async function verifyTrace(
+  bundle: TraceBundle,
+  options: VerifyTraceOptions = {},
+): Promise<VerifyTraceOutput> {
   const outcomes = {} as Record<RuleId, RuleOutcome>;
+  // Confidential mode discharges R11 via the range proof (no plaintext amount).
+  const confidential = options.confidential === true && bundle.confidential !== undefined;
 
   outcomes.R1_HASH_CHAIN_INTACT = checkHashChain(bundle);
   outcomes.R2_SIGNATURES_VALID = await checkSignatures(bundle);
@@ -427,10 +481,13 @@ export async function verifyTrace(bundle: TraceBundle): Promise<VerifyTraceOutpu
   outcomes.R8_PAYMENT_NONCE_EQUALS_HASH_C = checkNonceEqualsHashC(bundle);
   outcomes.R9_NONCE_CONSUMED_EXACTLY_ONCE = checkNonceConsumedOnce(bundle);
   outcomes.R10_CHAIN_DOMAIN_MATCHES = checkChainDomain(bundle);
-  outcomes.R11_AMOUNT_WITHIN_MANDATE = checkAmountWithinMandate(bundle);
+  outcomes.R11_AMOUNT_WITHIN_MANDATE = confidential
+    ? checkAmountConfidential(bundle)
+    : checkAmountWithinMandate(bundle);
   outcomes.R12_PAYEE_MATCHES_CHECKOUT_OR_TASK = checkPayeeMatches(bundle);
   outcomes.R13_ASSET_ALLOWED = checkAssetAllowed(bundle);
   outcomes.R14_DELIVERY_AFTER_SETTLEMENT = checkDeliveryAfterSettlement(bundle);
+  outcomes.R14b_DELIVERY_BOUND_TO_SETTLEMENT = await checkDeliveryBoundToSettlement(bundle);
   outcomes.R15_TASK_HASH_MATCHES = checkTaskHashMatches(bundle);
   outcomes.R17_PREDICATE_TRUE_FOR_MODE_B = checkPredicateTrueForModeB(bundle);
 
@@ -470,5 +527,8 @@ export async function verifyTrace(bundle: TraceBundle): Promise<VerifyTraceOutpu
       checkedAt,
       mode: bundle.mode,
     },
+    // Undefined on the confidential (proof-only) path; true when a plaintext
+    // amount was read for R11.
+    ...(confidential ? {} : { readPlaintextAmount: true }),
   };
 }
