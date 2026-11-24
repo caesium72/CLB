@@ -1,0 +1,2299 @@
+{
+  "seed": 20261125,
+  "count": 64,
+  "vectors": [
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0xb41d378f35aaad083706be5f708932d837d0932f7a5ba6a8bcbff5ff24434878",
+      "predicateId": "ircv-pred-0",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "1000000",
+      "validUntil": 1800000000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x1c7706d6daeb3cc307f964c69d049fb32ab8a8f6c2ef08a3d8f4a6e644000b93",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.00",
+        "valueAtomic": "1000000",
+        "validBefore": "2027-01-15T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x079c1886f50a182ed58ea84661f13bee8f8420063482c7ae77737fc6c785bb6e",
+      "predicateId": "ircv-pred-1",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "2010000",
+      "validUntil": 1800086400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.01",
+        "valueAtomic": "2010000",
+        "validBefore": "2027-01-16T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x65d3a0e7e584c28e8dbd4e57541f9cfe461d45c7737da16e7a474737ce468fde",
+      "predicateId": "ircv-pred-2",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "3020000",
+      "validUntil": 1800172800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x9d4493b1fd445cf6cd2b89415a16c946a2e8a8d12db4abd620185e619c93d826",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "DAI",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.02",
+        "valueAtomic": "3020000",
+        "validBefore": "2027-01-17T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x59dee405be1fc55f537f9cc57ed2421f391e9d85125c86dfdb76e6452d09939f",
+      "predicateId": "ircv-pred-3",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "4030000",
+      "validUntil": 1800259200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "4.03",
+        "valueAtomic": "4030000",
+        "validBefore": "2027-01-18T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x3daeb68e86a40ef59f166b9eaa5ccf05c80ac6aeeaca5515c59207befd7ee125",
+      "predicateId": "ircv-pred-4",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "5040000",
+      "validUntil": 1800345600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0xa562dec19ab15a284a3f1ff1c53bb0183af167217b3170c81c01f8512fb716b8",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "5.04",
+        "valueAtomic": "5040000",
+        "validBefore": "2027-01-19T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xa234abe666f276ca8051b4e6a146afcae27e1de60e9c48cacefde6e627f741ca",
+      "predicateId": "ircv-pred-5",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "6050000",
+      "validUntil": 1800432000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "6.05",
+        "valueAtomic": "6050000",
+        "validBefore": "2027-01-20T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x9603ba43a664adee179184f36a0b019e95ef91a396e0f74e1fcea0531fdb4efe",
+      "predicateId": "ircv-pred-6",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "7060000",
+      "validUntil": 1800518400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x5477362a85083bf1b8f2ff7a053863c1989e428a8f5f96910b298cdad340ef61",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "7.06",
+        "valueAtomic": "7060000",
+        "validBefore": "2027-01-21T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x19aafcd50dc9566b97bd78d5992d126b7f8e74d5cbc74e6b468df0d5c8080a6b",
+      "predicateId": "ircv-pred-7",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "8070000",
+      "validUntil": 1800604800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "8.07",
+        "valueAtomic": "8070000",
+        "validBefore": "2027-01-22T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x77935e682ea3f437c5d252b8e6d4af87c63ca508806f68d74bfd95582d9b6027",
+      "predicateId": "ircv-pred-8",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "9080000",
+      "validUntil": 1800691200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x061723374a0afb3a1414e627e932332acc3303175720115a0a1fe60700bc694a",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "9.08",
+        "valueAtomic": "9080000",
+        "validBefore": "2027-01-23T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x392791416e71c201510836c1ad7daf819208ec41f344ad0154efb1c136acba81",
+      "predicateId": "ircv-pred-9",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "1090000",
+      "validUntil": 1800777600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.09",
+        "valueAtomic": "1090000",
+        "validBefore": "2027-01-24T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x22b8dcba54da653b8cd6cc0a6ac8e1ab128afb9a57d99e1bb94efeea280fee8b",
+      "predicateId": "ircv-pred-10",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "2100000",
+      "validUntil": 1800864000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0xcd58afb69b0e260918d8c286500de419d3f0bb9662c9a829f9006e668f3d5539",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.10",
+        "valueAtomic": "1100000",
+        "validBefore": "2027-01-25T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xfd6612c7f43cb24590f36d27734f8ea5efc72b873f518f0543f6cde71aa03365",
+      "predicateId": "ircv-pred-11",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "3110000",
+      "validUntil": 1800950400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.11",
+        "valueAtomic": "3110000",
+        "validBefore": "2027-01-26T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x4ea65defbc97173ccb853e7fc2d534acb260bf0f663c5e5c3d498b9f85e2a7cc",
+      "predicateId": "ircv-pred-12",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "4120000",
+      "validUntil": 1801036800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0d1a511c4419d15d622b6b6c4ee0c40d84ea75bc8cd457bd8124200c7e308b6d",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.12",
+        "valueAtomic": "1120000",
+        "validBefore": "2027-01-27T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0xabd45cf3b55e6ab789b3c5b3b6989777ff537673fdcc8c37de2e6f33840548f7",
+      "predicateId": "ircv-pred-13",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "5130000",
+      "validUntil": 1801123200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "4.13",
+        "valueAtomic": "4130000",
+        "validBefore": "2027-01-28T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xcc1225e2468efec7ba6d71320187aaf7611ff842502cd327da8ea792d9d1a357",
+      "predicateId": "ircv-pred-14",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "6140000",
+      "validUntil": 1801209600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0xa6a2edee2bb07e8dad9fdb9e206513ddca91d94e50a0082d32cc36fe63455c7d",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "DAI",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.14",
+        "valueAtomic": "3140000",
+        "validBefore": "2027-01-29T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x6d5b6dc76905b681bcb19d67fb7f4421a40d2907f6296dc112c090a74f8eb361",
+      "predicateId": "ircv-pred-15",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "7150000",
+      "validUntil": 1801296000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.15",
+        "valueAtomic": "2150000",
+        "validBefore": "2027-01-30T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0xee85ae600774df47bf8b3650b7291617c8ce36001f1544e77ada19f029ab17b7",
+      "predicateId": "ircv-pred-16",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "8160000",
+      "validUntil": 1801382400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x240583b78dc4cb226addb6277615d0b2a184689746ad564243699b0747fb5bd2",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.16",
+        "valueAtomic": "1160000",
+        "validBefore": "2027-01-31T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x6d2c30c78090312f8fc606077377e26f997ed3471e010bafb3939887d858acef",
+      "predicateId": "ircv-pred-17",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "9170000",
+      "validUntil": 1801468800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "9.17",
+        "valueAtomic": "9170000",
+        "validBefore": "2027-02-01T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0xc10b21eb62bbda523e2c60db7c1898228ba223cb7c270632262296bb0feab802",
+      "predicateId": "ircv-pred-18",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "1180000",
+      "validUntil": 1801555200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x91fb8ed3b295236439c63b233b25b914a7f9f8730aea5ec4254314c302d66474",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.18",
+        "valueAtomic": "1180000",
+        "validBefore": "2027-02-02T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x44fc087b7d0ea4116b059e9b52849031390900bb311c88510342aedb6f2b0c71",
+      "predicateId": "ircv-pred-19",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "2190000",
+      "validUntil": 1801641600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.19",
+        "valueAtomic": "2190000",
+        "validBefore": "2027-02-03T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x52ec3b3679f82f1d711c59266ce2882df29bb35660f15d3d93125d46d2ce824d",
+      "predicateId": "ircv-pred-20",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "3200000",
+      "validUntil": 1801728000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x83d60ce884163941af7107b882479571dda6d28829d2c1a17dbf1e581d786dd1",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.20",
+        "valueAtomic": "3200000",
+        "validBefore": "2027-02-04T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0xff61f000bb383f5c1e88fb40a448469ce4cb3e80fca205dcfcfdb9c08e8a7d1c",
+      "predicateId": "ircv-pred-21",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "4210000",
+      "validUntil": 1801814400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.21",
+        "valueAtomic": "2210000",
+        "validBefore": "2027-02-05T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0xb9f70aaf801a87126266785f09de57a2a63cf20fdc6be0721d83a3bfc429b502",
+      "predicateId": "ircv-pred-22",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "5220000",
+      "validUntil": 1801900800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0xb27054fd5467c6a68839f3cd445c86d6b4cbe29d12a097067a7dd26de004a736",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.22",
+        "valueAtomic": "3220000",
+        "validBefore": "2027-02-06T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x9e3279d774a534f9abdbc2b7d24277d95852df97d1634eb9adb75077d54f3999",
+      "predicateId": "ircv-pred-23",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "6230000",
+      "validUntil": 1801987200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "6.23",
+        "valueAtomic": "6230000",
+        "validBefore": "2027-02-07T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x81a1559085b5bedfd511a2c04716032fdd09e43088c9fb7f4d172d6069d07bcf",
+      "predicateId": "ircv-pred-24",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "7240000",
+      "validUntil": 1802073600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x7c751f75035d3c88b3e9f265cb55ba9898cf75559167e8a821a7a8453775c6b8",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "4.24",
+        "valueAtomic": "4240000",
+        "validBefore": "2027-02-08T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x3b572af0cd30e9d05ff42ef030a4add0f6a2b2f037b1f1d0b7f2b6f08de8b5d0",
+      "predicateId": "ircv-pred-25",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "8250000",
+      "validUntil": 1802160000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.25",
+        "valueAtomic": "2250000",
+        "validBefore": "2027-02-09T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xecdaab0caac39f1dc568747c4233694d6093efac2fcd457dc179709c09db47ad",
+      "predicateId": "ircv-pred-26",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "9260000",
+      "validUntil": 1802246400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0xe0a50c531a52366c667b5e2338a9b99c6ffad0f32f105cccaa95b2c3215f6ffc",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "DAI",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "9.26",
+        "valueAtomic": "9260000",
+        "validBefore": "2027-02-10T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x44f055d7f06f3b655e2d8b1742ac4ca54c4db857550ed5e5920ddd97e143d725",
+      "predicateId": "ircv-pred-27",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "1270000",
+      "validUntil": 1802332800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.27",
+        "valueAtomic": "1270000",
+        "validBefore": "2027-02-11T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x8da0efa83e5b521b810850b82025fe2bb30e6b884999443bc54f6c98bc7b904b",
+      "predicateId": "ircv-pred-28",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "2280000",
+      "validUntil": 1802419200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x8d3c1a23c3f2fc026e7f81938107bf72174a92030fbcbde2e147bc739ee60552",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.28",
+        "valueAtomic": "1280000",
+        "validBefore": "2027-02-12T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x721af52e739b25ea8665816e59305e2a5fe7a5ae890dae6ad09a61eee15c16aa",
+      "predicateId": "ircv-pred-29",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "3290000",
+      "validUntil": 1802505600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.29",
+        "valueAtomic": "3290000",
+        "validBefore": "2027-02-13T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x7bca4e167ccb2c43ce5fe8869a49e3b312e240b6988920a3f7f8d2a622ae7793",
+      "predicateId": "ircv-pred-30",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "4300000",
+      "validUntil": 1802592000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x62a69f64e369bdb7f4b564f4f577b54751ca5084b035a3d71e54a114e2551867",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.30",
+        "valueAtomic": "3300000",
+        "validBefore": "2027-02-14T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x642ccc59c0ea6acff4ab0c1986963e8fd5ce33d9d7ee7a4f1e4d4399e87a1e0f",
+      "predicateId": "ircv-pred-31",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "5310000",
+      "validUntil": 1802678400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.31",
+        "valueAtomic": "2310000",
+        "validBefore": "2027-02-15T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x737e45e4e02c66d3b1c882b478eec2a3b960e1447cc8a073648a8e1407f76c43",
+      "predicateId": "ircv-pred-32",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "6320000",
+      "validUntil": 1802764800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x5f9ceed8e425c34d179de548dad4c7bd3c4f35b83908a42d94e54028f93e7c9d",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.32",
+        "valueAtomic": "3320000",
+        "validBefore": "2027-02-16T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x00987b657f3fa53d7d8b1085e3334c9d869c962557fae3fdd2ea3345d8a7135d",
+      "predicateId": "ircv-pred-33",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "7330000",
+      "validUntil": 1802851200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "6.33",
+        "valueAtomic": "6330000",
+        "validBefore": "2027-02-17T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0xff57f1003a991e598d50fb70e9e9d989c3ec17a0a9cb06b9a4699990cb6ab9e9",
+      "predicateId": "ircv-pred-34",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "8340000",
+      "validUntil": 1802937600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0xa13a7c25e126be02006996f5df9ae6d2c33a6dc5ce37bca22e6992957ae68072",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.34",
+        "valueAtomic": "3340000",
+        "validBefore": "2027-02-18T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xe64b70da461a85f04f7095ba257878909551629a88ba6bb0cfd62f7a79a38650",
+      "predicateId": "ircv-pred-35",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "9350000",
+      "validUntil": 1803024000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "9.35",
+        "valueAtomic": "9350000",
+        "validBefore": "2027-02-19T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x9dd16b8601db379d32008ad6d66caded28d0bbe6c020bdbd9f78fab62ed47b8d",
+      "predicateId": "ircv-pred-36",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "1360000",
+      "validUntil": 1803110400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x69dfb91becc34ff20108170bd2a2b2e2e7ceeefbab44bed2f80d9febabce84c2",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.36",
+        "valueAtomic": "1360000",
+        "validBefore": "2027-02-20T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x7653406506a0f379658e6ac54e0f0c196a8f7da505fa8cb9b8b0a005e4a11d59",
+      "predicateId": "ircv-pred-37",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "2370000",
+      "validUntil": 1803196800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.37",
+        "valueAtomic": "2370000",
+        "validBefore": "2027-02-21T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xd7ad7f8a9f2c31771737a93ae258c7e70e369caa96bf0857a34c865a69083747",
+      "predicateId": "ircv-pred-38",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "3380000",
+      "validUntil": 1803283200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0xe766a602d81ee5b9216f1992730c2b496ec6f322480858d95521d2b230fe4a69",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "DAI",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.38",
+        "valueAtomic": "3380000",
+        "validBefore": "2027-02-22T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x8349efc1c6dfdb3fddf87fc1eba16b3fb4dd0fc177b8fb3fa4379fc1b3668b3f",
+      "predicateId": "ircv-pred-39",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "4390000",
+      "validUntil": 1803369600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "4.39",
+        "valueAtomic": "4390000",
+        "validBefore": "2027-02-23T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0xcb5167e01cd29d1fdf3a5e304880ba6f7cc906402ee0e9bfc5d68c9050e6970f",
+      "predicateId": "ircv-pred-40",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "5400000",
+      "validUntil": 1803456000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0ae3fabb5e7d8556951b0f6b40a3b406a562871ba06fa4b6647d6fcbe05c0566",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.40",
+        "valueAtomic": "1400000",
+        "validBefore": "2027-02-24T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x64fd72e93923f9093bea41691df93f8967327fe99df6f60906602e69c1871c89",
+      "predicateId": "ircv-pred-41",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "6410000",
+      "validUntil": 1803542400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "6.41",
+        "valueAtomic": "6410000",
+        "validBefore": "2027-02-25T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x70d394bd5593e0cc8cf123ede8f0c71c6d48fb1d2ca1756cc9161a4db370ebbc",
+      "predicateId": "ircv-pred-42",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "7420000",
+      "validUntil": 1803628800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x248d35c039cd329f94f92d10b601b1efffa20360ad39af3f67bca8b0ec7f1a8f",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.42",
+        "valueAtomic": "1420000",
+        "validBefore": "2027-02-26T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0xedce1fb7b3fca7f5babe0f972540ce15bf9ff7f7eb096c357d13ffd73efa2a55",
+      "predicateId": "ircv-pred-43",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "8430000",
+      "validUntil": 1803715200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "4.43",
+        "valueAtomic": "4430000",
+        "validBefore": "2027-02-27T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x1c79aed61cff29557fe6d586297f4f256f211436db68347562cb3a665b5881c5",
+      "predicateId": "ircv-pred-44",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "9440000",
+      "validUntil": 1803801600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0xc816ec4c774939cd3081249c581f11fd02eb17acc6a1e62d766363fc7721435d",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "9.44",
+        "valueAtomic": "9440000",
+        "validBefore": "2027-02-28T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x8944fd19af08511db0eb7e5910feee5d45817799bc3f839dc473e8d9ee2710dd",
+      "predicateId": "ircv-pred-45",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "1450000",
+      "validUntil": 1803888000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.45",
+        "valueAtomic": "1450000",
+        "validBefore": "2027-03-01T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x2d680e775fdd0da2e0b3c4671db37eb2e0e94a573c82bfc2533378c732bf0152",
+      "predicateId": "ircv-pred-46",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "2460000",
+      "validUntil": 1803974400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x62c8527937f7edcacdb92b8910fc16fa83721f99a9b92feac17903a974a7a51a",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.46",
+        "valueAtomic": "1460000",
+        "validBefore": "2027-03-02T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xa7cfeb443e88abd27bb99ca405b442f2754ccd8474915a12e1d656e4b7594932",
+      "predicateId": "ircv-pred-47",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "3470000",
+      "validUntil": 1804060800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.47",
+        "valueAtomic": "3470000",
+        "validBefore": "2027-03-03T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x8d28d49a5cebd09d75319f8a736ac6adfbc81a7ad653943daae814eabdcde1cd",
+      "predicateId": "ircv-pred-48",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "4480000",
+      "validUntil": 1804147200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x52133f203e4e9925dfcc72b0ba4168950960e80037f23c05100bef902c4c9f75",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.48",
+        "valueAtomic": "1480000",
+        "validBefore": "2027-03-04T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x8c60c701c852af693e6f800198f19869a76f99019cd3e169fa651201fdbd8a69",
+      "predicateId": "ircv-pred-49",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "5490000",
+      "validUntil": 1804233600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "5.49",
+        "valueAtomic": "5490000",
+        "validBefore": "2027-03-05T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xcf7adecf42306e1655a9657f41071b66d542d3af127030b6773e29dfc832ae06",
+      "predicateId": "ircv-pred-50",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "6500000",
+      "validUntil": 1804320000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0xcb7819deeeabfc798a985e8e7d31e0497677677e79baf919cbbca92eae68c9e9",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "DAI",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.00",
+        "valueAtomic": "3000000",
+        "validBefore": "2027-03-06T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0xc045f4b7913fba7d635c5a177f249e1d4372c7f755d709bd5b2f65578320a55d",
+      "predicateId": "ircv-pred-51",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "7510000",
+      "validUntil": 1804406400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.01",
+        "valueAtomic": "3010000",
+        "validBefore": "2027-03-07T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x0db82ae460820b2fea721cd4c1ebf83f5d3c5ec4ca6d354fa7b1c9346e2d1a5f",
+      "predicateId": "ircv-pred-52",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "8520000",
+      "validUntil": 1804492800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x4fe43572b9c25a7b4ee3a8429744426b97d4ab52b1daba5b362ed2224827164b",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "5.02",
+        "valueAtomic": "5020000",
+        "validBefore": "2027-03-08T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xc8e97b8f525b21c3b3dd084f9f86328382ce5d0f7ab08b43a04879cf40f52c03",
+      "predicateId": "ircv-pred-53",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "9530000",
+      "validUntil": 1804579200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "9.03",
+        "valueAtomic": "9030000",
+        "validBefore": "2027-03-09T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x17695c055c773ab8f1ab52f54a8cc4487f5221e56f307e5849f820d5adf46868",
+      "predicateId": "ircv-pred-54",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "1540000",
+      "validUntil": 1804665600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x468dc0d70039e08cd9dfcee750fa5fbcd77638f7a09c0eacce6ed307db290adc",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.04",
+        "valueAtomic": "1040000",
+        "validBefore": "2027-03-10T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x0303484b69a765e537eeef6b7c95a6c5a952168b7560402515a615ab110b5905",
+      "predicateId": "ircv-pred-55",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "2550000",
+      "validUntil": 1804752000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.05",
+        "valueAtomic": "2050000",
+        "validBefore": "2027-03-11T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x732dd592fada819d8e273302786d422d35a330721e33ca3dfeb79d621b4fc24d",
+      "predicateId": "ircv-pred-56",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "3560000",
+      "validUntil": 1804838400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0xeec04e751c1a3668d6bccc65ceb2ef785d4e1a559ea10c48042d8c45fd787958",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "3.06",
+        "valueAtomic": "3060000",
+        "validBefore": "2027-03-12T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0xe256cd34410be1349eb2b534c53f4934aa659d344399b1341a0f85349ebb1934",
+      "predicateId": "ircv-pred-57",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "4570000",
+      "validUntil": 1804924800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "2.07",
+        "valueAtomic": "2070000",
+        "validBefore": "2027-03-13T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x2b138350a817a7c163064f80b3865d7147421e30cd617521887c8760a00f06d1",
+      "predicateId": "ircv-pred-58",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "5580000",
+      "validUntil": 1805011200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x20dfce25b969d89ab85bb875f81773cadafceac5d8f8923ad8a06115b5a3aa6a",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "4.08",
+        "valueAtomic": "4080000",
+        "validBefore": "2027-03-14T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0xbdca247f32fee32d1a93b6bfa7fa19ede0a878ff8c27cfade727bb3f07f1b66d",
+      "predicateId": "ircv-pred-59",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "6590000",
+      "validUntil": 1805097600,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "6.09",
+        "valueAtomic": "6090000",
+        "validBefore": "2027-03-15T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0xed16bd974cfe739415dfb6a7e01b37a464ded5b7a09e41b478aa5ac7dcecf944",
+      "predicateId": "ircv-pred-60",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "7600000",
+      "validUntil": 1805184000,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0xa58c93b951e00b981874b36921a1d548820f07193f924e386c2da8c9be8297e8",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "USDC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "5.10",
+        "valueAtomic": "5100000",
+        "validBefore": "2027-03-16T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "analysis-agent-001",
+      "mandateDigest": "0x8be710f663e4ad1278837e76724de292a80afbf64fcd2812e363897699687d92",
+      "predicateId": "ircv-pred-61",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "8610000",
+      "validUntil": 1805270400,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "EURC",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "6.11",
+        "valueAtomic": "6110000",
+        "validBefore": "2027-03-17T08:00:00.000Z",
+        "payerAgentId": "analysis-agent-001"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "weather-agent-003",
+      "mandateDigest": "0x6e098ae03693d915ae201050f6480b855b9ddfc0126067f52c79e0b0e63b5665",
+      "predicateId": "ircv-pred-62",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568"
+      ],
+      "chainIds": [
+        84532
+      ],
+      "maxValueAtomic": "9620000",
+      "validUntil": 1805356800,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8",
+        "0x33c90fc88ee85bd9abd75f657ffc90003b2ec51bf89aed1eaaaf777d84f64077",
+        "0x5d6d9cf88b70244ccc43d9e85effd712d08b066b94ef773fa70417bb1b16d49a"
+      ],
+      "taskHash": "0x2afd9359aafa79da61972da9c6f5ddea5e448079c91a20bab79b024942d39dca",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "DAI",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "9.12",
+        "valueAtomic": "9120000",
+        "validBefore": "2027-03-18T08:00:00.000Z",
+        "payerAgentId": "weather-agent-003"
+      }
+    },
+    {
+      "chainId": 84532,
+      "registryAddr": "0x0000000000000000000000000000000000008004",
+      "agentId": "shopping-agent-001",
+      "mandateDigest": "0x7122abf0d43bbed6cb50d190ef093af6ddeec3b03a8ec3164d35da50450a2f36",
+      "predicateId": "ircv-pred-63",
+      "payees": [
+        "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      ],
+      "assetHashes": [
+        "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa",
+        "0x147758d3dafb1e8675e1a8ecff01cc8a943115b0fec1f4a13cfd4b303e47244a",
+        "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568",
+        "0x4de1662037f55cb794da13cab66bc4d0787a463af1249ee3624319fa70f7b48c"
+      ],
+      "chainIds": [
+        84532,
+        84533
+      ],
+      "maxValueAtomic": "1630000",
+      "validUntil": 1805443200,
+      "agentIdHashes": [
+        "0xd8302dfb2a10298aa816a0aaa8660e60ffe5aeb45f29dd4424a075adf2d3c7a8"
+      ],
+      "taskHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "principal": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "params": {
+        "chainId": 84532,
+        "network": "base-sepolia",
+        "asset": "PYUSD",
+        "payTo": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "value": "1.13",
+        "valueAtomic": "1130000",
+        "validBefore": "2027-03-19T08:00:00.000Z",
+        "payerAgentId": "shopping-agent-001"
+      }
+    }
+  ]
+}

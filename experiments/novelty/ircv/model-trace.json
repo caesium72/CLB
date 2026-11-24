@@ -1,0 +1,681 @@
+{
+  "schema": "ircv-formal-vocabulary/v1",
+  "theory": "CLBAligned",
+  "sources": {
+    "spthy": "formal/tamarin/clb-aligned.spthy",
+    "proof": "formal/tamarin/proofs/clb-aligned.proof",
+    "result": "formal/tamarin/proofs/clb-aligned.result.txt"
+  },
+  "toolchainFromCommittedArtifacts": {
+    "tamarin": "1.12.0",
+    "maude": "3.1",
+    "note": "Versions read from the footer of the committed .proof file; no tool was run for this artifact."
+  },
+  "rules": [
+    {
+      "name": "Anchor_Principal",
+      "actions": [
+        {
+          "label": "PrincipalAnchored",
+          "args": [
+            "$H"
+          ],
+          "rule": "Anchor_Principal"
+        }
+      ],
+      "line": 64
+    },
+    {
+      "name": "Register_Agent",
+      "actions": [
+        {
+          "label": "KeyAuthorized",
+          "args": [
+            "$agentId",
+            "pk(~sk)"
+          ],
+          "rule": "Register_Agent"
+        }
+      ],
+      "line": 70
+    },
+    {
+      "name": "Register_Predicate",
+      "actions": [
+        {
+          "label": "PredicateRegistered",
+          "args": [
+            "pid",
+            "h(<payee, asset, chain, max, until>)"
+          ],
+          "rule": "Register_Predicate"
+        }
+      ],
+      "line": 78
+    },
+    {
+      "name": "Authorize_ModeB",
+      "actions": [
+        {
+          "label": "DelegatedB",
+          "args": [
+            "$H",
+            "~mandateDigest",
+            "~pid",
+            "pd",
+            "Cp",
+            "nonce"
+          ],
+          "rule": "Authorize_ModeB"
+        },
+        {
+          "label": "AdmitB",
+          "args": [
+            "$H",
+            "~pid",
+            "$agentId",
+            "~payee",
+            "~asset",
+            "~valueAtomic",
+            "~chain",
+            "~taskHash"
+          ],
+          "rule": "Authorize_ModeB"
+        }
+      ],
+      "line": 88
+    },
+    {
+      "name": "Settle_ModeB",
+      "actions": [
+        {
+          "label": "Eq",
+          "args": [
+            "Cp_in",
+            "Cp"
+          ],
+          "rule": "Settle_ModeB"
+        },
+        {
+          "label": "Eq",
+          "args": [
+            "verify(sig, Cp, pkH)",
+            "true"
+          ],
+          "rule": "Settle_ModeB"
+        },
+        {
+          "label": "Paid",
+          "args": [
+            "agentId",
+            "pk(~sk)"
+          ],
+          "rule": "Settle_ModeB"
+        },
+        {
+          "label": "GuardPassed",
+          "args": [
+            "pid",
+            "payee",
+            "asset",
+            "valueAtomic",
+            "chain",
+            "taskHash"
+          ],
+          "rule": "Settle_ModeB"
+        },
+        {
+          "label": "SettledB",
+          "args": [
+            "H",
+            "mandateDigest",
+            "pid",
+            "pd",
+            "agentId",
+            "payee",
+            "asset",
+            "valueAtomic",
+            "chain",
+            "taskHash",
+            "pk(~sk)"
+          ],
+          "rule": "Settle_ModeB"
+        },
+        {
+          "label": "Consumed",
+          "args": [
+            "nonce"
+          ],
+          "rule": "Settle_ModeB"
+        }
+      ],
+      "line": 111
+    },
+    {
+      "name": "Failed_Settle_ModeB",
+      "actions": [
+        {
+          "label": "FailedSettle",
+          "args": [
+            "nonce",
+            "pid",
+            "H"
+          ],
+          "rule": "Failed_Settle_ModeB"
+        }
+      ],
+      "line": 138
+    },
+    {
+      "name": "Settle_Recovered",
+      "actions": [
+        {
+          "label": "Eq",
+          "args": [
+            "Cp_in",
+            "Cp"
+          ],
+          "rule": "Settle_Recovered"
+        },
+        {
+          "label": "Eq",
+          "args": [
+            "verify(sig, Cp, pkH)",
+            "true"
+          ],
+          "rule": "Settle_Recovered"
+        },
+        {
+          "label": "Paid",
+          "args": [
+            "agentId",
+            "pk(~sk)"
+          ],
+          "rule": "Settle_Recovered"
+        },
+        {
+          "label": "GuardPassed",
+          "args": [
+            "pid",
+            "payee",
+            "asset",
+            "valueAtomic",
+            "chain",
+            "taskHash"
+          ],
+          "rule": "Settle_Recovered"
+        },
+        {
+          "label": "SettledB",
+          "args": [
+            "H",
+            "mandateDigest",
+            "pid",
+            "pd",
+            "agentId",
+            "payee",
+            "asset",
+            "valueAtomic",
+            "chain",
+            "taskHash",
+            "pk(~sk)"
+          ],
+          "rule": "Settle_Recovered"
+        },
+        {
+          "label": "Consumed",
+          "args": [
+            "nonce"
+          ],
+          "rule": "Settle_Recovered"
+        }
+      ],
+      "line": 145
+    }
+  ],
+  "actionLabels": [
+    "AdmitB",
+    "Consumed",
+    "DelegatedB",
+    "Eq",
+    "FailedSettle",
+    "GuardPassed",
+    "KeyAuthorized",
+    "Paid",
+    "PredicateRegistered",
+    "PrincipalAnchored",
+    "SettledB"
+  ],
+  "lemmas": [
+    {
+      "name": "exec_aligned_modeB",
+      "quantifier": "exists-trace",
+      "formula": "",
+      "line": 174,
+      "committedStatus": "verified",
+      "steps": 22
+    },
+    {
+      "name": "P1_identity_binding",
+      "quantifier": "all-traces",
+      "formula": "All aid K #s. Paid(aid, K) @ #s ==> Ex #r. KeyAuthorized(aid, K) @ #r",
+      "line": 182,
+      "committedStatus": "verified",
+      "steps": 10
+    },
+    {
+      "name": "P2_authorization_integrity",
+      "quantifier": "all-traces",
+      "formula": "",
+      "line": 187,
+      "committedStatus": "verified",
+      "steps": 18
+    },
+    {
+      "name": "P3_no_replay",
+      "quantifier": "all-traces",
+      "formula": "All n #i #j. Consumed(n) @ #i & Consumed(n) @ #j ==> #i = #j",
+      "line": 194,
+      "committedStatus": "verified",
+      "steps": 96
+    },
+    {
+      "name": "P4_non_transferability",
+      "quantifier": "all-traces",
+      "formula": "",
+      "line": 200,
+      "committedStatus": "verified",
+      "steps": 16
+    },
+    {
+      "name": "P5_predicate_soundness",
+      "quantifier": "all-traces",
+      "formula": "",
+      "line": 209,
+      "committedStatus": "verified",
+      "steps": 18
+    },
+    {
+      "name": "P6_principal_anchor",
+      "quantifier": "all-traces",
+      "formula": "",
+      "line": 216,
+      "committedStatus": "verified",
+      "steps": 6
+    },
+    {
+      "name": "P7_failed_settlement_recovery",
+      "quantifier": "exists-trace",
+      "formula": "",
+      "line": 224,
+      "committedStatus": "verified",
+      "steps": 25
+    }
+  ],
+  "modelEventKinds": [
+    "commitment",
+    "delegation",
+    "key_authorization",
+    "nonce_consumption",
+    "predicate_decision",
+    "predicate_registration",
+    "principal_anchor",
+    "settlement",
+    "settlement_failure",
+    "verification_verdict"
+  ],
+  "constraints": [
+    {
+      "id": "MC-P1",
+      "lemma": "P1_identity_binding",
+      "description": "A settlement's paying key must be an authorized key of the same agentId.",
+      "predicate": "settlement => exists key_authorization(agentId, payer) before settlement"
+    },
+    {
+      "id": "MC-P2",
+      "lemma": "P2_authorization_integrity",
+      "description": "A settlement must trace to a human delegation with the same commitment and nonce.",
+      "predicate": "settlement => exists delegation(commitment == settlement.commitment, nonce == settlement.nonce) before settlement"
+    },
+    {
+      "id": "MC-P3",
+      "lemma": "P3_no_replay",
+      "description": "A nonce may be consumed at most once.",
+      "predicate": "count(nonce_consumption by nonce) <= 1"
+    },
+    {
+      "id": "MC-P4",
+      "lemma": "P4_non_transferability",
+      "description": "Settlement fields must equal those the predicate decision admitted.",
+      "predicate": "settlement => exists predicate_decision(decision == allow, predicateId == settlement.predicateId) before settlement"
+    },
+    {
+      "id": "MC-P5",
+      "lemma": "P5_predicate_soundness",
+      "description": "The predicate digest bound in the settlement must be the delegated one.",
+      "predicate": "settlement => delegation.predicateDigest == settlement.predicateDigest"
+    },
+    {
+      "id": "MC-P6",
+      "lemma": "P6_principal_anchor",
+      "description": "Every settlement traces to an anchored human principal.",
+      "predicate": "settlement => exists principal_anchor(principal == settlement.principal) before settlement"
+    }
+  ],
+  "ruleTraces": [
+    {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "model",
+      "sourcePath": "formal/tamarin/clb-aligned.spthy:rule Anchor_Principal",
+      "scenarioId": "MODEL_RULE_Anchor_Principal",
+      "events": [
+        {
+          "seq": 1,
+          "label": "PrincipalAnchored",
+          "kind": "principal_anchor",
+          "subject": "$H",
+          "bindings": {
+            "arg0": "$H"
+          },
+          "origin": "rule Anchor_Principal"
+        }
+      ],
+      "notes": [
+        "Model rule #1; actions copied from the committed .spthy, not executed."
+      ]
+    },
+    {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "model",
+      "sourcePath": "formal/tamarin/clb-aligned.spthy:rule Register_Agent",
+      "scenarioId": "MODEL_RULE_Register_Agent",
+      "events": [
+        {
+          "seq": 1,
+          "label": "KeyAuthorized",
+          "kind": "key_authorization",
+          "subject": "$agentId",
+          "bindings": {
+            "arg0": "$agentId",
+            "arg1": "pk(~sk)"
+          },
+          "origin": "rule Register_Agent"
+        }
+      ],
+      "notes": [
+        "Model rule #2; actions copied from the committed .spthy, not executed."
+      ]
+    },
+    {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "model",
+      "sourcePath": "formal/tamarin/clb-aligned.spthy:rule Register_Predicate",
+      "scenarioId": "MODEL_RULE_Register_Predicate",
+      "events": [
+        {
+          "seq": 1,
+          "label": "PredicateRegistered",
+          "kind": "predicate_registration",
+          "subject": "pid",
+          "bindings": {
+            "arg0": "pid",
+            "arg1": "h(<payee, asset, chain, max, until>)"
+          },
+          "origin": "rule Register_Predicate"
+        }
+      ],
+      "notes": [
+        "Model rule #3; actions copied from the committed .spthy, not executed."
+      ]
+    },
+    {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "model",
+      "sourcePath": "formal/tamarin/clb-aligned.spthy:rule Authorize_ModeB",
+      "scenarioId": "MODEL_RULE_Authorize_ModeB",
+      "events": [
+        {
+          "seq": 1,
+          "label": "DelegatedB",
+          "kind": "delegation",
+          "subject": "$H",
+          "bindings": {
+            "arg0": "$H",
+            "arg1": "~mandateDigest",
+            "arg2": "~pid",
+            "arg3": "pd",
+            "arg4": "Cp",
+            "arg5": "nonce"
+          },
+          "origin": "rule Authorize_ModeB"
+        },
+        {
+          "seq": 2,
+          "label": "AdmitB",
+          "kind": "predicate_decision",
+          "subject": "$H",
+          "bindings": {
+            "arg0": "$H",
+            "arg1": "~pid",
+            "arg2": "$agentId",
+            "arg3": "~payee",
+            "arg4": "~asset",
+            "arg5": "~valueAtomic",
+            "arg6": "~chain",
+            "arg7": "~taskHash"
+          },
+          "origin": "rule Authorize_ModeB"
+        }
+      ],
+      "notes": [
+        "Model rule #4; actions copied from the committed .spthy, not executed."
+      ]
+    },
+    {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "model",
+      "sourcePath": "formal/tamarin/clb-aligned.spthy:rule Settle_ModeB",
+      "scenarioId": "MODEL_RULE_Settle_ModeB",
+      "events": [
+        {
+          "seq": 1,
+          "label": "Eq",
+          "kind": "commitment",
+          "subject": "Cp_in",
+          "bindings": {
+            "arg0": "Cp_in",
+            "arg1": "Cp"
+          },
+          "origin": "rule Settle_ModeB"
+        },
+        {
+          "seq": 2,
+          "label": "Eq",
+          "kind": "verification_verdict",
+          "subject": "verify(sig, Cp, pkH)",
+          "bindings": {
+            "arg0": "verify(sig, Cp, pkH)",
+            "arg1": "true"
+          },
+          "origin": "rule Settle_ModeB"
+        },
+        {
+          "seq": 3,
+          "label": "Paid",
+          "kind": "settlement",
+          "subject": "agentId",
+          "bindings": {
+            "arg0": "agentId",
+            "arg1": "pk(~sk)"
+          },
+          "origin": "rule Settle_ModeB"
+        },
+        {
+          "seq": 4,
+          "label": "GuardPassed",
+          "kind": "predicate_decision",
+          "subject": "pid",
+          "bindings": {
+            "arg0": "pid",
+            "arg1": "payee",
+            "arg2": "asset",
+            "arg3": "valueAtomic",
+            "arg4": "chain",
+            "arg5": "taskHash"
+          },
+          "origin": "rule Settle_ModeB"
+        },
+        {
+          "seq": 5,
+          "label": "SettledB",
+          "kind": "settlement",
+          "subject": "H",
+          "bindings": {
+            "arg0": "H",
+            "arg1": "mandateDigest",
+            "arg2": "pid",
+            "arg3": "pd",
+            "arg4": "agentId",
+            "arg5": "payee",
+            "arg6": "asset",
+            "arg7": "valueAtomic",
+            "arg8": "chain",
+            "arg9": "taskHash",
+            "arg10": "pk(~sk)"
+          },
+          "origin": "rule Settle_ModeB"
+        },
+        {
+          "seq": 6,
+          "label": "Consumed",
+          "kind": "nonce_consumption",
+          "subject": "nonce",
+          "bindings": {
+            "arg0": "nonce"
+          },
+          "origin": "rule Settle_ModeB"
+        }
+      ],
+      "notes": [
+        "Model rule #5; actions copied from the committed .spthy, not executed."
+      ]
+    },
+    {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "model",
+      "sourcePath": "formal/tamarin/clb-aligned.spthy:rule Failed_Settle_ModeB",
+      "scenarioId": "MODEL_RULE_Failed_Settle_ModeB",
+      "events": [
+        {
+          "seq": 1,
+          "label": "FailedSettle",
+          "kind": "settlement_failure",
+          "subject": "nonce",
+          "bindings": {
+            "arg0": "nonce",
+            "arg1": "pid",
+            "arg2": "H"
+          },
+          "origin": "rule Failed_Settle_ModeB"
+        }
+      ],
+      "notes": [
+        "Model rule #6; actions copied from the committed .spthy, not executed."
+      ]
+    },
+    {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "model",
+      "sourcePath": "formal/tamarin/clb-aligned.spthy:rule Settle_Recovered",
+      "scenarioId": "MODEL_RULE_Settle_Recovered",
+      "events": [
+        {
+          "seq": 1,
+          "label": "Eq",
+          "kind": "commitment",
+          "subject": "Cp_in",
+          "bindings": {
+            "arg0": "Cp_in",
+            "arg1": "Cp"
+          },
+          "origin": "rule Settle_Recovered"
+        },
+        {
+          "seq": 2,
+          "label": "Eq",
+          "kind": "verification_verdict",
+          "subject": "verify(sig, Cp, pkH)",
+          "bindings": {
+            "arg0": "verify(sig, Cp, pkH)",
+            "arg1": "true"
+          },
+          "origin": "rule Settle_Recovered"
+        },
+        {
+          "seq": 3,
+          "label": "Paid",
+          "kind": "settlement",
+          "subject": "agentId",
+          "bindings": {
+            "arg0": "agentId",
+            "arg1": "pk(~sk)"
+          },
+          "origin": "rule Settle_Recovered"
+        },
+        {
+          "seq": 4,
+          "label": "GuardPassed",
+          "kind": "predicate_decision",
+          "subject": "pid",
+          "bindings": {
+            "arg0": "pid",
+            "arg1": "payee",
+            "arg2": "asset",
+            "arg3": "valueAtomic",
+            "arg4": "chain",
+            "arg5": "taskHash"
+          },
+          "origin": "rule Settle_Recovered"
+        },
+        {
+          "seq": 5,
+          "label": "SettledB",
+          "kind": "settlement",
+          "subject": "H",
+          "bindings": {
+            "arg0": "H",
+            "arg1": "mandateDigest",
+            "arg2": "pid",
+            "arg3": "pd",
+            "arg4": "agentId",
+            "arg5": "payee",
+            "arg6": "asset",
+            "arg7": "valueAtomic",
+            "arg8": "chain",
+            "arg9": "taskHash",
+            "arg10": "pk(~sk)"
+          },
+          "origin": "rule Settle_Recovered"
+        },
+        {
+          "seq": 6,
+          "label": "Consumed",
+          "kind": "nonce_consumption",
+          "subject": "nonce",
+          "bindings": {
+            "arg0": "nonce"
+          },
+          "origin": "rule Settle_Recovered"
+        }
+      ],
+      "notes": [
+        "Model rule #7; actions copied from the committed .spthy, not executed."
+      ]
+    }
+  ],
+  "warnings": [
+    "Tamarin was NOT executed: this generator only parses committed artifacts.",
+    "Model vocabulary is Mode B (delegated/predicate) only; Mode A exact traces are outside the model alphabet.",
+    "Revocation epochs (RCLB) are absent from clb-aligned.spthy; RCLB scenarios are reported as out-of-model."
+  ]
+}

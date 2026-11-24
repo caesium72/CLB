@@ -1,0 +1,1202 @@
+theory CLBAligned
+
+begin
+
+// Function signature and definition of the equational theory E
+
+functions: fst/1, h/1, pair/2, pk/1, sign/2, snd/1, true/0, verify/3
+equations:
+    fst(<x.1, x.2>) = x.1,
+    snd(<x.1, x.2>) = x.2,
+    verify(sign(x.1, x.2), x.1, pk(x.2)) = true
+
+restriction Equality:
+  "∀ x y #i. (Eq( x, y ) @ #i) ⇒ (x = y)"
+  // safety formula
+
+  /*
+  expanded formula:
+  "∀ x y #i. (Eq( x, y ) @ #i) ⇒ (x = y)"
+  */
+
+restriction UniquePredicateRegistration:
+  "∀ pid pd1 pd2 #i #j.
+    ((PredicateRegistered( pid, pd1 ) @ #i) ∧
+     (PredicateRegistered( pid, pd2 ) @ #j)) ⇒
+    (#i = #j)"
+  // safety formula
+
+  /*
+  expanded formula:
+  "∀ pid pd1 pd2 #i #j.
+    ((PredicateRegistered( pid, pd1 ) @ #i) ∧
+     (PredicateRegistered( pid, pd2 ) @ #j)) ⇒
+    (#i = #j)"
+  */
+
+rule (modulo E) Anchor_Principal:
+   [ Fr( ~hsk ) ]
+  --[ PrincipalAnchored( $H ) ]->
+   [
+   !Anchored( $H ), !HumanPk( $H, pk(~hsk) ), !HumanSk( $H, ~hsk ),
+   Out( pk(~hsk) )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Register_Agent:
+   [ Fr( ~sk ) ]
+  --[ KeyAuthorized( $agentId, pk(~sk) ) ]->
+   [ !AgentKey( $agentId, ~sk ), Out( pk(~sk) ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Register_Predicate:
+   [ In( <pid, payee, asset, chain, max, until> ) ]
+  --[ PredicateRegistered( pid, h(<payee, asset, chain, max, until>) ) ]->
+   [
+   !PredConfig( pid, payee, asset, chain, max, until ),
+   !PredDigest( pid, h(<payee, asset, chain, max, until>) )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Authorize_ModeB:
+   [
+   !Anchored( $H ), !HumanSk( $H, ~hsk ), Fr( ~pid ), Fr( ~mandateDigest ),
+   Fr( ~payee ), Fr( ~asset ), Fr( ~chain ), Fr( ~max ), Fr( ~until ),
+   Fr( ~valueAtomic ), Fr( ~taskHash )
+   ]
+  --[
+  DelegatedB( $H, ~mandateDigest, ~pid,
+              h(<~payee, ~asset, ~chain, ~max, ~until>),
+              h(<$H, ~mandateDigest, ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>), 
+                 ~chain, $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash>),
+              h(h(<$H, ~mandateDigest, ~pid, 
+                   h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                   ~asset, ~valueAtomic, ~taskHash>))
+  ),
+  AdmitB( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic, ~chain,
+          ~taskHash
+  )
+  ]->
+   [
+   Out( <~pid, ~mandateDigest, h(<~payee, ~asset, ~chain, ~max, ~until>), 
+         sign(h(<$H, ~mandateDigest, ~pid, 
+                 h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                 ~asset, ~valueAtomic, ~taskHash>),
+              ~hsk), 
+         h(<$H, ~mandateDigest, ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>), 
+            ~chain, $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash>), 
+         h(h(<$H, ~mandateDigest, ~pid, 
+              h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+              ~asset, ~valueAtomic, ~taskHash>)), 
+         $agentId, ~payee, ~asset, ~valueAtomic, ~chain, ~taskHash, ~max, ~until>
+   ),
+   NonceUnused( h(h(<$H, ~mandateDigest, ~pid, 
+                     h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                     ~asset, ~valueAtomic, ~taskHash>))
+   ),
+   !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic, ~chain,
+                ~taskHash
+   )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Settle_ModeB:
+   [
+   In( <pid, mandateDigest, H, sig, Cp_in, 
+        h(h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+             agentId, payee, asset, valueAtomic, taskHash>)), 
+        agentId, payee, asset, valueAtomic, chain, taskHash>
+   ),
+   !Anchored( H ), !HumanPk( H, pkH ), !AgentKey( agentId, ~sk ),
+   !PredConfig( pid, payee, asset, chain, max, until ),
+   !PredDigest( pid, h(<payee, asset, chain, max, until>) ),
+   !Admissible( H, pid, agentId, payee, asset, valueAtomic, chain, taskHash
+   ),
+   NonceUnused( h(h(<H, mandateDigest, pid, 
+                     h(<payee, asset, chain, max, until>), chain, agentId, payee, asset, 
+                     valueAtomic, taskHash>))
+   )
+   ]
+  --[
+  Eq( Cp_in,
+      h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+         agentId, payee, asset, valueAtomic, taskHash>)
+  ),
+  Eq( verify(sig,
+             h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+                agentId, payee, asset, valueAtomic, taskHash>),
+             pkH),
+      true
+  ),
+  Paid( agentId, pk(~sk) ),
+  GuardPassed( pid, payee, asset, valueAtomic, chain, taskHash ),
+  SettledB( H, mandateDigest, pid, h(<payee, asset, chain, max, until>),
+            agentId, payee, asset, valueAtomic, chain, taskHash, pk(~sk)
+  ),
+  Consumed( h(h(<H, mandateDigest, pid, 
+                 h(<payee, asset, chain, max, until>), chain, agentId, payee, asset, 
+                 valueAtomic, taskHash>))
+  )
+  ]->
+   [ ]
+
+  /*
+  rule (modulo AC) Settle_ModeB:
+     [
+     In( <pid, mandateDigest, H, sig, Cp_in, 
+          h(h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+               agentId, payee, asset, valueAtomic, taskHash>)), 
+          agentId, payee, asset, valueAtomic, chain, taskHash>
+     ),
+     !Anchored( H ), !HumanPk( H, pkH ), !AgentKey( agentId, ~sk ),
+     !PredConfig( pid, payee, asset, chain, max, until ),
+     !PredDigest( pid, h(<payee, asset, chain, max, until>) ),
+     !Admissible( H, pid, agentId, payee, asset, valueAtomic, chain, taskHash
+     ),
+     NonceUnused( h(h(<H, mandateDigest, pid, 
+                       h(<payee, asset, chain, max, until>), chain, agentId, payee, asset, 
+                       valueAtomic, taskHash>))
+     )
+     ]
+    --[
+    Eq( Cp_in,
+        h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+           agentId, payee, asset, valueAtomic, taskHash>)
+    ),
+    Eq( z, true ), Paid( agentId, pk(~sk) ),
+    GuardPassed( pid, payee, asset, valueAtomic, chain, taskHash ),
+    SettledB( H, mandateDigest, pid, h(<payee, asset, chain, max, until>),
+              agentId, payee, asset, valueAtomic, chain, taskHash, pk(~sk)
+    ),
+    Consumed( h(h(<H, mandateDigest, pid, 
+                   h(<payee, asset, chain, max, until>), chain, agentId, payee, asset, 
+                   valueAtomic, taskHash>))
+    )
+    ]->
+     [ ]
+    variants (modulo AC)
+    1. H     = H.17
+       agentId
+             = agentId.17
+       asset = asset.17
+       chain = chain.17
+       mandateDigest
+             = mandateDigest.17
+       max   = max.17
+       payee = payee.17
+       pid   = pid.17
+       pkH   = pkH.17
+       sig   = sig.17
+       taskHash
+             = taskHash.17
+       until = until.17
+       valueAtomic
+             = valueAtomic.17
+       z     = verify(sig.17,
+                      h(<H.17, mandateDigest.17, pid.17, 
+                         h(<payee.17, asset.17, chain.17, max.17, until.17>), chain.17, 
+                         agentId.17, payee.17, asset.17, valueAtomic.17, taskHash.17>),
+                      pkH.17)
+    
+    2. H     = x.17
+       agentId
+             = x.18
+       asset = x.19
+       chain = x.20
+       mandateDigest
+             = x.21
+       max   = x.22
+       payee = x.23
+       pid   = x.24
+       pkH   = pk(x.25)
+       sig   = sign(h(<x.17, x.21, x.24, h(<x.23, x.19, x.20, x.22, x.26>), 
+                       x.20, x.18, x.23, x.19, x.27, x.28>),
+                    x.25)
+       taskHash
+             = x.28
+       until = x.26
+       valueAtomic
+             = x.27
+       z     = true
+  */
+
+rule (modulo E) Failed_Settle_ModeB:
+   [
+   In( <pid, H, nonce> ), !Anchored( H ), !PredDigest( pid, pd ),
+   NonceUnused( nonce )
+   ]
+  --[ FailedSettle( nonce, pid, H ) ]->
+   [ NonceAvailable( nonce ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Settle_Recovered:
+   [
+   In( <pid, mandateDigest, H, sig, Cp_in, 
+        h(h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+             agentId, payee, asset, valueAtomic, taskHash>)), 
+        agentId, payee, asset, valueAtomic, chain, taskHash>
+   ),
+   !Anchored( H ), !HumanPk( H, pkH ), !AgentKey( agentId, ~sk ),
+   !PredConfig( pid, payee, asset, chain, max, until ),
+   !PredDigest( pid, h(<payee, asset, chain, max, until>) ),
+   !Admissible( H, pid, agentId, payee, asset, valueAtomic, chain, taskHash
+   ),
+   NonceAvailable( h(h(<H, mandateDigest, pid, 
+                        h(<payee, asset, chain, max, until>), chain, agentId, payee, asset, 
+                        valueAtomic, taskHash>))
+   )
+   ]
+  --[
+  Eq( Cp_in,
+      h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+         agentId, payee, asset, valueAtomic, taskHash>)
+  ),
+  Eq( verify(sig,
+             h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+                agentId, payee, asset, valueAtomic, taskHash>),
+             pkH),
+      true
+  ),
+  Paid( agentId, pk(~sk) ),
+  GuardPassed( pid, payee, asset, valueAtomic, chain, taskHash ),
+  SettledB( H, mandateDigest, pid, h(<payee, asset, chain, max, until>),
+            agentId, payee, asset, valueAtomic, chain, taskHash, pk(~sk)
+  ),
+  Consumed( h(h(<H, mandateDigest, pid, 
+                 h(<payee, asset, chain, max, until>), chain, agentId, payee, asset, 
+                 valueAtomic, taskHash>))
+  )
+  ]->
+   [ ]
+
+  /*
+  rule (modulo AC) Settle_Recovered:
+     [
+     In( <pid, mandateDigest, H, sig, Cp_in, 
+          h(h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+               agentId, payee, asset, valueAtomic, taskHash>)), 
+          agentId, payee, asset, valueAtomic, chain, taskHash>
+     ),
+     !Anchored( H ), !HumanPk( H, pkH ), !AgentKey( agentId, ~sk ),
+     !PredConfig( pid, payee, asset, chain, max, until ),
+     !PredDigest( pid, h(<payee, asset, chain, max, until>) ),
+     !Admissible( H, pid, agentId, payee, asset, valueAtomic, chain, taskHash
+     ),
+     NonceAvailable( h(h(<H, mandateDigest, pid, 
+                          h(<payee, asset, chain, max, until>), chain, agentId, payee, asset, 
+                          valueAtomic, taskHash>))
+     )
+     ]
+    --[
+    Eq( Cp_in,
+        h(<H, mandateDigest, pid, h(<payee, asset, chain, max, until>), chain, 
+           agentId, payee, asset, valueAtomic, taskHash>)
+    ),
+    Eq( z, true ), Paid( agentId, pk(~sk) ),
+    GuardPassed( pid, payee, asset, valueAtomic, chain, taskHash ),
+    SettledB( H, mandateDigest, pid, h(<payee, asset, chain, max, until>),
+              agentId, payee, asset, valueAtomic, chain, taskHash, pk(~sk)
+    ),
+    Consumed( h(h(<H, mandateDigest, pid, 
+                   h(<payee, asset, chain, max, until>), chain, agentId, payee, asset, 
+                   valueAtomic, taskHash>))
+    )
+    ]->
+     [ ]
+    variants (modulo AC)
+    1. H     = H.17
+       agentId
+             = agentId.17
+       asset = asset.17
+       chain = chain.17
+       mandateDigest
+             = mandateDigest.17
+       max   = max.17
+       payee = payee.17
+       pid   = pid.17
+       pkH   = pkH.17
+       sig   = sig.17
+       taskHash
+             = taskHash.17
+       until = until.17
+       valueAtomic
+             = valueAtomic.17
+       z     = verify(sig.17,
+                      h(<H.17, mandateDigest.17, pid.17, 
+                         h(<payee.17, asset.17, chain.17, max.17, until.17>), chain.17, 
+                         agentId.17, payee.17, asset.17, valueAtomic.17, taskHash.17>),
+                      pkH.17)
+    
+    2. H     = x.17
+       agentId
+             = x.18
+       asset = x.19
+       chain = x.20
+       mandateDigest
+             = x.21
+       max   = x.22
+       payee = x.23
+       pid   = x.24
+       pkH   = pk(x.25)
+       sig   = sign(h(<x.17, x.21, x.24, h(<x.23, x.19, x.20, x.22, x.26>), 
+                       x.20, x.18, x.23, x.19, x.27, x.28>),
+                    x.25)
+       taskHash
+             = x.28
+       until = x.26
+       valueAtomic
+             = x.27
+       z     = true
+  */
+
+lemma exec_aligned_modeB:
+  exists-trace
+  "∃ H md pid pd aid payee asset val chain th K #s.
+    SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ H md pid pd aid payee asset val chain th K #s.
+  (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s)"
+*/
+simplify
+solve( SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K
+       ) @ #s )
+  case Settle_ModeB
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #s )
+          case Register_Predicate
+          solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #s )
+            case Register_Predicate
+            solve( !Admissible( $H, pid, $agentId, payee, asset, val, chain, th
+                   ) ▶₆ #s )
+              case Authorize_ModeB
+              solve( NonceUnused( h(h(<$H, md, ~pid, 
+                                       h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, ~payee, 
+                                       ~asset, ~valueAtomic, ~taskHash>))
+                     ) ▶₇ #s )
+                case Authorize_ModeB
+                solve( !KU( sign(h(<$H, ~mandateDigest, ~pid, 
+                                    h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                                    ~asset, ~valueAtomic, ~taskHash>),
+                                 ~hsk)
+                       ) @ #vk.8 )
+                  case Authorize_ModeB
+                  solve( !KU( ~pid ) @ #vk.2 )
+                    case Authorize_ModeB
+                    solve( !KU( ~payee ) @ #vk.16 )
+                      case Authorize_ModeB
+                      solve( !KU( ~asset ) @ #vk.19 )
+                        case Authorize_ModeB
+                        solve( !KU( ~valueAtomic ) @ #vk.22 )
+                          case Authorize_ModeB
+                          solve( !KU( ~chain ) @ #vk.24 )
+                            case Authorize_ModeB
+                            solve( !KU( ~taskHash ) @ #vk.26 )
+                              case Authorize_ModeB
+                              solve( !KU( ~mandateDigest ) @ #vk.22 )
+                                case Authorize_ModeB
+                                solve( !KU( ~max ) @ #vk.28 )
+                                  case Authorize_ModeB
+                                  solve( !KU( ~until ) @ #vk.29 )
+                                    case Authorize_ModeB
+                                    solve( !KU( h(h(<$H, ~mandateDigest, ~pid, 
+                                                     h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, 
+                                                     $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash>))
+                                           ) @ #vk.28 )
+                                      case Authorize_ModeB
+                                      solve( !KU( h(<$H, ~mandateDigest, ~pid, 
+                                                     h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, 
+                                                     $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash>)
+                                             ) @ #vk.28 )
+                                        case Authorize_ModeB
+                                        SOLVED // trace found
+                                      qed
+                                    qed
+                                  qed
+                                qed
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma P1_identity_binding:
+  all-traces
+  "∀ aid K #s.
+    (Paid( aid, K ) @ #s) ⇒ (∃ #r. KeyAuthorized( aid, K ) @ #r)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ aid K #s.
+  (Paid( aid, K ) @ #s) ∧ ∀ #r. (KeyAuthorized( aid, K ) @ #r) ⇒ ⊥"
+*/
+simplify
+solve( Paid( aid, K ) @ #s )
+  case Settle_ModeB
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        by contradiction /* from formulas */
+      qed
+    qed
+  qed
+next
+  case Settle_Recovered
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        by contradiction /* from formulas */
+      qed
+    qed
+  qed
+qed
+
+lemma P2_authorization_integrity:
+  all-traces
+  "∀ H md pid pd aid payee asset val chain th K #s.
+    (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s) ⇒
+    (∃ Cp n #d. DelegatedB( H, md, pid, pd, Cp, n ) @ #d)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ H md pid pd aid payee asset val chain th K #s.
+  (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s)
+ ∧
+  ∀ Cp n #d. (DelegatedB( H, md, pid, pd, Cp, n ) @ #d) ⇒ ⊥"
+*/
+simplify
+solve( SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K
+       ) @ #s )
+  case Settle_ModeB
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #s )
+          case Register_Predicate
+          solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #s )
+            case Register_Predicate
+            solve( !Admissible( $H, pid, $agentId, payee, asset, val, chain, th
+                   ) ▶₆ #s )
+              case Authorize_ModeB
+              solve( NonceUnused( h(h(<$H, md, ~pid, 
+                                       h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, ~payee, 
+                                       ~asset, ~valueAtomic, ~taskHash>))
+                     ) ▶₇ #s )
+                case Authorize_ModeB
+                by contradiction /* from formulas */
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+next
+  case Settle_Recovered
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #s )
+          case Register_Predicate
+          solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #s )
+            case Register_Predicate
+            solve( !Admissible( $H, pid, $agentId, payee, asset, val, chain, th
+                   ) ▶₆ #s )
+              case Authorize_ModeB
+              solve( NonceAvailable( h(h(<$H, md, ~pid, 
+                                          h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, ~payee, 
+                                          ~asset, ~valueAtomic, ~taskHash>))
+                     ) ▶₇ #s )
+                case Failed_Settle_ModeB
+                by contradiction /* from formulas */
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma P3_no_replay:
+  all-traces
+  "∀ n #i #j. ((Consumed( n ) @ #i) ∧ (Consumed( n ) @ #j)) ⇒ (#i = #j)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ n #i #j. (Consumed( n ) @ #i) ∧ (Consumed( n ) @ #j) ∧ ¬(#i = #j)"
+*/
+simplify
+solve( (#i < #j)  ∥ (#j < #i) )
+  case case_1
+  solve( Consumed( n ) @ #i )
+    case Settle_ModeB
+    solve( !Anchored( H ) ▶₁ #i )
+      case Anchor_Principal
+      solve( !HumanPk( $H, pk(x) ) ▶₂ #i )
+        case Anchor_Principal
+        solve( !AgentKey( agentId, ~sk ) ▶₃ #i )
+          case Register_Agent
+          solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #i )
+            case Register_Predicate
+            solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #i )
+              case Register_Predicate
+              solve( !Admissible( $H, pid, $agentId, payee, asset, valueAtomic, chain,
+                                  taskHash
+                     ) ▶₆ #i )
+                case Authorize_ModeB
+                solve( NonceUnused( h(h(<$H, mandateDigest, ~pid, 
+                                         h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, ~payee, 
+                                         ~asset, ~valueAtomic, ~taskHash>))
+                       ) ▶₇ #i )
+                  case Authorize_ModeB
+                  solve( Consumed( h(h(<$H, ~mandateDigest, ~pid, 
+                                        h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                                        ~asset, ~valueAtomic, ~taskHash>))
+                         ) @ #j )
+                    case Settle_ModeB
+                    solve( !Anchored( $H ) ▶₁ #j )
+                      case Anchor_Principal
+                      solve( !HumanPk( $H, pk(x) ) ▶₂ #j )
+                        case Anchor_Principal
+                        solve( !AgentKey( $agentId, ~sk.1 ) ▶₃ #j )
+                          case Register_Agent
+                          solve( !PredConfig( ~pid, ~payee, ~asset, ~chain, ~max, ~until ) ▶₄ #j )
+                            case Register_Predicate
+                            solve( !PredDigest( ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                                   ) ▶₅ #j )
+                              case Register_Predicate
+                              solve( !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic,
+                                                  ~chain, ~taskHash
+                                     ) ▶₆ #j )
+                                case Authorize_ModeB
+                                solve( NonceUnused( h(h(<$H, ~mandateDigest, ~pid, 
+                                                         h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, 
+                                                         $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash>))
+                                       ) ▶₇ #j )
+                                  case Authorize_ModeB
+                                  by contradiction /* cyclic */
+                                qed
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  next
+                    case Settle_Recovered
+                    solve( !Anchored( $H ) ▶₁ #j )
+                      case Anchor_Principal
+                      solve( !HumanPk( $H, pk(x) ) ▶₂ #j )
+                        case Anchor_Principal
+                        solve( !AgentKey( $agentId, ~sk.1 ) ▶₃ #j )
+                          case Register_Agent
+                          solve( !PredConfig( ~pid, ~payee, ~asset, ~chain, ~max, ~until ) ▶₄ #j )
+                            case Register_Predicate
+                            solve( !PredDigest( ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                                   ) ▶₅ #j )
+                              case Register_Predicate
+                              solve( !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic,
+                                                  ~chain, ~taskHash
+                                     ) ▶₆ #j )
+                                case Authorize_ModeB
+                                by solve( NonceAvailable( h(h(<$H, ~mandateDigest, ~pid, 
+                                                               h(<~payee, ~asset, ~chain, ~max, ~until>), 
+                                                               ~chain, $agentId, ~payee, ~asset, 
+                                                               ~valueAtomic, ~taskHash>))
+                                          ) ▶₇ #j )
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  next
+    case Settle_Recovered
+    solve( !Anchored( H ) ▶₁ #i )
+      case Anchor_Principal
+      solve( !HumanPk( $H, pk(x) ) ▶₂ #i )
+        case Anchor_Principal
+        solve( !AgentKey( agentId, ~sk ) ▶₃ #i )
+          case Register_Agent
+          solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #i )
+            case Register_Predicate
+            solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #i )
+              case Register_Predicate
+              solve( !Admissible( $H, pid, $agentId, payee, asset, valueAtomic, chain,
+                                  taskHash
+                     ) ▶₆ #i )
+                case Authorize_ModeB
+                solve( NonceAvailable( h(h(<$H, mandateDigest, ~pid, 
+                                            h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, 
+                                            ~payee, ~asset, ~valueAtomic, ~taskHash>))
+                       ) ▶₇ #i )
+                  case Failed_Settle_ModeB
+                  solve( Consumed( h(h(<$H, ~mandateDigest, ~pid, 
+                                        h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                                        ~asset, ~valueAtomic, ~taskHash>))
+                         ) @ #j )
+                    case Settle_ModeB
+                    solve( !Anchored( $H ) ▶₁ #j )
+                      case Anchor_Principal
+                      solve( !HumanPk( $H, pk(x) ) ▶₂ #j )
+                        case Anchor_Principal
+                        solve( !AgentKey( $agentId, ~sk.1 ) ▶₃ #j )
+                          case Register_Agent
+                          solve( !PredConfig( ~pid, ~payee, ~asset, ~chain, ~max, ~until ) ▶₄ #j )
+                            case Register_Predicate
+                            solve( !PredDigest( ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                                   ) ▶₅ #j )
+                              case Register_Predicate
+                              solve( !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic,
+                                                  ~chain, ~taskHash
+                                     ) ▶₆ #j )
+                                case Authorize_ModeB
+                                by solve( NonceUnused( h(h(<$H, ~mandateDigest, ~pid, 
+                                                            h(<~payee, ~asset, ~chain, ~max, ~until>), 
+                                                            ~chain, $agentId, ~payee, ~asset, ~valueAtomic, 
+                                                            ~taskHash>))
+                                          ) ▶₇ #j )
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  next
+                    case Settle_Recovered
+                    solve( !Anchored( $H ) ▶₁ #j )
+                      case Anchor_Principal
+                      solve( !HumanPk( $H, pk(x) ) ▶₂ #j )
+                        case Anchor_Principal
+                        solve( !AgentKey( $agentId, ~sk.1 ) ▶₃ #j )
+                          case Register_Agent
+                          solve( !PredConfig( ~pid, ~payee, ~asset, ~chain, ~max, ~until ) ▶₄ #j )
+                            case Register_Predicate
+                            solve( !PredDigest( ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                                   ) ▶₅ #j )
+                              case Register_Predicate
+                              solve( !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic,
+                                                  ~chain, ~taskHash
+                                     ) ▶₆ #j )
+                                case Authorize_ModeB
+                                solve( NonceAvailable( h(h(<$H, ~mandateDigest, ~pid, 
+                                                            h(<~payee, ~asset, ~chain, ~max, ~until>), 
+                                                            ~chain, $agentId, ~payee, ~asset, ~valueAtomic, 
+                                                            ~taskHash>))
+                                       ) ▶₇ #j )
+                                  case Failed_Settle_ModeB
+                                  by contradiction /* cyclic */
+                                qed
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+next
+  case case_2
+  solve( Consumed( n ) @ #i )
+    case Settle_ModeB
+    solve( !Anchored( H ) ▶₁ #i )
+      case Anchor_Principal
+      solve( !HumanPk( $H, pk(x) ) ▶₂ #i )
+        case Anchor_Principal
+        solve( !AgentKey( agentId, ~sk ) ▶₃ #i )
+          case Register_Agent
+          solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #i )
+            case Register_Predicate
+            solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #i )
+              case Register_Predicate
+              solve( !Admissible( $H, pid, $agentId, payee, asset, valueAtomic, chain,
+                                  taskHash
+                     ) ▶₆ #i )
+                case Authorize_ModeB
+                solve( NonceUnused( h(h(<$H, mandateDigest, ~pid, 
+                                         h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, ~payee, 
+                                         ~asset, ~valueAtomic, ~taskHash>))
+                       ) ▶₇ #i )
+                  case Authorize_ModeB
+                  solve( Consumed( h(h(<$H, ~mandateDigest, ~pid, 
+                                        h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                                        ~asset, ~valueAtomic, ~taskHash>))
+                         ) @ #j )
+                    case Settle_ModeB
+                    solve( !Anchored( $H ) ▶₁ #j )
+                      case Anchor_Principal
+                      solve( !HumanPk( $H, pk(x) ) ▶₂ #j )
+                        case Anchor_Principal
+                        solve( !AgentKey( $agentId, ~sk.1 ) ▶₃ #j )
+                          case Register_Agent
+                          solve( !PredConfig( ~pid, ~payee, ~asset, ~chain, ~max, ~until ) ▶₄ #j )
+                            case Register_Predicate
+                            solve( !PredDigest( ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                                   ) ▶₅ #j )
+                              case Register_Predicate
+                              solve( !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic,
+                                                  ~chain, ~taskHash
+                                     ) ▶₆ #j )
+                                case Authorize_ModeB
+                                solve( NonceUnused( h(h(<$H, ~mandateDigest, ~pid, 
+                                                         h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, 
+                                                         $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash>))
+                                       ) ▶₇ #j )
+                                  case Authorize_ModeB
+                                  by contradiction /* cyclic */
+                                qed
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  next
+                    case Settle_Recovered
+                    solve( !Anchored( $H ) ▶₁ #j )
+                      case Anchor_Principal
+                      solve( !HumanPk( $H, pk(x) ) ▶₂ #j )
+                        case Anchor_Principal
+                        solve( !AgentKey( $agentId, ~sk.1 ) ▶₃ #j )
+                          case Register_Agent
+                          solve( !PredConfig( ~pid, ~payee, ~asset, ~chain, ~max, ~until ) ▶₄ #j )
+                            case Register_Predicate
+                            solve( !PredDigest( ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                                   ) ▶₅ #j )
+                              case Register_Predicate
+                              solve( !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic,
+                                                  ~chain, ~taskHash
+                                     ) ▶₆ #j )
+                                case Authorize_ModeB
+                                by solve( NonceAvailable( h(h(<$H, ~mandateDigest, ~pid, 
+                                                               h(<~payee, ~asset, ~chain, ~max, ~until>), 
+                                                               ~chain, $agentId, ~payee, ~asset, 
+                                                               ~valueAtomic, ~taskHash>))
+                                          ) ▶₇ #j )
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  next
+    case Settle_Recovered
+    solve( !Anchored( H ) ▶₁ #i )
+      case Anchor_Principal
+      solve( !HumanPk( $H, pk(x) ) ▶₂ #i )
+        case Anchor_Principal
+        solve( !AgentKey( agentId, ~sk ) ▶₃ #i )
+          case Register_Agent
+          solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #i )
+            case Register_Predicate
+            solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #i )
+              case Register_Predicate
+              solve( !Admissible( $H, pid, $agentId, payee, asset, valueAtomic, chain,
+                                  taskHash
+                     ) ▶₆ #i )
+                case Authorize_ModeB
+                solve( NonceAvailable( h(h(<$H, mandateDigest, ~pid, 
+                                            h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, 
+                                            ~payee, ~asset, ~valueAtomic, ~taskHash>))
+                       ) ▶₇ #i )
+                  case Failed_Settle_ModeB
+                  solve( Consumed( h(h(<$H, ~mandateDigest, ~pid, 
+                                        h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                                        ~asset, ~valueAtomic, ~taskHash>))
+                         ) @ #j )
+                    case Settle_ModeB
+                    solve( !Anchored( $H ) ▶₁ #j )
+                      case Anchor_Principal
+                      solve( !HumanPk( $H, pk(x) ) ▶₂ #j )
+                        case Anchor_Principal
+                        solve( !AgentKey( $agentId, ~sk.1 ) ▶₃ #j )
+                          case Register_Agent
+                          solve( !PredConfig( ~pid, ~payee, ~asset, ~chain, ~max, ~until ) ▶₄ #j )
+                            case Register_Predicate
+                            solve( !PredDigest( ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                                   ) ▶₅ #j )
+                              case Register_Predicate
+                              solve( !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic,
+                                                  ~chain, ~taskHash
+                                     ) ▶₆ #j )
+                                case Authorize_ModeB
+                                by solve( NonceUnused( h(h(<$H, ~mandateDigest, ~pid, 
+                                                            h(<~payee, ~asset, ~chain, ~max, ~until>), 
+                                                            ~chain, $agentId, ~payee, ~asset, ~valueAtomic, 
+                                                            ~taskHash>))
+                                          ) ▶₇ #j )
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  next
+                    case Settle_Recovered
+                    solve( !Anchored( $H ) ▶₁ #j )
+                      case Anchor_Principal
+                      solve( !HumanPk( $H, pk(x) ) ▶₂ #j )
+                        case Anchor_Principal
+                        solve( !AgentKey( $agentId, ~sk.1 ) ▶₃ #j )
+                          case Register_Agent
+                          solve( !PredConfig( ~pid, ~payee, ~asset, ~chain, ~max, ~until ) ▶₄ #j )
+                            case Register_Predicate
+                            solve( !PredDigest( ~pid, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                                   ) ▶₅ #j )
+                              case Register_Predicate
+                              solve( !Admissible( $H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic,
+                                                  ~chain, ~taskHash
+                                     ) ▶₆ #j )
+                                case Authorize_ModeB
+                                solve( NonceAvailable( h(h(<$H, ~mandateDigest, ~pid, 
+                                                            h(<~payee, ~asset, ~chain, ~max, ~until>), 
+                                                            ~chain, $agentId, ~payee, ~asset, ~valueAtomic, 
+                                                            ~taskHash>))
+                                       ) ▶₇ #j )
+                                  case Failed_Settle_ModeB
+                                  by contradiction /* cyclic */
+                                qed
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma P4_non_transferability:
+  all-traces
+  "∀ H md pid pd aid payee asset val chain th K #s.
+    (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s) ⇒
+    (∃ #d. AdmitB( H, pid, aid, payee, asset, val, chain, th ) @ #d)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ H md pid pd aid payee asset val chain th K #s.
+  (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s)
+ ∧
+  ∀ #d. (AdmitB( H, pid, aid, payee, asset, val, chain, th ) @ #d) ⇒ ⊥"
+*/
+simplify
+solve( SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K
+       ) @ #s )
+  case Settle_ModeB
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #s )
+          case Register_Predicate
+          solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #s )
+            case Register_Predicate
+            solve( !Admissible( $H, pid, $agentId, payee, asset, val, chain, th
+                   ) ▶₆ #s )
+              case Authorize_ModeB
+              by contradiction /* from formulas */
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+next
+  case Settle_Recovered
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #s )
+          case Register_Predicate
+          solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #s )
+            case Register_Predicate
+            solve( !Admissible( $H, pid, $agentId, payee, asset, val, chain, th
+                   ) ▶₆ #s )
+              case Authorize_ModeB
+              by contradiction /* from formulas */
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma P5_predicate_soundness:
+  all-traces
+  "∀ H md pid pd aid payee asset val chain th K #s.
+    (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s) ⇒
+    (∃ Cp n #d. DelegatedB( H, md, pid, pd, Cp, n ) @ #d)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ H md pid pd aid payee asset val chain th K #s.
+  (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s)
+ ∧
+  ∀ Cp n #d. (DelegatedB( H, md, pid, pd, Cp, n ) @ #d) ⇒ ⊥"
+*/
+simplify
+solve( SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K
+       ) @ #s )
+  case Settle_ModeB
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #s )
+          case Register_Predicate
+          solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #s )
+            case Register_Predicate
+            solve( !Admissible( $H, pid, $agentId, payee, asset, val, chain, th
+                   ) ▶₆ #s )
+              case Authorize_ModeB
+              solve( NonceUnused( h(h(<$H, md, ~pid, 
+                                       h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, ~payee, 
+                                       ~asset, ~valueAtomic, ~taskHash>))
+                     ) ▶₇ #s )
+                case Authorize_ModeB
+                by contradiction /* from formulas */
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+next
+  case Settle_Recovered
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    solve( !HumanPk( $H, pk(x) ) ▶₂ #s )
+      case Anchor_Principal
+      solve( !AgentKey( aid, ~sk ) ▶₃ #s )
+        case Register_Agent
+        solve( !PredConfig( pid, payee, asset, chain, max, until ) ▶₄ #s )
+          case Register_Predicate
+          solve( !PredDigest( pid, h(<payee, asset, chain, max, until>) ) ▶₅ #s )
+            case Register_Predicate
+            solve( !Admissible( $H, pid, $agentId, payee, asset, val, chain, th
+                   ) ▶₆ #s )
+              case Authorize_ModeB
+              solve( NonceAvailable( h(h(<$H, md, ~pid, 
+                                          h(<~payee, ~asset, ~chain, max, until>), ~chain, $agentId, ~payee, 
+                                          ~asset, ~valueAtomic, ~taskHash>))
+                     ) ▶₇ #s )
+                case Failed_Settle_ModeB
+                by contradiction /* from formulas */
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma P6_principal_anchor:
+  all-traces
+  "∀ H md pid pd aid payee asset val chain th K #s.
+    (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s) ⇒
+    (∃ #a. PrincipalAnchored( H ) @ #a)"
+/*
+guarded formula characterizing all counter-examples:
+"∃ H md pid pd aid payee asset val chain th K #s.
+  (SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K ) @ #s)
+ ∧
+  ∀ #a. (PrincipalAnchored( H ) @ #a) ⇒ ⊥"
+*/
+simplify
+solve( SettledB( H, md, pid, pd, aid, payee, asset, val, chain, th, K
+       ) @ #s )
+  case Settle_ModeB
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    by contradiction /* from formulas */
+  qed
+next
+  case Settle_Recovered
+  solve( !Anchored( H ) ▶₁ #s )
+    case Anchor_Principal
+    by contradiction /* from formulas */
+  qed
+qed
+
+lemma P7_failed_settlement_recovery:
+  exists-trace
+  "∃ H pid n #f #s.
+    ((FailedSettle( n, pid, H ) @ #f) ∧ (Consumed( n ) @ #s)) ∧ (#f < #s)"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ H pid n #f #s.
+  (FailedSettle( n, pid, H ) @ #f) ∧ (Consumed( n ) @ #s) ∧ #f < #s"
+*/
+simplify
+solve( !Anchored( H ) ▶₁ #f )
+  case Anchor_Principal
+  solve( !PredDigest( pid, pd ) ▶₂ #f )
+    case Register_Predicate
+    solve( NonceUnused( n ) ▶₃ #f )
+      case Authorize_ModeB
+      solve( Consumed( h(h(<$H.1, ~mandateDigest, ~pid.1, 
+                            h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, ~payee, 
+                            ~asset, ~valueAtomic, ~taskHash>))
+             ) @ #s )
+        case Settle_Recovered
+        solve( !Anchored( $H.1 ) ▶₁ #s )
+          case Anchor_Principal
+          solve( !HumanPk( $H.1, pk(x) ) ▶₂ #s )
+            case Anchor_Principal
+            solve( !AgentKey( $agentId, ~sk ) ▶₃ #s )
+              case Register_Agent
+              solve( !PredConfig( ~pid.1, ~payee, ~asset, ~chain, ~max, ~until
+                     ) ▶₄ #s )
+                case Register_Predicate
+                solve( !PredDigest( ~pid.1, h(<~payee, ~asset, ~chain, ~max, ~until>)
+                       ) ▶₅ #s )
+                  case Register_Predicate
+                  solve( !Admissible( $H.1, ~pid.1, $agentId, ~payee, ~asset, ~valueAtomic,
+                                      ~chain, ~taskHash
+                         ) ▶₆ #s )
+                    case Authorize_ModeB
+                    solve( NonceAvailable( h(h(<$H.1, ~mandateDigest, ~pid.1, 
+                                                h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, 
+                                                ~payee, ~asset, ~valueAtomic, ~taskHash>))
+                           ) ▶₇ #s )
+                      case Failed_Settle_ModeB
+                      solve( !KU( sign(h(<$H.1, ~mandateDigest, ~pid.1, 
+                                          h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, $agentId, 
+                                          ~payee, ~asset, ~valueAtomic, ~taskHash>),
+                                       ~hsk)
+                             ) @ #vk.25 )
+                        case Authorize_ModeB
+                        solve( !KU( ~pid.1 ) @ #vk.22 )
+                          case Authorize_ModeB
+                          solve( !KU( ~mandateDigest ) @ #vk.24 )
+                            case Authorize_ModeB
+                            solve( !KU( ~payee ) @ #vk.30 )
+                              case Authorize_ModeB
+                              solve( !KU( ~asset ) @ #vk.33 )
+                                case Authorize_ModeB
+                                solve( !KU( ~valueAtomic ) @ #vk.36 )
+                                  case Authorize_ModeB
+                                  solve( !KU( ~chain ) @ #vk.38 )
+                                    case Authorize_ModeB
+                                    solve( !KU( ~taskHash ) @ #vk.40 )
+                                      case Authorize_ModeB
+                                      solve( !KU( ~max ) @ #vk.42 )
+                                        case Authorize_ModeB
+                                        solve( !KU( ~until ) @ #vk.43 )
+                                          case Authorize_ModeB
+                                          solve( !KU( h(h(<$H.1, ~mandateDigest, ~pid.1, 
+                                                           h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, 
+                                                           $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash
+                                                          >))
+                                                 ) @ #vk.31 )
+                                            case Authorize_ModeB
+                                            solve( !KU( h(<$H.1, ~mandateDigest, ~pid.1, 
+                                                           h(<~payee, ~asset, ~chain, ~max, ~until>), ~chain, 
+                                                           $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash>)
+                                                   ) @ #vk.42 )
+                                              case Authorize_ModeB
+                                              SOLVED // trace found
+                                            qed
+                                          qed
+                                        qed
+                                      qed
+                                    qed
+                                  qed
+                                qed
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+/* All wellformedness checks were successful. */
+
+/*
+Generated from:
+Tamarin version 1.12.0
+Maude version 3.1
+Git revision: 82780bbaf3328a45f624ddb41e51bf75425f851c (with uncommited changes), branch: master
+Compiled at: 2026-03-07 14:22:39.174278293 UTC
+*/
+
+end

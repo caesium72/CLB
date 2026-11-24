@@ -1,31 +1,36 @@
 (*
   ============================================================================
-  CLB-ACEL — Phase 7C ProVerif cross-check of the OFF-CHAIN sub-protocol.
+  CLB-ACEL — R3-C2 ALIGNED MODEL (ProVerif 2.05, applied pi-calculus).
 
-  Independent confirmation (different tool, different semantics: applied
-  pi-calculus, unbounded sessions) of two facts about the off-chain mandate
-  exchange between the human and the settling agent:
+  HISTORICAL NOTE — DO NOT MISREAD THE ARCHIVED RESULT:
+    `clb-offchain.result.txt` (SHA-256 558F8E9A...C5AA) is the record of the
+    PRE-ALIGNMENT version of this file: an off-chain-only exchange with Q1 true
+    and Q2 (injective replay) FALSE. That file is preserved untouched.
+    This file is the NEW aligned model; its output is archived in
+    `clb-offchain-aligned.result.txt`. The Q2 result here is expected to change
+    because the on-chain single-use nonce is now represented.
 
-    Q1 (authentication / P2):   non-injective correspondence
-        event(Settled(p)) ==> event(Authorized(p))                EXPECT: true
-        -> every settlement's params were authorized by the human (signature
-           over C binds the params).
+  What changed vs the archived model:
+    - the commitment C' binds predicateId, predicateDigest, human principal
+      anchor, mandateDigest and the settlement fields (R3-C1 C' binding);
+    - predicate registration is a separate process emitting Registered(pid,pd);
+    - the guard requires a matching registration token (config-content binding);
+    - the guard requires a single-use nonce token held on a PRIVATE channel, the
+      standard applied-pi encoding of the on-chain consumed[nonce] mapping.
 
-    Q2 (non-replay / P3):       injective correspondence
-        inj-event(Settled(p)) ==> inj-event(Authorized(p))        EXPECT: false
-        -> the OFF-CHAIN messages alone do NOT prevent replay: a Dolev-Yao
-           attacker can replay one signed mandate into many settlements.
-
-  The Q2 "false" is the point, and it agrees with the Tamarin model: replay
-  resistance (P3) is provided by the ON-CHAIN single-use nonce = H(C)
-  (the NonceUnused linear fact / PredicatePaymentGuard consume-once), NOT by
-  the off-chain protocol. Two tools, one consistent story.
+  Queries:
+    Q1  event(Settled) ==> event(Authorized)                  authentication
+    Q2  inj-event(Settled) ==> inj-event(Authorized)          injective replay
+    Q3  event(Settled(...,pd,...)) ==> event(Registered(pid,pd))  content binding
+    Q4  attacker(skH)                                         key secrecy
 
   Run:  proverif formal/proverif/clb-offchain.pv
   ============================================================================
 *)
 
 free c:channel.
+free regStore:channel [private].      (* registration tokens *)
+free nonceStore:channel [private].    (* on-chain consumed[nonce] tokens *)
 
 type skey.
 type pkey.
@@ -34,35 +39,60 @@ fun sign(bitstring, skey):bitstring.
 reduc forall m:bitstring, k:skey; checksign(sign(m,k), pk(k)) = m.
 fun h(bitstring):bitstring.
 
-event Authorized(bitstring).
-event Settled(bitstring).
+free skH:skey [private].              (* human signing key; queried in Q4 *)
 
-(* Q1 — authentication (P2): expect TRUE *)
-query p:bitstring; event(Settled(p)) ==> event(Authorized(p)).
+event Authorized(bitstring, bitstring, bitstring, bitstring).
+event Registered(bitstring, bitstring).
+event Settled(bitstring, bitstring, bitstring, bitstring).
 
-(* Q2 — injective non-replay (P3) off-chain only: expect FALSE *)
-query p:bitstring; inj-event(Settled(p)) ==> inj-event(Authorized(p)).
+(* Q1 — authentication: expect TRUE (as before). *)
+query pid:bitstring, pd:bitstring, payee:bitstring, val:bitstring;
+  event(Settled(pid,pd,payee,val)) ==> event(Authorized(pid,pd,payee,val)).
 
-(* Human: forms commitment C over the exact settlement params + a fresh mandate,
-   signs it, and publishes (params, mandate, signature). *)
-let human(skH:skey) =
-    new mandate:bitstring;
-    new agentId:bitstring; new payee:bitstring; new asset:bitstring;
-    new value:bitstring; new chainId:bitstring;
-    let params = (agentId, payee, asset, value, chainId) in
-    let C = h((params, mandate)) in
-    event Authorized(params);
-    out(c, (params, mandate, sign(C, skH))).
+(* Q2 — injective replay. Archived off-chain-only model: FALSE.
+   Aligned model (on-chain nonce token): expect TRUE. *)
+query pid:bitstring, pd:bitstring, payee:bitstring, val:bitstring;
+  inj-event(Settled(pid,pd,payee,val)) ==> inj-event(Authorized(pid,pd,payee,val)).
 
-(* Settler: recomputes C, verifies the human signature, then settles. There is
-   NO nonce store here (that lives on-chain), so a replayed message settles again. *)
-let settler(pkH:pkey) =
-    in(c, (params:bitstring, mandate:bitstring, s:bitstring));
-    let C = h((params, mandate)) in
+(* Q3 — predicate content binding: the guard only settles under a digest that
+   was actually registered. *)
+query pid:bitstring, pd:bitstring, payee:bitstring, val:bitstring;
+  event(Settled(pid,pd,payee,val)) ==> event(Registered(pid,pd)).
+
+(* Q4 — human signing key secrecy: expect FALSE (attacker cannot learn it). *)
+query attacker(skH).
+
+(* Human: signs C' over (principal anchor, mandateDigest, predicateId,
+   predicateDigest, settlement params). The predicate config is public because
+   it is registered on-chain, so the attacker can also request registration. *)
+let human(skH:skey, anchor:bitstring) =
+    new pid:bitstring; new mandateDigest:bitstring; new pd:bitstring;
+    new payee:bitstring; new val:bitstring;
+    let C = h((anchor, mandateDigest, pid, pd, payee, val)) in
+    event Authorized(pid, pd, payee, val);
+    out(c, (pid, mandateDigest, pd, payee, val, sign(C, skH), h(C)));
+    out(c, (pid, pd));
+    out(nonceStore, (h(C), C)).
+
+(* Registrar: permissionless, like registerPredicate; emits a token that the
+   guard must possess, modelling "predicateId must be registered". *)
+let registrar() =
+    in(c, (pid:bitstring, pd:bitstring));
+    event Registered(pid, pd);
+    out(regStore, (pid, pd)).
+
+(* Guard: validateAndConsume. Recomputes C' from the registered digest, checks
+   the human signature, requires a matching registration and a single-use nonce. *)
+let guard(pkH:pkey, anchor:bitstring) =
+    in(c, (pid:bitstring, mandateDigest:bitstring, pd:bitstring,
+           payee:bitstring, val:bitstring, s:bitstring, n:bitstring));
+    let C = h((anchor, mandateDigest, pid, pd, payee, val)) in
     if checksign(s, pkH) = C then
-        event Settled(params).
+    in(regStore, (=pid, =pd));
+    in(nonceStore, (=n, =C));
+    event Settled(pid, pd, payee, val).
 
 process
-    new skH:skey;
-    out(c, pk(skH));
-    ( (!human(skH)) | (!settler(pk(skH))) )
+    new anchor:bitstring;
+    out(c, (pk(skH), anchor));
+    ( !human(skH, anchor) | !registrar() | !guard(pk(skH), anchor) )

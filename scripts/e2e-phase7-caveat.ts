@@ -20,20 +20,19 @@ import { execFileSync, spawn, type ChildProcess } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
-import { settlementParamsFromExact } from "@clb-acel/clb-core";
+import { computePredicateExtrasDigest, settlementParamsFromExact } from "@clb-acel/clb-core";
 import {
   ContractPredicateGuard,
-  PREDICATE_GUARD_ABI,
   makeViemGuardWriter,
+  mockConfigFromPredicate,
+  registerPredicateBound,
 } from "@clb-acel/predicate-adapter";
 import type { ModeBSettlementInput } from "@clb-acel/clb-core";
-import type { SettlementDescriptorExact } from "@clb-acel/schemas";
+import type { SettlementDescriptorExact, SpendingPredicate } from "@clb-acel/schemas";
 import {
   createPublicClient,
   createWalletClient,
   http,
-  keccak256,
-  toBytes,
   type Address,
   type Hex,
 } from "viem";
@@ -52,8 +51,22 @@ const REGISTRY = "0x0000000000000000000000000000000000008004" as Address;
 const AGENT_ID = "shopping-agent-001";
 const PREDICATE_ID = "predicate-phase7a";
 const MANDATE_DIGEST = `0x${"11".repeat(32)}` as Hex;
-const MAX_VALUE_ATOMIC = 5_000_000n; // 5 USDC
+const ZERO_BYTES32 = `0x${"00".repeat(32)}` as Hex;
 const NOW_MS = Date.parse("2026-05-30T05:00:00.000Z");
+
+/**
+ * The human-signed predicate both the registration binding and C' commit to.
+ * `validUntil` is far in the future because the spawned Anvil uses the real
+ * block clock; the script is about amount/expiry isolation, not this date.
+ */
+const PHASE7_PREDICATE: SpendingPredicate = {
+  allowedAssets: ["USDC"],
+  allowedPayees: [MERCHANT],
+  maxValue: "5.00",
+  validUntil: "2099-01-01T00:00:00.000Z",
+  allowedChainIds: [CHAIN_ID],
+  allowedAgentIds: [AGENT_ID],
+};
 
 function anvilChain() {
   return {
@@ -138,6 +151,8 @@ function buildModeBInput(descriptor: SettlementDescriptorExact): ModeBSettlement
     identityRef: { chainId: CHAIN_ID, registryAddr: REGISTRY, agentId: AGENT_ID },
     mandateDigest: MANDATE_DIGEST,
     predicateId: PREDICATE_ID,
+    // C' binds the same predicate the registration bound (config digest + extras).
+    predicate: PHASE7_PREDICATE,
     settlementParams: settlementParamsFromExact(descriptor, AGENT_ID),
     domain: { name: "CLB-ACEL", version: "0.1", chainId: CHAIN_ID },
   };
@@ -163,25 +178,25 @@ async function main() {
     const guardAddress = deployGuard();
     console.log(`✓ PredicatePaymentGuard deployed: ${guardAddress}`);
 
-    // Register the spending predicate the settlements are checked against.
-    const registerHash = await walletClient.writeContract({
-      address: guardAddress,
-      abi: PREDICATE_GUARD_ABI,
-      functionName: "registerPredicate",
-      args: [
-        PREDICATE_ID,
-        {
-          allowedPayees: [MERCHANT],
-          allowedAssetHashes: [keccak256(toBytes("USDC"))],
-          allowedChainIds: [BigInt(CHAIN_ID)],
-          maxValueAtomic: MAX_VALUE_ATOMIC,
-          validUntil: 18446744073709551615n, // type(uint64).max
-          registered: true,
-        },
-      ],
-    });
-    await publicClient.waitForTransactionReceipt({ hash: registerHash });
-    console.log(`✓ Predicate "${PREDICATE_ID}" registered (maxValueAtomic=${MAX_VALUE_ATOMIC})`);
+    // Register the spending predicate the settlements are checked against. The
+    // guard only settles predicates registered through the human-bound path; the
+    // principal must be msg.sender and must sign the binding digest.
+    const config = mockConfigFromPredicate(PHASE7_PREDICATE);
+    const registerHash = await registerPredicateBound(
+      { publicClient, walletClient, account },
+      {
+        address: guardAddress,
+        predicateId: PREDICATE_ID,
+        config,
+        principal: account.address,
+        mandateDigest: MANDATE_DIGEST,
+        taskHash: (PHASE7_PREDICATE.taskHash ?? ZERO_BYTES32) as Hex,
+        extraFieldsDigest: computePredicateExtrasDigest(PHASE7_PREDICATE),
+      },
+    );
+    console.log(
+      `✓ Predicate "${PREDICATE_ID}" bound (maxValueAtomic=${config.maxValueAtomic}, tx ${registerHash})`,
+    );
 
     const writer = makeViemGuardWriter({ publicClient, walletClient, account });
     const guard = new ContractPredicateGuard({ address: guardAddress, writer });
@@ -200,14 +215,7 @@ async function main() {
     // 1. VIOLATING: over-budget (9.00 > 5.00 max) must REVERT on-chain.
     const violatingInput = buildModeBInput({ ...baseDescriptor, value: "9.00" });
     const violating = await guard.settleOnChain({
-      predicate: {
-        allowedAssets: ["USDC"],
-        allowedPayees: [MERCHANT],
-        maxValue: "5.00",
-        validUntil: validBefore,
-        allowedChainIds: [CHAIN_ID],
-        allowedAgentIds: [AGENT_ID],
-      },
+      predicate: PHASE7_PREDICATE,
       params: violatingInput.settlementParams,
       commitment: violatingInput,
     });
@@ -221,14 +229,7 @@ async function main() {
     // 2. HAPPY: within budget settles once.
     const happyInput = buildModeBInput(baseDescriptor);
     const happy = await guard.settleOnChain({
-      predicate: {
-        allowedAssets: ["USDC"],
-        allowedPayees: [MERCHANT],
-        maxValue: "5.00",
-        validUntil: validBefore,
-        allowedChainIds: [CHAIN_ID],
-        allowedAgentIds: [AGENT_ID],
-      },
+      predicate: PHASE7_PREDICATE,
       params: happyInput.settlementParams,
       commitment: happyInput,
     });
@@ -240,14 +241,7 @@ async function main() {
 
     // Confirm replay is blocked (single-use nonce).
     const replay = await guard.settleOnChain({
-      predicate: {
-        allowedAssets: ["USDC"],
-        allowedPayees: [MERCHANT],
-        maxValue: "5.00",
-        validUntil: validBefore,
-        allowedChainIds: [CHAIN_ID],
-        allowedAgentIds: [AGENT_ID],
-      },
+      predicate: PHASE7_PREDICATE,
       params: happyInput.settlementParams,
       commitment: happyInput,
     });

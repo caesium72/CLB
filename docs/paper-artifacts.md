@@ -24,6 +24,7 @@
 | A8 | **Deterministic verifier** | `packages/verifier-core/src/index.ts` | the 17-rule cross-layer checker | algorithm box (B3) |
 | A9 | **Benchmark data** | `experiments/benchmarks/results.csv`,`*.json`,`*.md` | all eval numbers | tables + plotted figures |
 | A10 | **Attack/baseline matrices** | `experiments/benchmarks/{attack-matrix,baseline-comparison,p5-attack-matrix,five-attacks-comparison}.*` | the "baselines miss it" result | tables / heatmap |
+| A11 | **Compositional adversarial evaluation** | `experiments/benchmarks/reviewer2/comment1/{adversarial-matrix,presettlement-results,concurrency-results}.json` + `SUMMARY.md` | multi-step, malicious-merchant, compromised-agent and concurrency coverage (Reviewer #2 C1) | tables (see `review-revision/reviewer-2/comment-1/manuscript-insert.tex`) |
 
 **Deliberately excluded from the paper** (engineering, not contribution): web-demo UI, Fastify services, LLM
 adapter, Zod schemas, mocks, deployment scripts.

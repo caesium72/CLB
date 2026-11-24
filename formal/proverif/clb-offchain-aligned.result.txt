@@ -1,0 +1,244 @@
+Process 0 (that is, the initial process):
+{1}new anchor: bitstring;
+{2}out(c, (pk(skH),anchor));
+(
+    {3}!
+    {4}let skH_1: skey = skH in
+    {5}let anchor_1: bitstring = anchor in
+    {6}new pid: bitstring;
+    {7}new mandateDigest: bitstring;
+    {8}new pd: bitstring;
+    {9}new payee: bitstring;
+    {10}new val: bitstring;
+    {11}let C: bitstring = h((anchor_1,mandateDigest,pid,pd,payee,val)) in
+    {12}event Authorized(pid,pd,payee,val);
+    {13}out(c, (pid,mandateDigest,pd,payee,val,sign(C,skH_1),h(C)));
+    {14}out(c, (pid,pd));
+    {15}out(nonceStore, (h(C),C))
+) | (
+    {16}!
+    {17}in(c, (pid_1: bitstring,pd_1: bitstring));
+    {18}event Registered(pid_1,pd_1);
+    {19}out(regStore, (pid_1,pd_1))
+) | (
+    {20}!
+    {21}let pkH: pkey = pk(skH) in
+    {22}let anchor_2: bitstring = anchor in
+    {23}in(c, (pid_2: bitstring,mandateDigest_1: bitstring,pd_2: bitstring,payee_1: bitstring,val_1: bitstring,s: bitstring,n: bitstring));
+    {24}let C_1: bitstring = h((anchor_2,mandateDigest_1,pid_2,pd_2,payee_1,val_1)) in
+    {25}if (checksign(s,pkH) = C_1) then
+    {26}in(regStore, (=pid_2,=pd_2));
+    {27}in(nonceStore, (=n,=C_1));
+    {28}event Settled(pid_2,pd_2,payee_1,val_1)
+)
+
+--  Process 1 (that is, process 0, with let moved downwards):
+{1}new anchor: bitstring;
+{2}out(c, (pk(skH),anchor));
+(
+    {3}!
+    {6}new pid: bitstring;
+    {7}new mandateDigest: bitstring;
+    {8}new pd: bitstring;
+    {9}new payee: bitstring;
+    {10}new val: bitstring;
+    {12}event Authorized(pid,pd,payee,val);
+    {5}let anchor_1: bitstring = anchor in
+    {11}let C: bitstring = h((anchor_1,mandateDigest,pid,pd,payee,val)) in
+    {4}let skH_1: skey = skH in
+    {13}out(c, (pid,mandateDigest,pd,payee,val,sign(C,skH_1),h(C)));
+    {14}out(c, (pid,pd));
+    {15}out(nonceStore, (h(C),C))
+) | (
+    {16}!
+    {17}in(c, (pid_1: bitstring,pd_1: bitstring));
+    {18}event Registered(pid_1,pd_1);
+    {19}out(regStore, (pid_1,pd_1))
+) | (
+    {20}!
+    {23}in(c, (pid_2: bitstring,mandateDigest_1: bitstring,pd_2: bitstring,payee_1: bitstring,val_1: bitstring,s: bitstring,n: bitstring));
+    {22}let anchor_2: bitstring = anchor in
+    {24}let C_1: bitstring = h((anchor_2,mandateDigest_1,pid_2,pd_2,payee_1,val_1)) in
+    {21}let pkH: pkey = pk(skH) in
+    {25}if (checksign(s,pkH) = C_1) then
+    {26}in(regStore, (=pid_2,=pd_2));
+    {27}in(nonceStore, (=n,=C_1));
+    {28}event Settled(pid_2,pd_2,payee_1,val_1)
+)
+
+-- Query event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Authorized(pid_3,pd_3,payee_2,val_2)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Authorized(pid_3,pd_3,payee_2,val_2))
+goal reachable: b-event(Authorized(pid_3,pd_3,payee_2,val_2)) -> event(Settled(pid_3,pd_3,payee_2,val_2))
+Abbreviations:
+pid_3 = pid[!1 = @sid]
+pd_3 = pd[!1 = @sid]
+payee_2 = payee[!1 = @sid]
+val_2 = val[!1 = @sid]
+RESULT event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Authorized(pid_3,pd_3,payee_2,val_2)) is true.
+-- Query inj-event(Settled(pid_3,pd_3,payee_2,val_2)) ==> inj-event(Authorized(pid_3,pd_3,payee_2,val_2)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query inj-event(Settled(pid_3,pd_3,payee_2,val_2)) ==> inj-event(Authorized(pid_3,pd_3,payee_2,val_2))
+goal reachable: @sid Γëá @sid_1 && b-inj-event(Authorized(pid_3,pd_3,payee_2,val_2),@occ12_1) -> inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_1) && inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_2)
+Abbreviations:
+pid_3 = pid[!1 = @sid_2]
+pd_3 = pd[!1 = @sid_2]
+payee_2 = payee[!1 = @sid_2]
+val_2 = val[!1 = @sid_2]
+mandateDigest_2 = mandateDigest[!1 = @sid_2]
+@occ28_1 = @occ28[n = h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))),s = sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),val_1 = val_2,payee_1 = payee_2,pd_2 = pd_3,mandateDigest_1 = mandateDigest_2,pid_2 = pid_3,!1 = @sid]
+@occ28_2 = @occ28[n = h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))),s = sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),val_1 = val_2,payee_1 = payee_2,pd_2 = pd_3,mandateDigest_1 = mandateDigest_2,pid_2 = pid_3,!1 = @sid_1]
+@occ12_1 = @occ12[!1 = @sid_2]
+
+Derivation:
+Abbreviations:
+pid_3 = pid[!1 = @sid]
+pd_3 = pd[!1 = @sid]
+payee_2 = payee[!1 = @sid]
+val_2 = val[!1 = @sid]
+mandateDigest_2 = mandateDigest[!1 = @sid]
+@occ28_1 = @occ28[n = h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))),s = sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),val_1 = val_2,payee_1 = payee_2,pd_2 = pd_3,mandateDigest_1 = mandateDigest_2,pid_2 = pid_3,!1 = @sid_1]
+@occ28_2 = @occ28[n = h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))),s = sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),val_1 = val_2,payee_1 = payee_2,pd_2 = pd_3,mandateDigest_1 = mandateDigest_2,pid_2 = pid_3,!1 = @sid_2]
+@occ12_1 = @occ12[!1 = @sid]
+
+1. The event Authorized(pid_3,pd_3,payee_2,val_2) (with occurrence name @occ12_1) may be executed at {12}.
+So the message (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))) may be sent to the attacker at output {13}.
+attacker((pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))))).
+
+2. By 1, the attacker may know (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+Using the function 5-proj-7-tuple the attacker may obtain val_2.
+attacker(val_2).
+
+3. By 1, the attacker may know (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+Using the function 4-proj-7-tuple the attacker may obtain payee_2.
+attacker(payee_2).
+
+4. By 1, the attacker may know (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+Using the function 3-proj-7-tuple the attacker may obtain pd_3.
+attacker(pd_3).
+
+5. By 1, the attacker may know (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+Using the function 1-proj-7-tuple the attacker may obtain pid_3.
+attacker(pid_3).
+
+6. By 1, the attacker may know (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+Using the function 2-proj-7-tuple the attacker may obtain mandateDigest_2.
+attacker(mandateDigest_2).
+
+7. The message (pk(skH[]),anchor[]) may be sent to the attacker at output {2}.
+attacker((pk(skH[]),anchor[])).
+
+8. By 7, the attacker may know (pk(skH[]),anchor[]).
+Using the function 2-proj-2-tuple the attacker may obtain anchor[].
+attacker(anchor[]).
+
+9. By 8, the attacker may know anchor[].
+By 6, the attacker may know mandateDigest_2.
+By 5, the attacker may know pid_3.
+By 4, the attacker may know pd_3.
+By 3, the attacker may know payee_2.
+By 2, the attacker may know val_2.
+Using the function 6-tuple the attacker may obtain (anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2).
+attacker((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)).
+
+10. By 9, the attacker may know (anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2).
+Using the function h the attacker may obtain h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)).
+attacker(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))).
+
+11. By 10, the attacker may know h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)).
+Using the function h the attacker may obtain h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))).
+attacker(h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+
+12. By 1, the attacker may know (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+Using the function 6-proj-7-tuple the attacker may obtain sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]).
+attacker(sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[])).
+
+13. By 5, the attacker may know pid_3.
+By 6, the attacker may know mandateDigest_2.
+By 4, the attacker may know pd_3.
+By 3, the attacker may know payee_2.
+By 2, the attacker may know val_2.
+By 12, the attacker may know sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]).
+By 11, the attacker may know h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))).
+Using the function 7-tuple the attacker may obtain (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+attacker((pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))))).
+
+14. By 5, the attacker may know pid_3.
+By 4, the attacker may know pd_3.
+Using the function 2-tuple the attacker may obtain (pid_3,pd_3).
+attacker((pid_3,pd_3)).
+
+15. The message (pid_3,pd_3) that the attacker may have by 14 may be received at input {17}.
+So the message (pid_3,pd_3) may be sent on channel regStore[] at output {19}.
+mess(regStore[],(pid_3,pd_3)).
+
+16. The event Authorized(pid_3,pd_3,payee_2,val_2) (with occurrence name @occ12_1) may be executed at {12}.
+So the message (h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))),h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))) may be sent on channel nonceStore[] at output {15}.
+mess(nonceStore[],(h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))),h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))).
+
+17. The message (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))) that the attacker may have by 13 may be received at input {23}.
+The message (pid_3,pd_3) that may be sent on channel regStore[] by 15 may be received at input {26}.
+The message (h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))),h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))) that may be sent on channel nonceStore[] by 16 may be received at input {27}.
+So event Settled(pid_3,pd_3,payee_2,val_2) may be executed at {28} in session @sid_2.
+inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_2).
+
+18. By 17, inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_2).
+The goal is reached, represented in the following fact:
+inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_2).
+
+19. The message (pid_3,pd_3) that the attacker may have by 14 may be received at input {17}.
+So the message (pid_3,pd_3) may be sent on channel regStore[] at output {19}.
+mess(regStore[],(pid_3,pd_3)).
+
+20. The message (pid_3,mandateDigest_2,pd_3,payee_2,val_2,sign(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)),skH[]),h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2)))) that the attacker may have by 13 may be received at input {23}.
+The message (pid_3,pd_3) that may be sent on channel regStore[] by 19 may be received at input {26}.
+The message (h(h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))),h((anchor[],mandateDigest_2,pid_3,pd_3,payee_2,val_2))) that may be sent on channel nonceStore[] by 16 may be received at input {27}.
+So event Settled(pid_3,pd_3,payee_2,val_2) may be executed at {28} in session @sid_1.
+inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_1).
+
+21. By 20, inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_1).
+The goal is reached, represented in the following fact:
+inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_1).
+
+22. By 21, inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_1).
+By 18, inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_2).
+We have @occ28_1 Γëá @occ28_2.
+The goals for injectivity are reached, combined in the following fact:
+inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_1) && inj-event(Settled(pid_3,pd_3,payee_2,val_2),@occ28_2).
+
+
+Could not find a trace corresponding to this derivation.
+RESULT inj-event(Settled(pid_3,pd_3,payee_2,val_2)) ==> inj-event(Authorized(pid_3,pd_3,payee_2,val_2)) cannot be proved.
+RESULT (but event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Authorized(pid_3,pd_3,payee_2,val_2)) is true.)
+-- Query event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Registered(pid_3,pd_3)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Registered(pid_3,pd_3))
+goal reachable: b-event(Registered(pid_3,pd_3)) -> event(Settled(pid_3,pd_3,payee_2,val_2))
+Abbreviations:
+pid_3 = pid[!1 = @sid]
+pd_3 = pd[!1 = @sid]
+payee_2 = payee[!1 = @sid]
+val_2 = val[!1 = @sid]
+RESULT event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Registered(pid_3,pd_3)) is true.
+-- Query not attacker(skH[]) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query not attacker(skH[])
+RESULT not attacker(skH[]) is true.
+
+--------------------------------------------------------------
+Verification summary:
+
+Query event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Authorized(pid_3,pd_3,payee_2,val_2)) is true.
+
+Query inj-event(Settled(pid_3,pd_3,payee_2,val_2)) ==> inj-event(Authorized(pid_3,pd_3,payee_2,val_2)) cannot be proved.
+
+Query event(Settled(pid_3,pd_3,payee_2,val_2)) ==> event(Registered(pid_3,pd_3)) is true.
+
+Query not attacker(skH[]) is true.
+
+--------------------------------------------------------------
+

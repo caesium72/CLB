@@ -59,6 +59,8 @@ export function loadMonorepoEnv(startDir: string = process.cwd()): void {
   }
 }
 
+export * from "./recovery";
+
 export type OpenApiOptions = {
   title: string;
   version?: string;

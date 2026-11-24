@@ -207,3 +207,89 @@ export function createIdentityRegistryFromEnv(): IdentityRegistry {
   const registryAddr = process.env.ERC8004_REGISTRY_ADDRESS?.trim() as Address | undefined;
   return createIdentityRegistry({ rpcUrl, registryAddr, chainId });
 }
+
+// ---------------------------------------------------------------------------
+// RCLB: revocation-aware authority epochs (additive, existing API unchanged)
+// ---------------------------------------------------------------------------
+
+/**
+ * CURRENT authority state for an ERC-8004 agent. E_I advances when an identity
+ * key is revoked or rotated; E_M advances when the human mandate is revoked.
+ * A commitment pinned to an older epoch is no longer current authority.
+ */
+export type AuthorityEpochs = {
+  identityEpoch: bigint;
+  mandateEpoch: bigint;
+};
+
+export type EpochSeed = Partial<AuthorityEpochs> & { signingKey?: Address };
+
+/**
+ * Minimal authority-state registry used by the guard at execution time.
+ * `currentEpochs` returns null for an unknown agent so callers FAIL CLOSED;
+ * mutation methods throw `AgentNotFoundError` for an unknown agent.
+ */
+export type EpochRegistry = {
+  currentEpochs(agentId: string): Promise<AuthorityEpochs | null>;
+  currentSigningKey(agentId: string): Promise<Address | null>;
+  revokeIdentity(agentId: string): Promise<AuthorityEpochs>;
+  revokeMandate(agentId: string): Promise<AuthorityEpochs>;
+  rotateIdentityKey(agentId: string, newKey: Address): Promise<AuthorityEpochs>;
+};
+
+/**
+ * In-memory epoch authority. Optionally coupled to an existing `Erc8004Registry`:
+ * identity revocation marks the agent REVOKED there, matching ERC-8004 status
+ * semantics; mandate revocation only advances E_M (the agent identity survives).
+ * Key rotation advances E_I and replaces the recorded signing key.
+ */
+export function createInMemoryEpochRegistry(
+  seed: Record<string, EpochSeed> = {},
+  registry?: Erc8004Registry,
+): EpochRegistry {
+  const state = new Map<string, Required<AuthorityEpochs> & { signingKey?: Address }>();
+  for (const [agentId, initial] of Object.entries(seed)) {
+    state.set(agentId, {
+      identityEpoch: initial.identityEpoch ?? 0n,
+      mandateEpoch: initial.mandateEpoch ?? 0n,
+      ...(initial.signingKey ? { signingKey: getAddress(initial.signingKey) } : {}),
+    });
+  }
+
+  function requireState(agentId: string) {
+    const entry = state.get(agentId);
+    if (!entry) throw new AgentNotFoundError(agentId);
+    return entry;
+  }
+
+  function snapshot(entry: Required<AuthorityEpochs>): AuthorityEpochs {
+    return { identityEpoch: entry.identityEpoch, mandateEpoch: entry.mandateEpoch };
+  }
+
+  return {
+    async currentEpochs(agentId) {
+      const entry = state.get(agentId);
+      return entry ? snapshot(entry) : null;
+    },
+    async currentSigningKey(agentId) {
+      return state.get(agentId)?.signingKey ?? null;
+    },
+    async revokeIdentity(agentId) {
+      const entry = requireState(agentId);
+      entry.identityEpoch += 1n;
+      if (registry) await registry.setStatus(agentId, "REVOKED");
+      return snapshot(entry);
+    },
+    async revokeMandate(agentId) {
+      const entry = requireState(agentId);
+      entry.mandateEpoch += 1n;
+      return snapshot(entry);
+    },
+    async rotateIdentityKey(agentId, newKey) {
+      const entry = requireState(agentId);
+      entry.identityEpoch += 1n;
+      entry.signingKey = getAddress(newKey);
+      return snapshot(entry);
+    },
+  };
+}

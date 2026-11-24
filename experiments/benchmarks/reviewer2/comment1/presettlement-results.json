@@ -1,0 +1,198 @@
+{
+  "generatedAt": "2026-11-24T21:26:33.257Z",
+  "results": [
+    {
+      "id": "MALICIOUS_MERCHANT_PAYEE_SUBSTITUTION",
+      "description": "The merchant swaps the settlement payee to an attacker address after the human signed the predicate.",
+      "addresses": [
+        "malicious-merchant"
+      ],
+      "guardAllowed": false,
+      "guardError": "PredicateViolationError",
+      "predicateViolations": [
+        "PAYEE_NOT_ALLOWED"
+      ],
+      "settlementAttempted": false,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Human signs a predicate restricted to the approved merchant.",
+        "Merchant substitutes the settlement payee with an attacker address.",
+        "Predicate guard evaluates the concrete settlement BEFORE any transfer."
+      ],
+      "notes": []
+    },
+    {
+      "id": "MALICIOUS_MERCHANT_REVOKED_IDENTITY",
+      "description": "A revoked merchant identity is presented alongside an unapproved payee; the guard rejects on the payee.",
+      "addresses": [
+        "malicious-merchant"
+      ],
+      "guardAllowed": false,
+      "guardError": "PredicateViolationError",
+      "predicateViolations": [
+        "PAYEE_NOT_ALLOWED"
+      ],
+      "settlementAttempted": false,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Merchant identity is revoked but its content is still served.",
+        "Attacker routes payment to a fresh address.",
+        "Predicate guard rejects the payee before settlement."
+      ],
+      "notes": []
+    },
+    {
+      "id": "COMPROMISED_AGENT_AMOUNT_ESCALATION",
+      "description": "A compromised agent (application logic, not the signing key) raises the settlement amount above the human cap.",
+      "addresses": [
+        "compromised-agent"
+      ],
+      "guardAllowed": false,
+      "guardError": "PredicateViolationError",
+      "predicateViolations": [
+        "AMOUNT_EXCEEDS_MAX"
+      ],
+      "settlementAttempted": false,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Human signs a predicate capping spend at 5.00.",
+        "Compromised agent orchestration submits 9.99.",
+        "Predicate guard rejects the over-limit settlement before any transfer."
+      ],
+      "notes": []
+    },
+    {
+      "id": "COMPROMISED_AGENT_ASSET_SWITCH",
+      "description": "A compromised agent settles in an asset the human never allowed.",
+      "addresses": [
+        "compromised-agent"
+      ],
+      "guardAllowed": false,
+      "guardError": "PredicateViolationError",
+      "predicateViolations": [
+        "ASSET_NOT_ALLOWED"
+      ],
+      "settlementAttempted": false,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Human allows USDC only.",
+        "Compromised agent submits a WETH settlement.",
+        "Predicate guard rejects the asset before any transfer."
+      ],
+      "notes": []
+    },
+    {
+      "id": "COMPROMISED_AGENT_CHAIN_SWITCH",
+      "description": "A compromised agent moves settlement to a chain outside the predicate.",
+      "addresses": [
+        "compromised-agent"
+      ],
+      "guardAllowed": false,
+      "guardError": "PredicateViolationError",
+      "predicateViolations": [
+        "CHAIN_NOT_ALLOWED"
+      ],
+      "settlementAttempted": false,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Human allows chain 84532 only.",
+        "Compromised agent targets chain 1.",
+        "Predicate guard rejects the chain before any transfer."
+      ],
+      "notes": []
+    },
+    {
+      "id": "COMPROMISED_AGENT_TASK_SUBSTITUTION",
+      "description": "A compromised agent settles a different task than the one the human authorized.",
+      "addresses": [
+        "compromised-agent"
+      ],
+      "guardAllowed": false,
+      "guardError": "PredicateViolationError",
+      "predicateViolations": [
+        "TASK_HASH_MISMATCH"
+      ],
+      "settlementAttempted": false,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Human pins task hash eeee… to the predicate.",
+        "Compromised agent delivers a settlement for task aaaa….",
+        "Predicate guard rejects the task mismatch before any transfer."
+      ],
+      "notes": []
+    },
+    {
+      "id": "EXPIRED_AUTHORIZATION",
+      "description": "The agent attempts to settle after the human's authorization window closed.",
+      "addresses": [
+        "compromised-agent"
+      ],
+      "guardAllowed": false,
+      "guardError": "PredicateViolationError",
+      "predicateViolations": [
+        "PREDICATE_EXPIRED"
+      ],
+      "settlementAttempted": false,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Human authorized spending until 04:00Z.",
+        "Agent attempts settlement at 05:05Z.",
+        "Predicate guard rejects the expired authorization before any transfer."
+      ],
+      "notes": []
+    },
+    {
+      "id": "MULTI_STEP_SELECTION_THEN_SUBSTITUTION",
+      "description": "Step 1: discovery is prompt-injected to select an unapproved merchant. Step 2: the settlement payee follows the injected selection.",
+      "addresses": [
+        "multi-step",
+        "malicious-merchant"
+      ],
+      "guardAllowed": false,
+      "guardError": "PredicateViolationError",
+      "predicateViolations": [
+        "PAYEE_NOT_ALLOWED"
+      ],
+      "settlementAttempted": false,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Attacker injects a merchant recommendation into untrusted merchant content.",
+        "Agent selection follows the injected payee.",
+        "Settlement is built for the injected payee.",
+        "Predicate guard rejects at the payee rule before any transfer."
+      ],
+      "notes": []
+    },
+    {
+      "id": "MULTI_STEP_ESCALATION_THEN_REPLAY",
+      "description": "Step 1: the agent settles a legitimate payment. Step 2: it replays the same signed payload to double-settle.",
+      "addresses": [
+        "multi-step",
+        "compromised-agent"
+      ],
+      "guardAllowed": true,
+      "predicateViolations": [
+        "NONCE_ALREADY_CONSUMED"
+      ],
+      "settlementAttempted": true,
+      "receiptIssued": false,
+      "prevented": true,
+      "steps": [
+        "Agent settles the legitimate 2.00 payment (nonce consumed).",
+        "Agent replays the identical signed payload.",
+        "Facilitator rejects the second settlement on the consumed nonce."
+      ],
+      "notes": [
+        "Replay rejected by the facilitator on the consumed nonce."
+      ]
+    }
+  ]
+}

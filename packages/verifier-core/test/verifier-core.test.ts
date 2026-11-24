@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  TEST_KEYS,
   attackerAddress,
   buildValidBundle,
   constraints,
@@ -7,11 +8,14 @@ import {
   merchantAddress,
   payerAgent,
 } from "@clb-acel/attack-core";
+import { privateKeyToAccount } from "viem/accounts";
 import { verifyTrace } from "../src/index";
+
+const HUMAN = privateKeyToAccount(TEST_KEYS.userKey).address;
 
 describe("verifyTrace (Mode A)", () => {
   test("a normal trace passes all rules R1-R17", async () => {
-    const { result, certificate, outcomes } = await verifyTrace(await buildValidBundle());
+    const { result, certificate, outcomes } = await verifyTrace(await buildValidBundle(), { expectedHumanPrincipal: HUMAN });
 
     expect(result.status).toBe("PASS");
     expect(result.failedRules).toEqual([]);
@@ -27,7 +31,7 @@ describe("verifyTrace (Mode A)", () => {
       mandateConstraints: constraints({ maxAmount: "2.00" }),
     });
 
-    const { result } = await verifyTrace(bundle);
+    const { result } = await verifyTrace(bundle, { expectedHumanPrincipal: HUMAN });
     expect(result.status).toBe("FAIL");
     expect(result.failedRules).toContain("R11_AMOUNT_WITHIN_MANDATE");
     expect(result.failedRules).not.toContain("R6_CLB_COMMITMENT_RECOMPUTES");
@@ -38,7 +42,7 @@ describe("verifyTrace (Mode A)", () => {
       settlementDescriptor: descriptor({ payTo: attackerAddress }),
     });
 
-    const { result } = await verifyTrace(bundle);
+    const { result } = await verifyTrace(bundle, { expectedHumanPrincipal: HUMAN });
     expect(result.status).toBe("FAIL");
     expect(result.failedRules).toContain("R12_PAYEE_MATCHES_CHECKOUT_OR_TASK");
   });
@@ -47,7 +51,7 @@ describe("verifyTrace (Mode A)", () => {
     const bundle = await buildValidBundle();
     bundle.settlement = { ...bundle.settlement, chainId: 1 };
 
-    const { result } = await verifyTrace(bundle);
+    const { result } = await verifyTrace(bundle, { expectedHumanPrincipal: HUMAN });
     expect(result.status).toBe("FAIL");
     expect(result.failedRules).toContain("R10_CHAIN_DOMAIN_MATCHES");
   });
@@ -56,7 +60,7 @@ describe("verifyTrace (Mode A)", () => {
     const bundle = await buildValidBundle();
     bundle.payerAgent = { ...payerAgent, authorizedPaymentKeys: [merchantAddress] };
 
-    const { result } = await verifyTrace(bundle);
+    const { result } = await verifyTrace(bundle, { expectedHumanPrincipal: HUMAN });
     expect(result.status).toBe("FAIL");
     expect(result.failedRules).toContain("R4_AGENT_PAYMENT_KEY_AUTHORIZED");
   });
@@ -70,7 +74,7 @@ describe("verifyTrace (Mode A)", () => {
       ...rest,
     ];
 
-    const { result } = await verifyTrace(bundle);
+    const { result } = await verifyTrace(bundle, { expectedHumanPrincipal: HUMAN });
     expect(result.status).toBe("FAIL");
     expect(result.failedRules).toContain("R1_HASH_CHAIN_INTACT");
   });
@@ -79,7 +83,7 @@ describe("verifyTrace (Mode A)", () => {
     const bundle = await buildValidBundle();
     bundle.nonceReplayAttempt = true;
 
-    const { result, outcomes } = await verifyTrace(bundle);
+    const { result, outcomes } = await verifyTrace(bundle, { expectedHumanPrincipal: HUMAN });
     expect(result.status).toBe("FAIL");
     expect(result.failedRules).toContain("R9_NONCE_CONSUMED_EXACTLY_ONCE");
     expect(outcomes.R9_NONCE_CONSUMED_EXACTLY_ONCE.detail).toBe("Nonce replay detected");
@@ -90,7 +94,7 @@ describe("verifyTrace (Mode A)", () => {
       mandateConstraints: constraints({ taskHash: `0x${"b".repeat(64)}` }),
     });
 
-    const { result } = await verifyTrace(bundle);
+    const { result } = await verifyTrace(bundle, { expectedHumanPrincipal: HUMAN });
     expect(result.status).toBe("FAIL");
     expect(result.failedRules).toContain("R15_TASK_HASH_MATCHES");
   });

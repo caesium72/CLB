@@ -26,6 +26,8 @@ import { privateKeyToAccount } from "viem/accounts";
 // Confidential commit-and-prove (Phase 7F). The curve library is isolated in
 // `./confidential`; consumers reach it through this package re-export.
 export * from "./confidential";
+// RCLB: revocation-aware temporal binding (additive; existing exports unchanged).
+export * from "./epochs";
 
 /**
  * EIP-712 type definitions for the Cross-Layer Binding commitment.
@@ -162,14 +164,19 @@ export function deriveCommitment(input: CLBCommitmentInput): ComputedCommitment 
  * binds an exact descriptor at authorization time), C' is bound when the agent
  * picks concrete settlement params within the human-signed predicate:
  *
- *   C' = keccak256(EIP712(identityRef, mandateDigest, predicateId, settlementParamsDigest))
+ *   C' = keccak256(EIP712(identityRef, mandateDigest, predicateId,
+ *                          predicateDigest, settlementParamsDigest))
  *   nonce = H(C')
  *
+ * `predicateDigest` binds the FULL predicate content, so a permissive predicate
+ * registered under a human-signed `predicateId` cannot pass the human's signature.
  * The fixed-size leaves keep off-chain (viem) and on-chain
  * (`PredicatePaymentGuard.sol`) encodings identical. Solidity parity:
  *   IDENTITY_REF_TYPEHASH = keccak256("IdentityRef(uint256 chainId,address registryAddr,string agentId)")
  *   SETTLEMENT_TYPEHASH   = keccak256(
- *     "CLBSettlementCommitment(IdentityRef identityRef,bytes32 mandateDigest,string predicateId,bytes32 settlementParamsDigest)IdentityRef(uint256 chainId,address registryAddr,string agentId)")
+ *     "CLBSettlementCommitment(IdentityRef identityRef,bytes32 mandateDigest,string predicateId,bytes32 predicateDigest,bytes32 settlementParamsDigest)IdentityRef(uint256 chainId,address registryAddr,string agentId)")
+ *
+ * NOTE: adding `predicateDigest` changes SETTLEMENT_TYPEHASH and therefore every C'.
  */
 export const CLB_SETTLEMENT_TYPED_DATA_TYPES = {
   IdentityRef: [
@@ -181,9 +188,136 @@ export const CLB_SETTLEMENT_TYPED_DATA_TYPES = {
     { name: "identityRef", type: "IdentityRef" },
     { name: "mandateDigest", type: "bytes32" },
     { name: "predicateId", type: "string" },
+    { name: "predicateDigest", type: "bytes32" },
     { name: "settlementParamsDigest", type: "bytes32" },
   ],
 } as const;
+
+const ZERO_BYTES32: Hex = `0x${"00".repeat(32)}`;
+
+/**
+ * Digest of the predicate fields the Solidity guard does not store in
+ * `PredicateConfig` (agent IDs and optional task hash). Bound into C' so that
+ * substituting those fields under the same predicate ID also breaks the human
+ * signature. Parity: `keccak256(abi.encode(bytes32[] agentIdHashes, bytes32 taskHash))`.
+ */
+export function computePredicateExtrasDigest(predicate: SpendingPredicate): Hex {
+  return keccak256(
+    encodeAbiParameters(
+      [{ type: "bytes32[]" }, { type: "bytes32" }],
+      [
+        predicate.allowedAgentIds.map((agentId) => keccak256(toBytes(agentId))),
+        (predicate.taskHash ?? ZERO_BYTES32) as Hex,
+      ],
+    ),
+  );
+}
+
+/**
+ * Layer-1 digest of `PredicateConfig`, byte-identical to Solidity
+ * `PredicatePaymentGuard.predicateDigest`. `maxValue` is converted with 6
+ * decimals (USDC base units); `validUntil` is truncated to Unix seconds.
+ */
+export function computePredicateConfigDigest(predicate: SpendingPredicate): Hex {
+  // shortcut: maxValue is 6-decimal USDC base-units, matching the guard's maxValueAtomic; upgrade when multi-decimal assets are registered.
+  return keccak256(
+    encodeAbiParameters(
+      [
+        { type: "address[]" },
+        { type: "bytes32[]" },
+        { type: "uint256[]" },
+        { type: "uint256" },
+        { type: "uint64" },
+      ],
+      [
+        predicate.allowedPayees.map(getAddress),
+        predicate.allowedAssets.map((asset) => keccak256(toBytes(asset))),
+        predicate.allowedChainIds.map(BigInt),
+        parseUnits(predicate.maxValue, 6),
+        BigInt(Math.trunc(Date.parse(predicate.validUntil) / 1000)),
+      ],
+    ),
+  );
+}
+
+/**
+ * Canonical digest of the FULL spending predicate, byte-identical to the
+ * Solidity `predicateDigestWithExtras(PredicateConfig, extraFieldsDigest)`.
+ * Layer 1 = config digest; layer 2 folds in agent IDs / task hash.
+ */
+export function computePredicateDigest(predicate: SpendingPredicate): Hex {
+  return keccak256(
+    encodeAbiParameters(
+      [{ type: "bytes32" }, { type: "bytes32" }],
+      [computePredicateConfigDigest(predicate), computePredicateExtrasDigest(predicate)],
+    ),
+  );
+}
+
+/** Typehash of the DEMO human registration signature payload (Solidity parity). */
+export const PREDICATE_GUARD_BINDING_TYPEHASH = keccak256(
+  toBytes(
+    "PredicateGuardBinding(string predicateId,bytes32 configDigest,address principal,bytes32 mandateDigest,bytes32 taskHash,bytes32 extraFieldsDigest,uint256 chainId)",
+  ),
+);
+
+/**
+ * EIP-191 digest a human signs to bind a predicate registration to a principal,
+ * mandate digest and task hash. Byte-identical to Solidity `bindingDigest`.
+ * The extras digest defaults to clb-core's agent-IDs + taskHash encoding.
+ */
+export function computePredicateGuardBindingDigest(input: {
+  predicateId: string;
+  predicate: SpendingPredicate;
+  principal: Address;
+  mandateDigest: Hex;
+  taskHash?: Hex;
+  extraFieldsDigest?: Hex;
+  chainId: number;
+}): Hex {
+  const extras =
+    input.extraFieldsDigest ??
+    (input.taskHash !== undefined
+      ? keccak256(
+          encodeAbiParameters(
+            [{ type: "bytes32[]" }, { type: "bytes32" }],
+            [
+              input.predicate.allowedAgentIds.map((agentId) => keccak256(toBytes(agentId))),
+              input.taskHash,
+            ],
+          ),
+        )
+      : computePredicateExtrasDigest(input.predicate));
+  const structHash = keccak256(
+    encodeAbiParameters(
+      [
+        { type: "bytes32" }, // typehash
+        { type: "bytes32" }, // keccak256(bytes(predicateId))
+        { type: "bytes32" }, // config digest
+        { type: "address" }, // principal
+        { type: "bytes32" }, // mandateDigest
+        { type: "bytes32" }, // taskHash
+        { type: "bytes32" }, // extraFieldsDigest
+        { type: "uint256" }, // domain chainId
+      ],
+      [
+        PREDICATE_GUARD_BINDING_TYPEHASH,
+        keccak256(toBytes(input.predicateId)),
+        computePredicateConfigDigest(input.predicate),
+        input.principal,
+        input.mandateDigest,
+        input.taskHash ?? ZERO_BYTES32,
+        extras,
+        BigInt(input.chainId),
+      ],
+    ),
+  );
+  // EIP-191 prefix bytes + structHash, concatenated as raw bytes (viem's
+  // `concat` re-encodes hex strings as text, so build the hex payload directly).
+  return keccak256(
+    `0x19457468657265756d205369676e6564204d6573736167653a0a3332${structHash.slice(2)}` as Hex,
+  );
+}
 
 export const CLB_SETTLEMENT_PRIMARY_TYPE = "CLBSettlementCommitment" as const;
 
@@ -227,6 +361,8 @@ export type ModeBSettlementInput = {
   identityRef: IdentityRef;
   mandateDigest: Hex;
   predicateId: string;
+  /** The human-signed predicate content bound into C'. Required for the binding. */
+  predicate?: SpendingPredicate;
   settlementParams: SettlementParams;
   domain: CLBCommitmentInput["domain"];
 };
@@ -245,12 +381,16 @@ export function buildModeBSettlementCommitment(input: ModeBSettlementInput) {
       },
       mandateDigest: input.mandateDigest,
       predicateId: input.predicateId,
+      predicateDigest: input.predicate ? computePredicateDigest(input.predicate) : ZERO_BYTES32,
       settlementParamsDigest: computeSettlementParamsDigest(input.settlementParams),
     },
   } as const;
 }
 
-/** C' = keccak256(EIP712(identityRef, mandateDigest, predicateId, settlementParamsDigest)). */
+/**
+ * C' = keccak256(EIP712(identityRef, mandateDigest, predicateId,
+ *                       predicateDigest, settlementParamsDigest)).
+ */
 export function computeModeBSettlementCommitment(input: ModeBSettlementInput): Hex {
   return hashTypedData(buildModeBSettlementCommitment(input));
 }

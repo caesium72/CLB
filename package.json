@@ -25,19 +25,31 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --build"
+    "typecheck": "tsc --build",
+    "e2e:reviewer2:comment1": "bun run scripts/e2e-reviewer2-comment1.ts",
+    "e2e:reviewer2:comment2": "bun run scripts/e2e-reviewer2-comment2.ts",
+    "e2e:reviewer2:comment2:public": "bun run scripts/e2e-reviewer2-comment2-public.ts",
+    "bridge:sepolia-to-base": "bun run scripts/bridge-sepolia-to-base.ts",
+    "watch:mining": "bun run scripts/watch-mine-and-bridge.ts",
+    "reproduce:all": "bun run scripts/reproduce-all.ts",
+    "perf:all": "bun run scripts/e2e-performance.ts",
+    "perf:scaling": "bun run scripts/e2e-scaling.ts",
+    "novelty:aearv": "bun run scripts/e2e-aearv.ts",
+    "novelty:ircv": "bun run tools/ircv/run.ts"
   },
   "devDependencies": {
     "@clb-acel/agent-orchestrator": "workspace:*",
     "@clb-acel/attack-core": "workspace:*",
     "@clb-acel/clb-core": "workspace:*",
     "@clb-acel/predicate-adapter": "workspace:*",
+    "@clb-acel/x402-adapter": "workspace:*",
     "@eslint/js": "^9.28.0",
     "@types/node": "^22.15.29",
     "bun-types": "^1.3.14",
     "eslint": "^9.28.0",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.0"
+    "typescript-eslint": "^8.33.0",
+    "viem": "^2.40.0"
   }
 }

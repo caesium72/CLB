@@ -1,0 +1,143 @@
+{
+  "schema": "ircv-serialization/v1",
+  "method": "clb-core functions vs independent TypeScript mirror of Solidity ABI/EIP-712 formulas (no Solidity execution in this component)",
+  "findings": [
+    {
+      "id": "FINDING-MULTI-PAYEE-GETADDRESS",
+      "severity": "medium",
+      "detail": "computePredicateConfigDigest throws for >=2 allowedPayees: InvalidAddressError (viem getAddress receives the map index as chainId). Core source was NOT modified; this framework reports only."
+    }
+  ],
+  "sources": [
+    "packages/clb-core/src/index.ts",
+    "packages/clb-core/src/epochs.ts",
+    "contracts/src/PredicatePaymentGuard.sol",
+    "contracts/src/RevocationAwareGuard.sol"
+  ],
+  "checks": [
+    {
+      "id": "default-config",
+      "field": "predicateConfigDigest",
+      "clbCore": "0x5f1d899a8f07becaf1f92e9bf7fbd46935ff1fa606f38bb8cc584daabf45f239",
+      "solidityMirror": "0x5f1d899a8f07becaf1f92e9bf7fbd46935ff1fa606f38bb8cc584daabf45f239",
+      "ok": true
+    },
+    {
+      "id": "default-extras",
+      "field": "predicateExtrasDigest",
+      "clbCore": "0xffcfa2c006b97b08f2715cf05ce45e0d9b24d8043ce14df8e28cc378f8a2a034",
+      "solidityMirror": "0xffcfa2c006b97b08f2715cf05ce45e0d9b24d8043ce14df8e28cc378f8a2a034",
+      "ok": true
+    },
+    {
+      "id": "default-predicate",
+      "field": "predicateDigest(config,extras)",
+      "clbCore": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+      "solidityMirror": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+      "ok": true
+    },
+    {
+      "id": "default-params",
+      "field": "settlementParamsDigest",
+      "clbCore": "0xf53141700ccdde38b455e45b2bfe857f8067f759a7e126f118f9ce2903cfd6c9",
+      "solidityMirror": "0xf53141700ccdde38b455e45b2bfe857f8067f759a7e126f118f9ce2903cfd6c9",
+      "ok": true
+    },
+    {
+      "id": "default-cprime",
+      "field": "C' (EIP-712 struct hash)",
+      "clbCore": "0x68acb46c51c22c6512bf1acc48b859a40ea877a6e51b65059853d445f073bd7d",
+      "solidityMirror": "0x68acb46c51c22c6512bf1acc48b859a40ea877a6e51b65059853d445f073bd7d",
+      "ok": true
+    },
+    {
+      "id": "default-nonce",
+      "field": "nonce = H(C')",
+      "clbCore": "0xb75ea35404348362ce62561e95d53110426357b798cef22b92e1ef01f2f124f1",
+      "solidityMirror": "0xb75ea35404348362ce62561e95d53110426357b798cef22b92e1ef01f2f124f1",
+      "ok": true
+    },
+    {
+      "id": "default-binding",
+      "field": "predicateGuardBindingDigest (EIP-191)",
+      "clbCore": "0x9fa75860e338691457182779a3a1d3fe78a904ceff546b6aec2cc91341c19af1",
+      "solidityMirror": "0x9fa75860e338691457182779a3a1d3fe78a904ceff546b6aec2cc91341c19af1",
+      "ok": true
+    },
+    {
+      "id": "multi-field-config",
+      "field": "predicateConfigDigest",
+      "clbCore": "0x73aa3336e216808eb232cf0c2048a627d4fb411f29fc362e9ef22afc585c5c72",
+      "solidityMirror": "0x73aa3336e216808eb232cf0c2048a627d4fb411f29fc362e9ef22afc585c5c72",
+      "ok": true
+    },
+    {
+      "id": "multi-field-extras",
+      "field": "predicateExtrasDigest",
+      "clbCore": "0xff556d5cefc84925ea196d7e8e34463111a8fa196424ee21b6485136403eded4",
+      "solidityMirror": "0xff556d5cefc84925ea196d7e8e34463111a8fa196424ee21b6485136403eded4",
+      "ok": true
+    },
+    {
+      "id": "multi-field-predicate",
+      "field": "predicateDigest(config,extras)",
+      "clbCore": "0x3ee91e5eb53c2e0c37b41c9603cb3d7d28bd672d1dbdc762dd8a9a67483ace0e",
+      "solidityMirror": "0x3ee91e5eb53c2e0c37b41c9603cb3d7d28bd672d1dbdc762dd8a9a67483ace0e",
+      "ok": true
+    },
+    {
+      "id": "multi-field-params",
+      "field": "settlementParamsDigest",
+      "clbCore": "0xf53141700ccdde38b455e45b2bfe857f8067f759a7e126f118f9ce2903cfd6c9",
+      "solidityMirror": "0xf53141700ccdde38b455e45b2bfe857f8067f759a7e126f118f9ce2903cfd6c9",
+      "ok": true
+    },
+    {
+      "id": "multi-field-cprime",
+      "field": "C' (EIP-712 struct hash)",
+      "clbCore": "0x4a886a158a8c284c6c8683e38ca14dd77e0bb45a03ccc284575683f15f9301c0",
+      "solidityMirror": "0x4a886a158a8c284c6c8683e38ca14dd77e0bb45a03ccc284575683f15f9301c0",
+      "ok": true
+    },
+    {
+      "id": "multi-field-nonce",
+      "field": "nonce = H(C')",
+      "clbCore": "0xcab67880c0c297027b385b1faa5f8e0b10b4d60f8a5fbae7eabbea844df66738",
+      "solidityMirror": "0xcab67880c0c297027b385b1faa5f8e0b10b4d60f8a5fbae7eabbea844df66738",
+      "ok": true
+    },
+    {
+      "id": "multi-field-binding",
+      "field": "predicateGuardBindingDigest (EIP-191)",
+      "clbCore": "0x1ec367d1a5db3e54636aecda7d2f6b282e5a6c8e71c95c368290fe283fbf1a05",
+      "solidityMirror": "0x1ec367d1a5db3e54636aecda7d2f6b282e5a6c8e71c95c368290fe283fbf1a05",
+      "ok": true
+    },
+    {
+      "id": "rclb-ct",
+      "field": "C_t = keccak256(abi.encode(C,E_I,E_M,T,N))",
+      "clbCore": "0x5afcb4be129ceddaf2f1479bbbfb8929d140b87683fef61363c2bacb229aae36",
+      "solidityMirror": "0x5afcb4be129ceddaf2f1479bbbfb8929d140b87683fef61363c2bacb229aae36",
+      "ok": true
+    },
+    {
+      "id": "rclb-nonce",
+      "field": "revocation-aware payment nonce",
+      "clbCore": "0xda3d79bac71a6c0e8bd6a78795552c1be1594b15c6782c27e2ef75ae16d5ace8",
+      "solidityMirror": "0xda3d79bac71a6c0e8bd6a78795552c1be1594b15c6782c27e2ef75ae16d5ace8",
+      "ok": true
+    },
+    {
+      "id": "negative-control-config",
+      "field": "maxValue change must change configDigest",
+      "clbCore": "true",
+      "solidityMirror": "true",
+      "ok": true
+    }
+  ],
+  "summary": {
+    "total": 17,
+    "matched": 17,
+    "mismatched": 0
+  }
+}

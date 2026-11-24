@@ -212,6 +212,9 @@ export async function runLiveOnChainRejection(
       },
       input.mandateDigest,
       input.predicateId,
+      // Legacy demo path: no predicate extras digest (the 6-arg overload in
+      // the contract delegates with zero). The bound path passes a real digest.
+      `0x${"0".repeat(64)}` as Hex,
       {
         chainId: BigInt(p.chainId),
         network: p.network,

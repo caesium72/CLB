@@ -1,0 +1,17 @@
+### Performance scaling, variance, and comparison with plain x402
+
+To address the limited scope of the initial performance evaluation, we measured how verification cost grows with trace length and quantified the additional cost of the CLB-ACEL path relative to plain x402. All measurements were taken on a single machine (12th Gen Intel Core i5-1240P, 16 logical cores, Windows x64, Bun 1.4.5), so these results are not claimed to generalise across hardware, operating systems, or cloud environments. Each reported series consists of 100 recorded observations with two warm-up iterations excluded; mean, median, 95th percentile, sample standard deviation, count, minimum, maximum and all raw samples are retained in the accompanying artifacts.
+
+Trace-length scaling was evaluated on synthetic but valid evidence traces of 7, 16, 32, 64 and 128 events. Hash chains, event-hash lists and Merkle roots were recomputed, and all verification rules were asserted to pass before timing. Evidence-chain construction (linking, hashing and Merkle-root computation) scaled approximately linearly: the mean rose from 0.58 ms at 7 events to 13.09 ms at 128 events (log–log slope 1.06), consistent with the O(n log n) Merkle reduction over this small range of n. Full trace verification rose from 6.98 ms to 13.64 ms over the same range (log–log slope 0.24), i.e. sublinearly, because size-independent signature verification and certificate hashing dominate the per-event hashing cost; the marginal cost at the largest step was 0.044 ms per event. The longest measured trace remains 128 events, so these figures demonstrate scaling behaviour rather than large-scale throughput.
+
+| Events | Evidence chain, mean ± sd (ms) | Evidence chain, p95 (ms) | verifyTrace, mean ± sd (ms) | verifyTrace, p95 (ms) |
+| ---: | ---: | ---: | ---: | ---: |
+| 7 | 0.5821 ± 0.0824 | 0.6869 | 6.9791 ± 0.8136 | 8.2055 |
+| 16 | 1.3666 ± 0.2139 | 1.5964 | 7.4979 ± 1.0833 | 9.6667 |
+| 32 | 2.7078 ± 0.3543 | 3.6795 | 8.0243 ± 0.9635 | 9.9309 |
+| 64 | 5.6712 ± 0.7205 | 7.1856 | 10.8290 ± 2.1189 | 14.4007 |
+| 128 | 13.0906 ± 1.9043 | 17.0709 | 13.6448 ± 1.0600 | 15.4623 |
+
+For the x402 comparison, we timed a plain x402 authorization (EIP-712 signature verification followed by settlement through the local facilitator) and a full CLB-ACEL span comprising commitment recomputation, commitment-signature verification, predicate-guard authorisation, evidence-chain construction, complete trace verification and settlement. Both spans used freshly prepared inputs and ended in a local-facilitator settlement, so the second span is a strict superset of the first. Plain x402 took 1.94 ± 0.59 ms (median 1.69 ms, p95 3.05 ms), while the full CLB-ACEL span took 8.55 ± 0.94 ms (median 8.52 ms, p95 10.04 ms). The paired per-iteration difference was 6.61 ± 1.12 ms, a ratio of means of 4.41×. This is the measured cost of the additional authorisation, evidence and verification machinery under the local harness; the components were assembled from prebuilt fixtures and therefore represent a component-cost model rather than a single end-to-end delegated-payment trace.
+
+Gas figures remain local measurements on an Anvil EVM with a mock guard and are not mainnet or public-testnet results. Base Sepolia measurements were not performed because the designated signer account was unfunded; a public-network harness is implemented but cannot execute until the signer receives test ETH, and no public-network timing, gas, or transaction evidence is claimed here.

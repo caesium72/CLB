@@ -1,0 +1,443 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-24T17:08:45.016Z",
+  "configuration": {
+    "requestedSamples": 100,
+    "warmupIterationsExcluded": 2
+  },
+  "environment": {
+    "runtime": "bun",
+    "bunVersion": "1.4.5",
+    "nodeVersion": "v26.3.0",
+    "platform": "win32",
+    "arch": "x64",
+    "cpuModel": "12th Gen Intel(R) Core(TM) i5-1240P",
+    "logicalCores": 16,
+    "machineCount": 1
+  },
+  "oneMachineLimitation": "ONE MACHINE ONLY — no multi-machine, multi-OS or cloud claim is made.",
+  "baseSepolia": "NOT MEASURED HERE — public-network results are recorded separately at experiments/benchmarks/reviewer2/comment2/public/onchain-guard-results.public.json. No public-network timing or gas is claimed in this file.",
+  "overheadVsPlainX402": {
+    "metricId": "M26",
+    "unit": "ms",
+    "n": 100,
+    "boundaryNote": "Both spans end in a local-facilitator settlement. The CLB-ACEL span additionally performs commitment recomputation, CLB signature verification, the predicate guard decision, evidence chain/Merkle construction and full verifyTrace (which internally re-verifies the x402 authorization). Components use the prebuilt M15/M16/M17/M19/M20 fixtures; the summed span is a cost model, not one coherent end-to-end trace.",
+    "plainX402": {
+      "mean": 2.427810999999492,
+      "median": 2.168649999999616,
+      "p50": 2.168649999999616,
+      "p95": 3.78619999998773,
+      "stddev": 0.6013820871351873,
+      "sampleCount": 100,
+      "min": 1.8849999999947613,
+      "max": 4.037400000001071
+    },
+    "clbAcel": {
+      "mean": 10.626345999999467,
+      "median": 10.683450000004086,
+      "p50": 10.683450000004086,
+      "p95": 11.982600000003004,
+      "stddev": 0.9003214935806876,
+      "sampleCount": 100,
+      "min": 8.697199999995064,
+      "max": 12.777499999996508
+    },
+    "pairedDeltaMs": {
+      "mean": 8.198534999999975,
+      "median": 8.32209999999759,
+      "p50": 8.32209999999759,
+      "p95": 9.887199999997392,
+      "stddev": 1.1695736009148057,
+      "sampleCount": 100,
+      "min": 5.128599999996368,
+      "max": 10.88619999999355
+    },
+    "ratioOfMeans": 4.3769247276668946
+  },
+  "labeling": {
+    "gas": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET",
+    "publicNetworkEvidence": false,
+    "mainnetGasClaims": false
+  },
+  "gas": {
+    "status": "RUN",
+    "reason": "Foundry available; real transactions executed on a local Anvil EVM."
+  },
+  "rawResults": {
+    "path": "experiments/benchmarks/performance-raw.json",
+    "sha256": "e2682d22ea563852adcfc2ee36d1f03ead842eefc6aa34ff2d388209910f6c86"
+  },
+  "metrics": {
+    "M15": {
+      "title": "Commitment-generation latency",
+      "status": "MEASURED",
+      "series": {
+        "computeCommitment": {
+          "unit": "ms",
+          "boundary": "computeCommitment(clbInput) — Mode A C = keccak256(EIP712(identityRef, mandateDigest, settlementDigest)); input prepared outside timer.",
+          "summary": {
+            "mean": 0.2108110000000005,
+            "median": 0.20315000000002215,
+            "p50": 0.20315000000002215,
+            "p95": 0.25540000000000873,
+            "stddev": 0.050723213849599436,
+            "sampleCount": 100,
+            "min": 0.17250000000001364,
+            "max": 0.5745000000000005
+          }
+        },
+        "computeModeBSettlementCommitment": {
+          "unit": "ms",
+          "boundary": "computeModeBSettlementCommitment(input) — Mode B C' = keccak256(EIP712(identityRef, mandateDigest, predicateId, settlementParamsDigest)).",
+          "summary": {
+            "mean": 0.42731600000000297,
+            "median": 0.3662999999999954,
+            "p50": 0.3662999999999954,
+            "p95": 0.4638999999999669,
+            "stddev": 0.32798266821663596,
+            "sampleCount": 100,
+            "min": 0.31490000000002283,
+            "max": 2.8145999999999844
+          }
+        }
+      }
+    },
+    "M16": {
+      "title": "Signature-verification latency",
+      "status": "MEASURED",
+      "series": {
+        "verifyPaymentPayload": {
+          "unit": "ms",
+          "boundary": "await verifyPaymentPayload(payload) — EIP-712 recovery + expected-signer equality for the x402 authorization.",
+          "summary": {
+            "mean": 1.3241070000000008,
+            "median": 1.1515500000000145,
+            "p50": 1.1515500000000145,
+            "p95": 2.3839000000000397,
+            "stddev": 0.43450574690321225,
+            "sampleCount": 100,
+            "min": 0.9913000000000238,
+            "max": 3.3175999999999704
+          }
+        },
+        "verifyCommitmentSignature": {
+          "unit": "ms",
+          "boundary": "await verifyCommitmentSignature(clbInput, signature, expectedSigner) — CLB EIP-712 signature recovery.",
+          "summary": {
+            "mean": 1.2499749999999932,
+            "median": 1.1188999999999965,
+            "p50": 1.1188999999999965,
+            "p95": 2.3783999999999423,
+            "stddev": 0.4270581606772161,
+            "sampleCount": 100,
+            "min": 0.9131999999999607,
+            "max": 2.960800000000006
+          }
+        }
+      }
+    },
+    "M17": {
+      "title": "Authorization-verification latency",
+      "status": "MEASURED",
+      "series": {
+        "guardAssertSettlementAllowed": {
+          "unit": "ms",
+          "boundary": "await InMemoryPredicateGuard.assertSettlementAllowed(guardInput) — predicate eval + C' recompute + expectedNonce binding + allow/deny decision.",
+          "summary": {
+            "mean": 0.3751620000000014,
+            "median": 0.35345000000000937,
+            "p50": 0.35345000000000937,
+            "p95": 0.42279999999993834,
+            "stddev": 0.131903002148384,
+            "sampleCount": 100,
+            "min": 0.31910000000004857,
+            "max": 1.619199999999978
+          }
+        }
+      }
+    },
+    "M18": {
+      "title": "Predicate-evaluation latency",
+      "status": "MEASURED",
+      "series": {
+        "evaluatePredicate": {
+          "unit": "ms",
+          "boundary": "evaluatePredicate(predicate, params, now, observedTaskHash) — pure rule evaluation only.",
+          "summary": {
+            "mean": 0.0022940000000062355,
+            "median": 0.0017000000000280124,
+            "p50": 0.0017000000000280124,
+            "p95": 0.004599999999982174,
+            "stddev": 0.002547520878467359,
+            "sampleCount": 100,
+            "min": 0.0013999999999896318,
+            "max": 0.024699999999938882
+          }
+        },
+        "guardEvaluateOffChain": {
+          "unit": "ms",
+          "boundary": "guard.evaluateOffChain(predicate, params, now, observedTaskHash) — adapter entry point, same pure evaluator.",
+          "summary": {
+            "mean": 0.0022099999999988995,
+            "median": 0.00164999999998372,
+            "p50": 0.00164999999998372,
+            "p95": 0.005700000000047112,
+            "stddev": 0.0018508802164854683,
+            "sampleCount": 100,
+            "min": 0.0013999999999896318,
+            "max": 0.015700000000038017
+          }
+        }
+      }
+    },
+    "M19": {
+      "title": "Evidence-generation latency",
+      "status": "MEASURED",
+      "series": {
+        "evidenceChainGeneration": {
+          "unit": "ms",
+          "boundary": "linkEvidenceEvents(events) + events.map(hashEvidenceEvent) + buildMerkleRoot(hashes) — hash-chained evidence plus Merkle root; input events prepared outside timer.",
+          "summary": {
+            "mean": 0.6153849999999921,
+            "median": 0.5830499999999574,
+            "p50": 0.5830499999999574,
+            "p95": 0.6789999999999736,
+            "stddev": 0.18776919873863768,
+            "sampleCount": 100,
+            "min": 0.5303000000000111,
+            "max": 2.0249000000000024
+          }
+        },
+        "confidentialRangeProofEvidence": {
+          "unit": "ms",
+          "boundary": "commitConfidential({valueAtomic, maxValueAtomic, payTo}, {rng}) — Pedersen commitment + 64-bit per-bit range proof evidence (deterministic RNG).",
+          "summary": {
+            "mean": 692.857368,
+            "median": 693.0973500000036,
+            "p50": 693.0973500000036,
+            "p95": 738.3580000000002,
+            "stddev": 29.141460347324834,
+            "sampleCount": 100,
+            "min": 632.1998000000003,
+            "max": 784.4588999999978
+          }
+        }
+      }
+    },
+    "M20": {
+      "title": "Verification latency",
+      "status": "MEASURED",
+      "series": {
+        "verifyTrace": {
+          "unit": "ms",
+          "boundary": "await verifyTrace(validModeABundle) — all deterministic rules R1–R17 and certificate hash; bundle prebuilt outside timer.",
+          "summary": {
+            "mean": 7.762215999999171,
+            "median": 7.839949999994133,
+            "p50": 7.839949999994133,
+            "p95": 9.250799999994342,
+            "stddev": 1.0236839109000198,
+            "sampleCount": 100,
+            "min": 5.955000000001746,
+            "max": 10.383900000000722
+          }
+        }
+      }
+    },
+    "M21": {
+      "title": "Complete end-to-end transaction latency",
+      "status": "MEASURED",
+      "series": {
+        "e2eModeATransaction": {
+          "unit": "ms",
+          "boundary": "buildValidBundle({traceId}) + verifyTrace(bundle) — full Mode A: mandate issue, C/nonce, x402 signing, local facilitator settle, evidence chain, report/delivery signatures, verification.",
+          "summary": {
+            "mean": 12.206187999999965,
+            "median": 12.172299999998359,
+            "p50": 12.172299999998359,
+            "p95": 13.81579999999667,
+            "stddev": 0.9448451391769191,
+            "sampleCount": 100,
+            "min": 9.738799999991897,
+            "max": 14.1930999999895
+          }
+        }
+      }
+    },
+    "M22": {
+      "title": "Complete payment-related gas consumption",
+      "status": "MEASURED",
+      "gasStatus": "RUN",
+      "label": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET",
+      "publicNetworkEvidence": false,
+      "chain": {
+        "label": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET",
+        "publicNetwork": false,
+        "network": "local-anvil",
+        "rpcUrl": "http://127.0.0.1:18547",
+        "chainId": 84532,
+        "guardAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "deployTxHash": "0xc4f45529a0aa7437ccd01173f7cd2d60758b99a244139f202cdc3e78e25e4817",
+        "contract": "contracts/src/PredicatePaymentGuard.sol::validateAndConsume"
+      },
+      "series": {
+        "guardOnlyGas": {
+          "unit": "gas",
+          "boundary": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET: gasUsed of the successful PredicatePaymentGuard.validateAndConsume receipt (C' recompute + predicate checks + nonce consume); deployment/registration excluded.",
+          "summary": {
+            "mean": 92478.12,
+            "median": 92484,
+            "p50": 92484,
+            "p95": 92484,
+            "stddev": 9.87117014340245,
+            "sampleCount": 100,
+            "min": 92448,
+            "max": 92484
+          }
+        },
+        "completePaymentGas": {
+          "unit": "gas",
+          "boundary": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET: gasUsed(validateAndConsume success) + gasUsed(on-chain settlement transfer from createOnChainFacilitator), summed per iteration; deployment/registration excluded.",
+          "summary": {
+            "mean": 114756.02,
+            "median": 114764,
+            "p50": 114764,
+            "p95": 114764,
+            "stddev": 13.240571259304778,
+            "sampleCount": 100,
+            "min": 114710,
+            "max": 114764
+          }
+        }
+      }
+    },
+    "M23": {
+      "title": "Successful and reverted transaction costs",
+      "status": "MEASURED",
+      "gasStatus": "RUN",
+      "label": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET",
+      "publicNetworkEvidence": false,
+      "chain": {
+        "label": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET",
+        "publicNetwork": false,
+        "network": "local-anvil",
+        "rpcUrl": "http://127.0.0.1:18547",
+        "chainId": 84532,
+        "guardAddress": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+        "deployTxHash": "0xc4f45529a0aa7437ccd01173f7cd2d60758b99a244139f202cdc3e78e25e4817",
+        "contract": "contracts/src/PredicatePaymentGuard.sol::validateAndConsume"
+      },
+      "series": {
+        "successfulGuardGas": {
+          "unit": "gas",
+          "boundary": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET: gasUsed of the successful validateAndConsume receipt (same observations as guardOnlyGas, reported under the success/revert split).",
+          "summary": {
+            "mean": 92478.12,
+            "median": 92484,
+            "p50": 92484,
+            "p95": 92484,
+            "stddev": 9.87117014340245,
+            "sampleCount": 100,
+            "min": 92448,
+            "max": 92484
+          }
+        },
+        "revertedGuardGas": {
+          "unit": "gas",
+          "boundary": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET: gasUsed of a MINED reverted validateAndConsume tx (PayeeNotAllowed). The guard aborts before the settlement transfer, so no settlement tx exists for the reverted path.",
+          "summary": {
+            "mean": 68781.48,
+            "median": 68787,
+            "p50": 68787,
+            "p95": 68787,
+            "stddev": 7.893841097509324,
+            "sampleCount": 100,
+            "min": 68763,
+            "max": 68787
+          }
+        },
+        "successfulSettlementTxGas": {
+          "unit": "gas",
+          "boundary": "LOCAL ANVIL / DEMO — NOT MAINNET AND NOT A PUBLIC TESTNET: gasUsed of the demo on-chain settlement transfer receipt on the successful path.",
+          "summary": {
+            "mean": 22277.9,
+            "median": 22280,
+            "p50": 22280,
+            "p95": 22280,
+            "stddev": 7.692971999287274,
+            "sampleCount": 100,
+            "min": 22250,
+            "max": 22280
+          }
+        }
+      }
+    },
+    "M24": {
+      "title": "Mean, median, standard deviation, sample count",
+      "status": "MEASURED",
+      "definition": "mean = arithmetic mean; median = middle order statistic; p50 = median; p95 = 95th order statistic; stddev = sample (n-1) standard deviation; sampleCount = raw observations; min/max included.",
+      "computedFor": [
+        "computeCommitment",
+        "computeModeBSettlementCommitment",
+        "verifyPaymentPayload",
+        "verifyCommitmentSignature",
+        "guardAssertSettlementAllowed",
+        "evaluatePredicate",
+        "guardEvaluateOffChain",
+        "evidenceChainGeneration",
+        "confidentialRangeProofEvidence",
+        "verifyTrace",
+        "e2eModeATransaction",
+        "plainX402Accept",
+        "clbAcelAcceptAndVerify",
+        "guardOnlyGas",
+        "completePaymentGas",
+        "successfulGuardGas",
+        "revertedGuardGas",
+        "successfulSettlementTxGas"
+      ]
+    },
+    "M25": {
+      "title": "Preserve raw benchmark results",
+      "status": "MEASURED",
+      "path": "experiments/benchmarks/performance-raw.json",
+      "sha256": "e2682d22ea563852adcfc2ee36d1f03ead842eefc6aa34ff2d388209910f6c86",
+      "totalSamples": 1800,
+      "seriesCount": 18
+    },
+    "M26": {
+      "title": "Overhead of the full CLB-ACEL path vs plain x402",
+      "status": "MEASURED",
+      "series": {
+        "plainX402Accept": {
+          "unit": "ms",
+          "boundary": "await verifyPaymentPayload(payload) + await facilitator.settle(payload) on a fresh local facilitator — plain x402 authorization + settlement. Payload and fresh facilitator prepared outside timer.",
+          "summary": {
+            "mean": 2.427810999999492,
+            "median": 2.168649999999616,
+            "p50": 2.168649999999616,
+            "p95": 3.78619999998773,
+            "stddev": 0.6013820871351873,
+            "sampleCount": 100,
+            "min": 1.8849999999947613,
+            "max": 4.037400000001071
+          }
+        },
+        "clbAcelAcceptAndVerify": {
+          "unit": "ms",
+          "boundary": "computeCommitment + verifyCommitmentSignature + guard.assertSettlementAllowed + (link/hash/Merkle over 7 events) + verifyTrace(bundle) + facilitator.settle(payload) — full CLB-ACEL acceptance/verification pipeline. All inputs, including a fresh facilitator, prepared outside timer.",
+          "summary": {
+            "mean": 10.626345999999467,
+            "median": 10.683450000004086,
+            "p50": 10.683450000004086,
+            "p95": 11.982600000003004,
+            "stddev": 0.9003214935806876,
+            "sampleCount": 100,
+            "min": 8.697199999995064,
+            "max": 12.777499999996508
+          }
+        }
+      }
+    }
+  }
+}

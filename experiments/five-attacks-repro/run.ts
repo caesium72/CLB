@@ -25,7 +25,8 @@
 
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { buildValidBundle, markReplayAttempt, verifyTrace } from "@clb-acel/attack-core";
+import { TEST_KEYS, buildValidBundle, markReplayAttempt, verifyTrace } from "@clb-acel/attack-core";
+import { privateKeyToAccount } from "viem/accounts";
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -114,7 +115,9 @@ if (!replay.prevented) {
   process.exit(1);
 }
 
-const verification = await verifyTrace(replay.bundle);
+const verification = await verifyTrace(replay.bundle, {
+  expectedHumanPrincipal: privateKeyToAccount(TEST_KEYS.userKey).address,
+});
 
 console.log(`  verifier status  : ${verification.result.status}`);
 console.log(`  failedRules      : ${verification.result.failedRules.join(", ")}`);

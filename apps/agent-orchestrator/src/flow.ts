@@ -422,7 +422,9 @@ export async function runHumanPresent(
     report,
   };
 
-  const verification = await verifyTrace(bundle);
+  const verification = await verifyTrace(bundle, {
+    expectedHumanPrincipal: privateKeyToAccount(config.userPrivateKey).address,
+  });
   const recommendedFeedback = assessFeedback(verification);
 
   return {
@@ -557,6 +559,7 @@ export async function runDelegated(
     identityRef,
     mandateDigest: computeMandateDigest(mandate),
     predicateId: predicateDescriptor.predicateId,
+    predicate,
     settlementParams,
     domain,
   };
@@ -687,7 +690,9 @@ export async function runDelegated(
     modeBCommitment,
   };
 
-  const verification = await verifyTrace(bundle);
+  const verification = await verifyTrace(bundle, {
+    expectedHumanPrincipal: privateKeyToAccount(config.userPrivateKey).address,
+  });
   const recommendedFeedback = assessFeedback(verification);
 
   return {

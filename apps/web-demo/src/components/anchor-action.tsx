@@ -158,7 +158,7 @@ export function AnchorAction() {
               </p>
             </div>
             <div className="grid gap-1 font-mono text-xs">
-              {Object.entries(status.requirements).map(([key, ok]) => (
+              {Object.entries(status.requirements ?? {}).map(([key, ok]) => (
                 <p key={key} className={ok ? "text-emerald-600" : "text-destructive"}>
                   {ok ? "set" : "missing"} {key}
                   <span className="font-sans text-muted-foreground">

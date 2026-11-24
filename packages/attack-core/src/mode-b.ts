@@ -22,6 +22,7 @@ import {
   signPaymentPayload,
 } from "@clb-acel/x402-adapter";
 import type { Hex } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import {
   TEST_KEYS,
   attackerAddress,
@@ -43,6 +44,7 @@ import type {
 } from "./types";
 
 const BASE_TIME = Date.parse("2026-05-30T05:00:00.000Z");
+const HONEST_HUMAN_PRINCIPAL = privateKeyToAccount(TEST_KEYS.userKey).address;
 
 export type PredicateAttackId =
   | "PREDICATE_HAPPY_PATH"
@@ -125,13 +127,30 @@ export type ModeBBundle = {
   };
 };
 
+export type ModeBPaymentDraft = {
+  traceId: string;
+  baseTimeMs: number;
+  token: string;
+  predicate: SpendingPredicate;
+  predicateId: string;
+  predicateDescriptor: PredicateDescriptor;
+  concrete: SettlementDescriptorExact;
+  settlementParams: ReturnType<typeof settlementParamsFromExact>;
+  commitment: ModeBSettlementInput;
+  modeBCommitment: Hex;
+  nonce: Hex;
+  mandate: Awaited<ReturnType<typeof issueMandate>>;
+  paymentPayload: Awaited<ReturnType<typeof signPaymentPayload>>;
+};
+
 /**
- * Build a deterministic delegated (Mode B) trace bundle, mirroring
- * `buildValidBundle` for Mode A. C' is recomputed from the concrete params so
- * R6/R8 hold even when the concrete params violate the predicate (so violations
- * surface at R17/R11–R13, not the binding rules).
+ * Build everything up to (but excluding) settlement. Exists so the
+ * pre-settlement evaluation can ask the predicate guard BEFORE any receipt
+ * exists — the difference between real prevention and post-hoc detection.
  */
-export async function buildValidModeBBundle(options: ModeBBundleOptions = {}): Promise<ModeBBundle> {
+export async function draftModeBPayment(
+  options: ModeBBundleOptions = {},
+): Promise<ModeBPaymentDraft> {
   const traceId = options.traceId ?? "trace-mode-b-001";
   const baseTime = options.baseTimeMs ?? BASE_TIME;
   const predicate = options.predicate ?? defaultPredicate();
@@ -152,6 +171,9 @@ export async function buildValidModeBBundle(options: ModeBBundleOptions = {}): P
     identityRef: payerIdentity,
     mandateDigest: computeMandateDigest(mandate),
     predicateId,
+    // C' binds the full human-signed predicate, not just its ID: a permissive
+    // predicate swapped under this ID must break the binding.
+    predicate,
     settlementParams,
     domain,
   };
@@ -160,6 +182,46 @@ export async function buildValidModeBBundle(options: ModeBBundleOptions = {}): P
 
   const auth = buildPaymentAuthorization({ from: shopperAddress, descriptor: concrete, nonce });
   const paymentPayload = await signPaymentPayload(TEST_KEYS.shopperKey, auth, "predicate");
+
+  return {
+    traceId,
+    baseTimeMs: baseTime,
+    token: options.token ?? "XYZ",
+    predicate,
+    predicateId,
+    predicateDescriptor,
+    concrete,
+    settlementParams,
+    commitment,
+    modeBCommitment,
+    nonce,
+    mandate,
+    paymentPayload,
+  };
+}
+
+/**
+ * Build a deterministic delegated (Mode B) trace bundle, mirroring
+ * `buildValidBundle` for Mode A. C' is recomputed from the concrete params so
+ * R6/R8 hold even when the concrete params violate the predicate (so violations
+ * surface at R17/R11–R13, not the binding rules).
+ */
+export async function buildValidModeBBundle(options: ModeBBundleOptions = {}): Promise<ModeBBundle> {
+  const traceId = options.traceId ?? "trace-mode-b-001";
+  const baseTime = options.baseTimeMs ?? BASE_TIME;
+  const predicate = options.predicate ?? defaultPredicate();
+  const concrete = options.concrete ?? defaultConcrete();
+  const predicateId = options.predicateId ?? "predicate-001";
+
+  const {
+    predicateDescriptor,
+    mandate,
+    settlementParams,
+    commitment,
+    modeBCommitment,
+    nonce,
+    paymentPayload,
+  } = await draftModeBPayment(options);
 
   const facilitator = createLocalFacilitator();
   const settledReceipt = await facilitator.settle(paymentPayload);
@@ -483,7 +545,7 @@ export async function runPredicateAttack(id: PredicateAttackId): Promise<Predica
   };
 
   const verifyStart = performance.now();
-  const verification = await verifyTrace(bundle);
+  const verification = await verifyTrace(bundle, { expectedHumanPrincipal: HONEST_HUMAN_PRINCIPAL });
   const verifyLatencyMs = performance.now() - verifyStart;
 
   const failedRules = verification.result.failedRules;
@@ -543,7 +605,12 @@ export async function runAllPredicateAttacks(): Promise<{
     generatedAt: new Date(BASE_TIME).toISOString(),
     results,
     matrix: buildP5Matrix(
-      results.map((r) => ({ attackId: r.attackId, guardPrevented: r.guardPrevented, verification: r.verification })),
+      results.map((r) => ({
+        attackId: r.attackId,
+        guardPrevented: r.guardPrevented,
+        verification: r.verification,
+        baselineComparison: r.baselineComparison,
+      })),
       MODE_B_PREDICATE_FIXTURES,
     ),
   };
@@ -562,6 +629,7 @@ type P5LiveInput = {
   attackId: PredicateAttackId;
   guardPrevented: boolean;
   verification: VerifyTraceOutput;
+  baselineComparison?: Record<BaselineId, BaselineOutcome>;
 };
 
 export function buildP5Matrix(
@@ -578,6 +646,7 @@ export function buildP5Matrix(
     const prevented = live?.guardPrevented === true;
     matrix[fixture.id] = {
       ...fixture.baselineOutcomes,
+      ...(live?.baselineComparison ?? {}),
       B3: {
         detected,
         prevented,

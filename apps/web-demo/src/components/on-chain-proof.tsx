@@ -62,7 +62,7 @@ export function OnChainProof({ traceId }: { traceId?: string }) {
     fetch(`/api/demo/anchor/${encodeURIComponent(traceId)}/status`, { cache: "no-store" })
       .then((response) => response.json())
       .then((payload) => {
-        if (!cancelled && !("error" in payload)) setAnchor(payload);
+        if (!cancelled && payload && typeof payload === "object" && !("error" in payload)) setAnchor(payload);
       })
       .catch(() => undefined);
     return () => {

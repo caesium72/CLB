@@ -1,0 +1,18 @@
+% Reviewer #3, Comment 4 -- paste-ready corrections to Manuscript/main.tex.
+% 1) Insert after the first paragraph of "Theory and Practical Analysis" (currently line 537).
+% 2) Replace the stale sentence in "Discussion" (line 542).
+% 3) Replace the stale sentence in "Conclusion and Future Recommendations" (line 549).
+% Requires \cite{tamarin}, which is already in refs.bib.
+
+% --- INSERT after line 537 ---
+Security was also machine-checked with the Tamarin prover (v1.12.0). Under a Dolev--Yao attacker with perfect symbolic cryptography, the abstract protocol satisfies identity binding (P1), authorization integrity (P2), nonce freshness (P3), non-transferability (P4), and delegated-predicate soundness (P5); \texttt{exists-trace} lemmas confirm that honest executions exist, so these results are not vacuous. Ablations that remove the cross-layer binding or the on-chain guard admit concrete counterexamples for P4 and P5, which motivates those components. A separate ProVerif cross-check confirms that every settlement is preceded by an authorization event; the stronger injective correspondence fails as expected because off-chain messages alone cannot prevent replay, which is why nonce consumption is enforced on-chain. These proofs concern the abstract protocol logic rather than a line-by-line correctness proof of the TypeScript and Solidity implementation; code-level agreement is checked separately by commitment-parity tests and the deterministic verifier.
+
+% --- REPLACE the last clause of line 542 ---
+% OLD: "The evaluation is deterministic and representative rather than exhaustive, and formal protocol verification and public-network trials remain necessary."
+% NEW:
+The evaluation is deterministic and representative rather than exhaustive, and public-network trials remain necessary.
+
+% --- REPLACE the first clause of line 549 ---
+% OLD: "Future work should machine-check the security properties with tools such as Tamarin~\cite{tamarin}, integrate production wallet delegation such as ERC-7710~\cite{erc7710}, ..."
+% NEW:
+Future work should integrate production wallet delegation such as ERC-7710~\cite{erc7710}, evaluate public networks and larger trace volumes, and add confidential selective disclosure. Stronger pre-signature decision governance, dispute handling, and atomic payment--delivery mechanisms are also required before deployment in higher-value commerce.

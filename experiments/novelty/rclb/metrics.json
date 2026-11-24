@@ -1,0 +1,161 @@
+{
+  "generatedAt": "2026-11-24T20:49:34.754Z",
+  "novelty": "RCLB — Revocation-Aware Temporal Cross-Layer Binding",
+  "scope": "DEMO / LOCAL. Not a production deployment or a literature-priority claim.",
+  "environment": {
+    "bun": "1.4.5",
+    "forge": "1.10.0",
+    "solc": "0.8.28",
+    "execution": "in-process TS + local EVM (forge/anvil class); forge-std cloned to TEMP only"
+  },
+  "commitmentConstruction": {
+    "formula": "C_t = keccak256(abi.encode(bytes32 C, uint256 E_I, uint256 E_M, uint64 T_expiry, bytes32 N))",
+    "acceptance": "E_I == current E_I && E_M == current E_M && t <= T_expiry && N not consumed",
+    "paymentNonce": "keccak256(C_t)",
+    "example": {
+      "baseCommitment": "0xb037baea2770d584aaa7db43383b9b79d31ad22d4dc17f4e6d71f3bf60bc01c3",
+      "identityEpoch": "1",
+      "mandateEpoch": "1",
+      "expiry": "1800000000",
+      "nonce": "0x1111111111111111111111111111111111111111111111111111111111111111",
+      "commitment": "0x0762bd5e6332d3e17a575c4710a59140be62a8271ae1bc0243479c4b229b04cd",
+      "paymentNonce": "0x5685014776e638d963b925559ce9a1c7675278e2956876b1fc40f49dfd641a63"
+    }
+  },
+  "scenarios": [
+    {
+      "id": "SETTLE_AFTER_IDENTITY_REVOCATION",
+      "description": "Settle with a cryptographically valid C_t after the identity key was revoked.",
+      "expectedAccepted": false,
+      "accepted": false,
+      "violations": [
+        "IDENTITY_EPOCH_STALE"
+      ],
+      "steps": [
+        "Human signs C_t with E_I=1, E_M=1.",
+        "Authority revokes the identity key, advancing E_I to 2.",
+        "Settlement presents the unchanged C_t; the guard reads E_I=2 and rejects."
+      ]
+    },
+    {
+      "id": "SETTLE_AFTER_MANDATE_REVOCATION",
+      "description": "Settle after the human mandate was revoked while the identity key is unchanged.",
+      "expectedAccepted": false,
+      "accepted": false,
+      "violations": [
+        "MANDATE_EPOCH_STALE"
+      ],
+      "steps": [
+        "Human signs C_t with E_I=1, E_M=1.",
+        "Authority revokes the mandate, advancing E_M to 2.",
+        "Settlement presents the unchanged C_t; the guard reads E_M=2 and rejects."
+      ]
+    },
+    {
+      "id": "KEY_ROTATION_INVALIDATES_OLD_COMMITMENT",
+      "description": "Rotating the identity key invalidates a C_t signed under the old key.",
+      "expectedAccepted": false,
+      "accepted": false,
+      "violations": [
+        "IDENTITY_EPOCH_STALE"
+      ],
+      "steps": [
+        "Human signs C_t under identity key K1 (E_I=1).",
+        "Authority rotates to K2 and advances E_I to 2 atomically.",
+        "The old C_t carries E_I=1 and can no longer satisfy the current-epoch guard."
+      ]
+    },
+    {
+      "id": "STALE_REGISTRY_READ",
+      "description": "A cached epoch snapshot would accept; the execution-time read rejects.",
+      "expectedAccepted": false,
+      "accepted": false,
+      "violations": [
+        "IDENTITY_EPOCH_STALE"
+      ],
+      "steps": [
+        "Guard caches {E_I=1, E_M=1} before the revocation.",
+        "Authority revokes the identity key (E_I=2).",
+        "Naive cached check would accept; the execution-time read rejects."
+      ]
+    },
+    {
+      "id": "REVOCATION_VS_SETTLEMENT_RACE",
+      "description": "Revocation lands between a passing pre-check and the settlement call.",
+      "expectedAccepted": false,
+      "accepted": false,
+      "violations": [
+        "MANDATE_EPOCH_STALE"
+      ],
+      "steps": [
+        "Pre-check passed (E_M=1, accepted=true).",
+        "Revocation is committed before settlement executes (E_M=2).",
+        "Execution-time check rejects; the rejected attempt does not consume N."
+      ]
+    },
+    {
+      "id": "DELAYED_MESSAGE_EXPIRED",
+      "description": "A delayed message arrives after T_expiry even though no revocation occurred.",
+      "expectedAccepted": false,
+      "accepted": false,
+      "violations": [
+        "COMMITMENT_EXPIRED"
+      ],
+      "steps": [
+        "Human signs C_t with T_expiry = 1_800_000_000.",
+        "Message is delivered at T_expiry + 1 second.",
+        "The inclusive expiry check rejects the delayed settlement."
+      ]
+    },
+    {
+      "id": "NONCE_REPLAY_AFTER_HONEST_SETTLEMENT",
+      "description": "Replay of the same C_t after N was consumed by the honest settlement.",
+      "expectedAccepted": false,
+      "accepted": false,
+      "violations": [
+        "NONCE_ALREADY_CONSUMED"
+      ],
+      "steps": [
+        "First settlement accepted (accepted=true) and consumed N.",
+        "Attacker replays the identical C_t and payment nonce.",
+        "The single-use application nonce check rejects the replay."
+      ]
+    },
+    {
+      "id": "HONEST_CONTROL",
+      "description": "Positive control: current epochs, in-window time and unconsumed N.",
+      "expectedAccepted": true,
+      "accepted": true,
+      "violations": [],
+      "steps": [
+        "Human signs C_t with current E_I=1, E_M=1.",
+        "Settlement executes inside the validity window.",
+        "Guard accepts; the honest control is not falsely rejected."
+      ]
+    }
+  ],
+  "metrics": {
+    "scenarioCount": 8,
+    "adversarialCount": 7,
+    "preventedCount": 7,
+    "staleAcceptanceRate": 0,
+    "falseRejectionRate": 0,
+    "raceResistance": 1,
+    "revocationLatencyMs": {
+      "samples": 200,
+      "meanMs": 0.061486000000000374,
+      "medianMs": 0.04649999999999466,
+      "p95Ms": 0.09300000000000352,
+      "maxMs": 2.2032999999999987,
+      "meaning": "in-process revokeIdentity + one acceptance decision; excludes network, consensus and RPC time"
+    },
+    "gasOverhead": {
+      "baselineGas": 5769,
+      "rclbGuardGas": 59834,
+      "overheadGas": 54065,
+      "source": "forge test --match-contract RevocationAwareGuardTest -vv (TEMP forge-std remap, local EVM)",
+      "baselineDefinition": "same-shape accept that recomputes C_t, checks H(C_t) and writes one storage slot, without authority epoch reads or expiry checks",
+      "caveat": "delta also includes cold account access, ABI decode and the settlement event; LOCAL ANVIL / DEMO only"
+    }
+  }
+}

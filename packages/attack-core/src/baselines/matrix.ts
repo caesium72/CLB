@@ -1,10 +1,12 @@
 import { verifyTrace } from "@clb-acel/verifier-core";
 import { PredicateViolationError, createPredicateGuard } from "@clb-acel/predicate-adapter";
 import type { Hex } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import {
   ATTACK_FIXTURES,
   MODE_B_PREDICATE_FIXTURES,
   PREDICATE_ATTACK_LABELS,
+  TEST_KEYS,
   attackerAddress,
   buildValidBundle,
   constraints,
@@ -12,12 +14,16 @@ import {
   markReplayAttempt,
 } from "../index";
 import type { AttackScenario, PredicateAttackId } from "../index";
+import { deriveOutcome } from "../types";
+import type { OutcomeCategory } from "../types";
 import { bVanillaX402 } from "./vanilla-x402";
 import { bAp2X402 } from "./ap2-x402";
 import { bEbayMonitor } from "./ebay-monitor";
 import type { BaselineVerdict } from "./types";
 
 export const GENERATED_AT = "2026-05-30T05:00:00.000Z";
+
+const HONEST_HUMAN_PRINCIPAL = privateKeyToAccount(TEST_KEYS.userKey).address;
 
 const SCENARIO: AttackScenario = {
   seed: 1,
@@ -42,10 +48,28 @@ export type BaselineMatrixRow = {
   ebay: Cell;
   clbacel: Cell;
   clbDetection: string;
+  /** 7-category outcome taxonomy, derived from the actual verdicts. */
+  vanillaOutcome?: OutcomeCategory;
+  ap2x402Outcome?: OutcomeCategory;
+  ebayOutcome?: OutcomeCategory;
+  clbacelOutcome?: OutcomeCategory;
 };
 
 function verdictToCell(v: BaselineVerdict): Cell {
   return v.accepted ? "ACCEPT" : "REJECT";
+}
+
+/** ACCEPT = attack missed (EXPLOITED); REJECT = detected but not prevented. */
+function verdictToOutcome(v: BaselineVerdict): OutcomeCategory {
+  return deriveOutcome({
+    detected: !v.accepted,
+    prevented: false,
+    ...(v.marker === undefined ? {} : { marker: v.marker }),
+  });
+}
+
+function clbOutcome(caught: boolean, prevented: boolean): OutcomeCategory {
+  return deriveOutcome({ detected: caught, prevented });
 }
 
 export async function runBaselineMatrix(): Promise<Record<string, BaselineMatrixRow>> {
@@ -66,13 +90,16 @@ export async function runBaselineMatrix(): Promise<Record<string, BaselineMatrix
         ? (await markReplayAttempt(base)).bundle
         : await fixture.mutate(base, SCENARIO);
 
-    const verification = await verifyTrace(attacked);
+    const verification = await verifyTrace(attacked, { expectedHumanPrincipal: HONEST_HUMAN_PRINCIPAL });
     const audit = fixture.auditCheck?.(attacked);
     const clbCaught = verification.result.status === "FAIL" || audit?.ok === true;
 
-    const vanilla = verdictToCell(await bVanillaX402(attacked));
-    const ap2x402 = verdictToCell(await bAp2X402(attacked));
-    const ebay = verdictToCell(bEbayMonitor(attacked));
+    const vanillaVerdict = await bVanillaX402(attacked);
+    const ap2Verdict = await bAp2X402(attacked);
+    const ebayVerdict = bEbayMonitor(attacked);
+    const vanilla = verdictToCell(vanillaVerdict);
+    const ap2x402 = verdictToCell(ap2Verdict);
+    const ebay = verdictToCell(ebayVerdict);
     const clbacel: Cell = clbCaught ? "REJECT" : "ACCEPT";
 
     let clbDetection: string;
@@ -93,13 +120,17 @@ export async function runBaselineMatrix(): Promise<Record<string, BaselineMatrix
       ebay,
       clbacel,
       clbDetection,
+      vanillaOutcome: verdictToOutcome(vanillaVerdict),
+      ap2x402Outcome: verdictToOutcome(ap2Verdict),
+      ebayOutcome: verdictToOutcome(ebayVerdict),
+      clbacelOutcome: clbOutcome(clbCaught, false),
     };
   }
 
   // ── Mode B (predicate) fixtures ───────────────────────────────────────────
   for (const fixture of MODE_B_PREDICATE_FIXTURES) {
     const { bundle, guardInput } = await fixture.build();
-    const verification = await verifyTrace(bundle);
+    const verification = await verifyTrace(bundle, { expectedHumanPrincipal: HONEST_HUMAN_PRINCIPAL });
 
     let prevented = false;
     try {
@@ -114,9 +145,12 @@ export async function runBaselineMatrix(): Promise<Record<string, BaselineMatrix
 
     const clbCaught = prevented || verification.result.status === "FAIL";
 
-    const vanilla = verdictToCell(await bVanillaX402(bundle));
-    const ap2x402 = verdictToCell(await bAp2X402(bundle));
-    const ebay = verdictToCell(bEbayMonitor(bundle));
+    const vanillaVerdict = await bVanillaX402(bundle);
+    const ap2Verdict = await bAp2X402(bundle);
+    const ebayVerdict = bEbayMonitor(bundle);
+    const vanilla = verdictToCell(vanillaVerdict);
+    const ap2x402 = verdictToCell(ap2Verdict);
+    const ebay = verdictToCell(ebayVerdict);
     const clbacel: Cell = clbCaught ? "REJECT" : "ACCEPT";
 
     const failedRules = verification.result.failedRules;
@@ -138,6 +172,10 @@ export async function runBaselineMatrix(): Promise<Record<string, BaselineMatrix
       ebay,
       clbacel,
       clbDetection,
+      vanillaOutcome: verdictToOutcome(vanillaVerdict),
+      ap2x402Outcome: verdictToOutcome(ap2Verdict),
+      ebayOutcome: verdictToOutcome(ebayVerdict),
+      clbacelOutcome: clbOutcome(clbCaught, prevented),
     };
   }
 

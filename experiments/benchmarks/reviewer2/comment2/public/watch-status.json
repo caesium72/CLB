@@ -1,0 +1,259 @@
+{
+  "startedAt": "2026-11-24T15:04:38.584Z",
+  "signer": "0x8eEd4275420870c43C06f370Af3AD53FFdB3B005",
+  "sepoliaRpc": "https://ethereum-sepolia-rpc.publicnode.com",
+  "baseRpc": "https://sepolia.base.org",
+  "minSepoliaWei": "1500000000000000",
+  "phase": "BRIDGING",
+  "checks": [
+    {
+      "at": "2026-11-24T15:04:39.090Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:04:54.417Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:05:09.767Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:05:25.106Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:05:40.430Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:05:55.745Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:06:11.066Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:06:26.413Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:06:41.691Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:06:57.008Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:07:12.354Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:07:27.673Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:07:43.001Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:07:58.343Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:08:13.660Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:08:28.993Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:08:44.321Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:08:59.649Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:09:14.949Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:09:30.273Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:09:45.591Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:10:00.910Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:10:16.375Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:10:31.678Z",
+      "sepoliaWei": "0",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:10:46.974Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:11:03.722Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:11:20.489Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:11:37.189Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:11:53.972Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:12:10.728Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:12:27.480Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:12:44.254Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:13:00.959Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:13:17.680Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:13:34.407Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:13:51.210Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:14:07.950Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:14:24.999Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:14:41.711Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:14:58.420Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:15:15.122Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:15:31.856Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:15:48.524Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:16:05.344Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:16:22.469Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:16:39.175Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:16:56.091Z",
+      "sepoliaWei": "53020000000000000",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:17:18.423Z",
+      "sepoliaWei": "51019999977128012",
+      "baseWei": "0"
+    },
+    {
+      "at": "2026-11-24T15:17:40.724Z",
+      "sepoliaWei": "50019999965692234",
+      "baseWei": "0"
+    }
+  ],
+  "bridge": {
+    "code": 1,
+    "log": "before: {\"signer\":\"0x8eEd4275420870c43C06f370Af3AD53FFdB3B005\",\"sepoliaBalance\":\"0.051019999977128012\",\"baseSepoliaBalance\":\"0\"}\n\n76 |   value: needed,\n77 | });\n78 | const receipt = await l1.waitForTransactionReceipt({ hash });\n79 | console.log(\n80 |   \"bridge tx:\",\n81 |   JSON.stringify({ hash, blockNumber: receipt.blockNumber, status: receipt.status, gasUsed: receipt.gasUsed.toString() }),\n            ^\nTypeError: JSON.stringify cannot serialize BigInt.\n      at E:\\RESEARCH\\A3C-VPEAL [ICCIT-26]\\A3C-v2\\scripts\\bridge-sepolia-to-base.ts:81:8\n\nBun v1.4.5 (Windows x64)\n"
+  }
+}

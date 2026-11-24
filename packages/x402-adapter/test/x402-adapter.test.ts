@@ -7,6 +7,7 @@ import {
   createLocalFacilitator,
   NonceAlreadyConsumedError,
   recoverPaymentSigner,
+  runConcurrencyTrials,
   signPaymentPayload,
 } from "../src/index";
 
@@ -26,7 +27,10 @@ const descriptor: SettlementDescriptorExact = {
 
 describe("payment requirements", () => {
   test("derive a 402 body from a settlement descriptor", () => {
-    const requirements = buildPaymentRequirements({ descriptor, resource: "/risk-report?token=XYZ" });
+    const requirements = buildPaymentRequirements({
+      descriptor,
+      resource: "/risk-report?token=XYZ",
+    });
     const [accept] = requirements.accepts;
 
     expect(accept?.scheme).toBe("exact");
@@ -59,6 +63,46 @@ describe("local facilitator", () => {
     await expect(facilitator.settle(payload)).rejects.toBeInstanceOf(NonceAlreadyConsumedError);
   });
 
+  test("atomically reserves a nonce under concurrent settlement attempts", async () => {
+    const facilitator = createLocalFacilitator();
+    const auth = buildPaymentAuthorization({ from: payerAddress, descriptor, nonce });
+    const payload = await signPaymentPayload(payerKey, auth);
+
+    const results = await Promise.allSettled(
+      Array.from({ length: 24 }, () => facilitator.settle(payload)),
+    );
+
+    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    expect(results.filter((result) => result.status === "rejected")).toHaveLength(23);
+    const rejected = results.find((result) => result.status === "rejected");
+    expect(rejected?.status).toBe("rejected");
+    if (rejected?.status === "rejected") {
+      expect(rejected.reason).toBeInstanceOf(NonceAlreadyConsumedError);
+    }
+    expect(facilitator.isConsumed(nonce)).toBe(true);
+    expect(facilitator.getSettlement(nonce)).not.toBeNull();
+  });
+
+  test("allows concurrent independent transactions with distinct nonces", async () => {
+    const facilitator = createLocalFacilitator();
+    const payloads = await Promise.all(
+      Array.from({ length: 12 }, async (_, index) => {
+        const uniqueNonce = `0x${(index + 1).toString(16).padStart(64, "0")}` as const;
+        const auth = buildPaymentAuthorization({
+          from: payerAddress,
+          descriptor,
+          nonce: uniqueNonce,
+        });
+        return signPaymentPayload(payerKey, auth);
+      }),
+    );
+
+    const receipts = await Promise.all(payloads.map((payload) => facilitator.settle(payload)));
+    expect(receipts).toHaveLength(12);
+    expect(new Set(receipts.map((receipt) => receipt.nonce)).size).toBe(12);
+    expect(receipts.every((receipt) => receipt.settled)).toBe(true);
+  });
+
   test("rejects a tampered authorization", async () => {
     const facilitator = createLocalFacilitator();
     const auth = buildPaymentAuthorization({ from: payerAddress, descriptor, nonce });
@@ -69,5 +113,21 @@ describe("local facilitator", () => {
     };
 
     expect(await facilitator.verify(tampered)).toBe(false);
+  });
+});
+
+describe("concurrency harness", () => {
+  test("holds the one-settlement-per-nonce invariant across burst levels", async () => {
+    const run = await runConcurrencyTrials({ levels: [4, 8], trialsPerLevel: 5 });
+
+    expect(run.summary.anomalyCount).toBe(0);
+    expect(run.summary.totalOtherErrors).toBe(0);
+    for (const result of run.results.filter((row) => row.mode === "same-nonce")) {
+      expect(result.settled, `same-nonce level ${result.level}`).toBe(1);
+      expect(result.rejected).toBe(result.attempted - 1);
+    }
+    for (const result of run.results.filter((row) => row.mode === "distinct-nonce")) {
+      expect(result.settled, `distinct-nonce level ${result.level}`).toBe(result.level);
+    }
   });
 });

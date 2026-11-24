@@ -14,10 +14,15 @@ import { resolve } from "node:path";
 import { createPublicClient, createWalletClient, http, type Address, type Hex } from "viem";
 import { baseSepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
-import { PREDICATE_GUARD_ABI } from "@clb-acel/predicate-adapter";
-import { GUARD_CHAIN_ID, demoPredicateConfigs } from "../apps/web-demo/src/server/clb/predicate-guard";
+import { PREDICATE_GUARD_ABI, registerPredicateBound } from "@clb-acel/predicate-adapter";
+import {
+  GUARD_CHAIN_ID,
+  GUARD_MANDATE_DIGEST,
+  demoPredicateConfigs,
+} from "../apps/web-demo/src/server/clb/predicate-guard";
 
 const CONTRACTS_DIR = resolve(import.meta.dir, "../contracts");
+const ZERO_BYTES32 = `0x${"00".repeat(32)}` as Hex;
 
 function deployGuard(rpc: string, key: Hex): Address {
   const out = execFileSync(
@@ -61,24 +66,33 @@ async function main() {
   }
 
   for (const { predicateId, config } of demoPredicateConfigs()) {
+    // The legacy `registerPredicate` path can no longer settle (the guard reverts
+    // `PredicateNotBound`), so register through the human-bound path as the
+    // deployer principal. The demo settle path in apps/web-demo passes a ZERO
+    // extras digest and GUARD_MANDATE_DIGEST, so the binding pins exactly those.
     const already = await publicClient.readContract({
       address: guard,
       abi: PREDICATE_GUARD_ABI,
-      functionName: "isRegistered",
+      functionName: "isBound",
       args: [predicateId],
     });
     if (already) {
-      console.log(`• Predicate "${predicateId}" already registered`);
+      console.log(`• Predicate "${predicateId}" already bound`);
       continue;
     }
-    const txHash = await walletClient.writeContract({
-      address: guard,
-      abi: PREDICATE_GUARD_ABI,
-      functionName: "registerPredicate",
-      args: [predicateId, config],
-    });
-    await publicClient.waitForTransactionReceipt({ hash: txHash });
-    console.log(`✓ Registered predicate "${predicateId}" (tx ${txHash})`);
+    const txHash = await registerPredicateBound(
+      { publicClient, walletClient, account },
+      {
+        address: guard,
+        predicateId,
+        config,
+        principal: account.address,
+        mandateDigest: GUARD_MANDATE_DIGEST,
+        taskHash: ZERO_BYTES32,
+        extraFieldsDigest: ZERO_BYTES32,
+      },
+    );
+    console.log(`✓ Registered bound predicate "${predicateId}" (tx ${txHash})`);
   }
 
   console.log(`\nGuard: ${guard}\nEnsure .env (and Vercel) has:\n  PREDICATE_GUARD_ADDRESS=${guard}\n`);

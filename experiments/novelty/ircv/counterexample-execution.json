@@ -1,0 +1,16 @@
+{
+  "scenarioId": "SETTLE_AFTER_IDENTITY_REVOCATION",
+  "expectedRejected": true,
+  "actualRejected": true,
+  "acceptanceOk": false,
+  "acceptanceDetail": "IDENTITY_EPOCH_STALE",
+  "acceptanceViolations": [
+    "IDENTITY_EPOCH_STALE"
+  ],
+  "facilitatorAccepted": true,
+  "verifierStatus": "FAIL",
+  "verifierFailedRules": [
+    "R18_REVOCATION_AWARE_BINDING"
+  ],
+  "paymentNonce": "0x5685014776e638d963b925559ce9a1c7675278e2956876b1fc40f49dfd641a63"
+}

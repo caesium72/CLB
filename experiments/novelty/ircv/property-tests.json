@@ -1,0 +1,26 @@
+{
+  "schema": "ircv-property-tests/v1",
+  "status": "PASS",
+  "seed": 20261125,
+  "caseCount": 64,
+  "forgeVersion": "forge Version: 1.10.0",
+  "solcVersion": "0.8.28",
+  "solidityHelper": "tools/ircv/solidity/ParityProbe.s.sol",
+  "fieldsChecked": [
+    "configDigest",
+    "extrasDigest",
+    "predicateDigest",
+    "paramsDigest",
+    "cPrime",
+    "nonce",
+    "parsedAtomic",
+    "bindingDigest"
+  ],
+  "counts": {
+    "comparisons": 512,
+    "matched": 512,
+    "mismatched": 0,
+    "casesFullyMatched": 64
+  },
+  "mismatches": []
+}

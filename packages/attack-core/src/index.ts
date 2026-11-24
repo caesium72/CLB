@@ -2,6 +2,7 @@ import { verifyTrace } from "@clb-acel/verifier-core";
 import type { TraceBundle } from "@clb-acel/verifier-core";
 export { verifyTrace } from "@clb-acel/verifier-core";
 import type { Hex } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { checkFakeFeedback, checkPromptInjection } from "./audit-checks";
 import { BASELINE_DESCRIPTIONS, BASELINE_LABELS, buildBaselineMatrix, commonOutcomes, liveBaselineOutcomes } from "./baselines";
 import type { BaselineOutcome } from "./types";
@@ -14,6 +15,7 @@ import {
   markReplayAttempt,
   merchantAddress,
   payerAgent,
+  TEST_KEYS,
 } from "./fixtures";
 import { estimateStorageBytes } from "./metrics";
 import type {
@@ -26,13 +28,18 @@ import type {
 } from "./types";
 
 export * from "./audit-checks";
+export * from "./adversarial-matrix";
 export * from "./baselines";
 export * from "./baselines/matrix";
 export * from "./fixtures";
 export * from "./metrics";
 export * from "./mode-b";
+export * from "./presettlement";
 export * from "./types";
 export { BASELINE_DESCRIPTIONS, BASELINE_LABELS };
+
+/** Independent anchor: the verifier must not trust the mandate's self-declared principal. */
+const HONEST_HUMAN_PRINCIPAL = privateKeyToAccount(TEST_KEYS.userKey).address;
 
 const TOKENS = ["XYZ", "AAVE", "UNI", "OP", "LINK", "ARB"] as const;
 const AMOUNT_PAIRS = [
@@ -536,7 +543,7 @@ export async function runAttack(id: AttackId, options: { nowMs?: number } = {}):
   }
 
   const verifyStart = performance.now();
-  const verification = await verifyTrace(bundle);
+  const verification = await verifyTrace(bundle, { expectedHumanPrincipal: HONEST_HUMAN_PRINCIPAL });
   const verifyLatencyMs = performance.now() - verifyStart;
   const auditCheck = fixture.auditCheck?.(bundle);
   const failedRules = verification.result.failedRules;
@@ -608,3 +615,5 @@ export async function runAllAttacks(options: { nowMs?: number } = {}) {
     matrix: buildBaselineMatrix(results, ATTACK_FIXTURES),
   };
 }
+
+export { runComposedAdversarialSequences } from "./adversarial-sequences";

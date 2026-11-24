@@ -98,7 +98,9 @@ describe("identity-service", () => {
     const wellKnown = await app.inject({ method: "GET", url: "/.well-known/agent-card.json" });
 
     expect(wellKnown.statusCode).toBe(200);
-    expect(wellKnown.json<AgentCard>().agentId).toBe("analysis-agent-001");
+    // Seeding order registers the canonical grammar agent (6827) first; the
+    // well-known endpoint serves agents[0].
+    expect(wellKnown.json<AgentCard>().agentId).toBe("6827");
 
     await app.close();
   });

@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { verifyTrace } from "@clb-acel/verifier-core";
+import { privateKeyToAccount } from "viem/accounts";
+import { TEST_KEYS } from "../src/fixtures";
 import {
   MODE_B_PREDICATE_FIXTURES,
   buildValidModeBBundle,
@@ -8,10 +10,12 @@ import {
   type PredicateAttackId,
 } from "../src/mode-b";
 
+const HUMAN = privateKeyToAccount(TEST_KEYS.userKey).address;
+
 describe("buildValidModeBBundle", () => {
   test("produces a PASS Mode B trace with R17 ok", async () => {
     const { bundle } = await buildValidModeBBundle();
-    const { result, outcomes } = await verifyTrace(bundle);
+    const { result, outcomes } = await verifyTrace(bundle, { expectedHumanPrincipal: HUMAN });
     expect(result.status).toBe("PASS");
     expect(outcomes.R17_PREDICATE_TRUE_FOR_MODE_B.ok).toBe(true);
   });

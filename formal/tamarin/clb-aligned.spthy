@@ -1,0 +1,229 @@
+theory CLBAligned
+begin
+
+/*
+  ============================================================================
+  CLB-ACEL — R3-C2 ALIGNED MODEL.  NEW FILE; the previously verified
+  `clb.spthy` and its archived `proofs/clb.proof` are deliberately left
+  untouched so the historical proof record stays valid.
+
+  What this model adds relative to `clb.spthy` (items 52-56):
+    52  lifecycle alignment: Anchor_Principal -> Register_Predicate ->
+        Authorize_ModeB -> validateAndConsume (Settle) / revert (Fail).
+    53  Register_Predicate: permissionless, like registerPredicate(sol:94-107),
+        with config digest DERIVED FROM THE STORED CONFIG (pd = h(<cfg>)),
+        not supplied by the caller.
+    54  Human principal anchor: the human identity H is an independently
+        anchored principal (verifyTrace expectedHumanPrincipal) and is bound
+        INTO C' together with mandateDigest -> human <-> mandate relationship.
+    55  Actual settlement fields: chainId, agentId, payTo, asset, valueAtomic,
+        taskHash, mandateDigest, predicateId, predicateDigest are all bound in
+        C'; the guard recomputes C' from the REGISTERED config digest.
+    56  Failed settlement: a reverting attempt returns the linear nonce fact,
+        modelling EVM rollback; an exists-trace lemma shows recovery.
+    --  C' predicateDigest binding: the human signs C' containing pd; the guard
+        recomputes C' with pd of the REGISTERED config. Swapping predicate
+        content under a signed predicate ID changes C' and kills the signature.
+
+  Faithful abstractions (documented, not hidden):
+    - The Solidity allow-list checks (payee/asset/chain/valueAtomic/expiry) are
+      abstracted as the linear !Admissible fact minted by the human at
+      delegation, as in the original model. This proves GUARD PLACEMENT and
+      CONTENT BINDING; it does not re-derive integer/list membership.
+    - taskHash / agentIdHashes are represented by a single abstract taskHash
+      field bound in the extra-fields digest, mirroring sol:146-166.
+    - Human signature verification and the EIP-712 hash are perfect symbolic
+      primitives; keccak has no algebraic structure.
+    - The on-chain anchor is a trusted setup fact (PrincipalAnchored). Code
+      enforces the equivalent at verifyTrace (fails closed without it), not in
+      the guard contract. See formal-model-delta.md.
+  ============================================================================
+*/
+
+builtins: signing, hashing
+
+restriction Equality:
+  "All x y #i. Eq(x, y) @ #i ==> x = y"
+
+/* The contract rejects duplicate predicate IDs (PredicateAlreadyRegistered). */
+restriction UniquePredicateRegistration:
+  "All pid pd1 pd2 #i #j.
+     PredicateRegistered(pid, pd1) @ #i & PredicateRegistered(pid, pd2) @ #j
+   ==> #i = #j"
+
+/* No extra failure-bounding restriction is needed: a reverted attempt moves the
+   linear nonce from NonceUnused to NonceAvailable (a distinct fact name), so the
+   rules cannot self-loop. NonceAvailable is then consumed by Settle_Recovered. */
+
+/* --------------------------------------------------------------------------
+   Trusted setup / registries.
+   -------------------------------------------------------------------------- */
+
+/* Independent human-principal anchor. verifyTrace's expectedHumanPrincipal is
+   modelled by this fact: no settlement counts unless the principal is anchored. */
+rule Anchor_Principal:
+    [ Fr(~hsk) ]
+  --[ PrincipalAnchored($H) ]->
+    [ !Anchored($H), !HumanPk($H, pk(~hsk)), !HumanSk($H, ~hsk), Out(pk(~hsk)) ]
+
+/* ERC-8004-style agent key authorization (identity binding). */
+rule Register_Agent:
+    [ Fr(~sk) ]
+  --[ KeyAuthorized($agentId, pk(~sk)) ]->
+    [ !AgentKey($agentId, ~sk), Out(pk(~sk)) ]
+
+/* Permissionless registration, faithful to registerPredicate. Config fields are
+   attacker-chosen via In; the digest is derived from the stored config, so the
+   caller cannot pick a digest independent of the policy. */
+rule Register_Predicate:
+    [ In(<pid, payee, asset, chain, max, until>) ]
+  --[ PredicateRegistered(pid, h(<payee, asset, chain, max, until>)) ]->
+    [ !PredConfig(pid, payee, asset, chain, max, until),
+      !PredDigest(pid, h(<payee, asset, chain, max, until>)) ]
+
+/* --------------------------------------------------------------------------
+   Delegation: the human signs C' over principal + mandate + predicate content.
+   -------------------------------------------------------------------------- */
+
+rule Authorize_ModeB:
+    let pd     = h(<~payee, ~asset, ~chain, ~max, ~until>)
+        params = <~chain, $agentId, ~payee, ~asset, ~valueAtomic, ~taskHash>
+        Cp     = h(<$H, ~mandateDigest, ~pid, pd, params>)
+        nonce  = h(Cp)
+        sig    = sign(Cp, ~hsk)
+    in
+    [ !Anchored($H), !HumanSk($H, ~hsk),
+      Fr(~pid), Fr(~mandateDigest), Fr(~payee), Fr(~asset), Fr(~chain),
+      Fr(~max), Fr(~until), Fr(~valueAtomic), Fr(~taskHash) ]
+  --[ DelegatedB($H, ~mandateDigest, ~pid, pd, Cp, nonce),
+      AdmitB($H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic, ~chain, ~taskHash) ]->
+    [ Out(<~pid, ~mandateDigest, pd, sig, Cp, nonce,
+           $agentId, ~payee, ~asset, ~valueAtomic, ~chain, ~taskHash, ~max, ~until>),
+      NonceUnused(nonce),
+      !Admissible($H, ~pid, $agentId, ~payee, ~asset, ~valueAtomic, ~chain, ~taskHash) ]
+
+/* --------------------------------------------------------------------------
+   On-chain validateAndConsume (sol:212-244). The guard recomputes C' using the
+   REGISTERED config digest, checks the human signature, checks the nonce,
+   enforces the field policy and consumes the single-use nonce exactly once.
+   -------------------------------------------------------------------------- */
+
+rule Settle_ModeB:
+    let pd     = h(<payee, asset, chain, max, until>)
+        params = <chain, agentId, payee, asset, valueAtomic, taskHash>
+        Cp     = h(<H, mandateDigest, pid, pd, params>)
+        nonce  = h(Cp)
+    in
+    [ In(<pid, mandateDigest, H, sig, Cp_in, nonce,
+          agentId, payee, asset, valueAtomic, chain, taskHash>),
+      !Anchored(H),
+      !HumanPk(H, pkH),
+      !AgentKey(agentId, ~sk),
+      !PredConfig(pid, payee, asset, chain, max, until),
+      !PredDigest(pid, pd),
+      !Admissible(H, pid, agentId, payee, asset, valueAtomic, chain, taskHash),
+      NonceUnused(nonce) ]
+  --[ Eq(Cp_in, Cp),
+      Eq(verify(sig, Cp, pkH), true),
+      Paid(agentId, pk(~sk)),
+      GuardPassed(pid, payee, asset, valueAtomic, chain, taskHash),
+      SettledB(H, mandateDigest, pid, pd, agentId, payee, asset,
+               valueAtomic, chain, taskHash, pk(~sk)),
+      Consumed(nonce) ]->
+    [ ]
+
+/* A reverting attempt. EVM rollback restores state: the linear nonce fact is
+   returned unchanged, so the authorization is still usable afterwards. This
+   models the EFFECT of a revert, not the exact failing branch. */
+rule Failed_Settle_ModeB:
+    [ In(<pid, H, nonce>), !Anchored(H), !PredDigest(pid, pd), NonceUnused(nonce) ]
+  --[ FailedSettle(nonce, pid, H) ]->
+    [ NonceAvailable(nonce) ]
+
+/* The same validateAndConsume call AFTER a reverted attempt: the nonce survived
+   the revert and can still be spent exactly once. */
+rule Settle_Recovered:
+    let pd     = h(<payee, asset, chain, max, until>)
+        params = <chain, agentId, payee, asset, valueAtomic, taskHash>
+        Cp     = h(<H, mandateDigest, pid, pd, params>)
+        nonce  = h(Cp)
+    in
+    [ In(<pid, mandateDigest, H, sig, Cp_in, nonce,
+          agentId, payee, asset, valueAtomic, chain, taskHash>),
+      !Anchored(H),
+      !HumanPk(H, pkH),
+      !AgentKey(agentId, ~sk),
+      !PredConfig(pid, payee, asset, chain, max, until),
+      !PredDigest(pid, pd),
+      !Admissible(H, pid, agentId, payee, asset, valueAtomic, chain, taskHash),
+      NonceAvailable(nonce) ]
+  --[ Eq(Cp_in, Cp),
+      Eq(verify(sig, Cp, pkH), true),
+      Paid(agentId, pk(~sk)),
+      GuardPassed(pid, payee, asset, valueAtomic, chain, taskHash),
+      SettledB(H, mandateDigest, pid, pd, agentId, payee, asset,
+               valueAtomic, chain, taskHash, pk(~sk)),
+      Consumed(nonce) ]->
+    [ ]
+
+/* ==========================================================================
+   LEMMAS
+   ========================================================================== */
+
+/* Sanity: an honest aligned settlement is reachable (non-vacuous). */
+lemma exec_aligned_modeB:
+  exists-trace
+  "Ex H md pid pd aid payee asset val chain th K #s.
+     SettledB(H, md, pid, pd, aid, payee, asset, val, chain, th, K) @ #s"
+
+/* P1 — identity binding: the paying key is an authorized key of the agentId.
+   Divergence: on-chain guard has no msg.sender check; this is the verifier /
+   facilitator-layer property (see delta doc). */
+lemma P1_identity_binding:
+  all-traces
+  "All aid K #s. Paid(aid, K) @ #s ==> Ex #r. KeyAuthorized(aid, K) @ #r"
+
+/* P2 — authorization integrity: settled params come from a human-signed C'. */
+lemma P2_authorization_integrity:
+  all-traces
+  "All H md pid pd aid payee asset val chain th K #s.
+     SettledB(H, md, pid, pd, aid, payee, asset, val, chain, th, K) @ #s
+   ==> Ex Cp n #d. DelegatedB(H, md, pid, pd, Cp, n) @ #d"
+
+/* P3 — freshness / non-replay: each nonce is consumed at most once. */
+lemma P3_no_replay:
+  all-traces
+  "All n #i #j. Consumed(n) @ #i & Consumed(n) @ #j ==> #i = #j"
+
+/* P4 — non-transferability: agentId/chain/payee/asset/value/taskHash of a
+   settlement equal those the human authorized (all are inside C'). */
+lemma P4_non_transferability:
+  all-traces
+  "All H md pid pd aid payee asset val chain th K #s.
+     SettledB(H, md, pid, pd, aid, payee, asset, val, chain, th, K) @ #s
+   ==> Ex #d. AdmitB(H, pid, aid, payee, asset, val, chain, th) @ #d"
+
+/* P5 — predicate SOUNDNESS with content binding: the pd used in the guard's
+   recomputed C' is exactly the pd the human signed, even though registration
+   is permissionless. A swapped config under the same ID cannot settle. */
+lemma P5_predicate_soundness:
+  all-traces
+  "All H md pid pd aid payee asset val chain th K #s.
+     SettledB(H, md, pid, pd, aid, payee, asset, val, chain, th, K) @ #s
+   ==> Ex Cp n #d. DelegatedB(H, md, pid, pd, Cp, n) @ #d"
+
+/* P6 — human principal anchor: every settlement traces to an anchored H. */
+lemma P6_principal_anchor:
+  all-traces
+  "All H md pid pd aid payee asset val chain th K #s.
+     SettledB(H, md, pid, pd, aid, payee, asset, val, chain, th, K) @ #s
+   ==> Ex #a. PrincipalAnchored(H) @ #a"
+
+/* P7 — failed settlement does not burn the nonce: a later successful
+   settlement with the SAME nonce is reachable. */
+lemma P7_failed_settlement_recovery:
+  exists-trace
+  "Ex H pid n #f #s.
+     FailedSettle(n, pid, H) @ #f & Consumed(n) @ #s & #f < #s"
+
+end

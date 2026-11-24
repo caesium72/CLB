@@ -1,0 +1,141 @@
+% Reviewer #2, Comment 1 -- paste-ready manuscript insert.
+% Drop into the evaluation section (after the existing Mode A / Mode B tables),
+% renumber tables to match the surrounding manuscript, and keep the cross-refs.
+% Requires \usepackage{booktabs,multirow}.
+
+\subsection{Broader Adversarial Evaluation}
+\label{sec:broader-adversarial}
+
+The earlier evaluation exercised a fixed set of modelled attacks. To test whether
+the guarantees hold beyond that set, we replaced the fixed list with a
+\emph{compositional} attack space and re-ran every scenario against the same
+deterministic verifier.
+
+\paragraph{Compositional attack matrix.}
+We decompose the threat model into nine independent attack primitives spanning
+merchant, agent, settlement, delivery and evidence surfaces (payee substitution,
+merchant revocation, amount escalation, payment-key de-authorization, asset
+switch, chain transplant, task substitution, delivery forgery, and
+selection injection). Each primitive is executed alone, in every ordered pair,
+and in twelve curated three-step chains that model an attacker advancing through
+discovery $\rightarrow$ payment $\rightarrow$ delivery or through identity
+$\rightarrow$ amount $\rightarrow$ settlement. Every scenario is instantiated
+under five seeds that vary the amount, asset, attacker payee, task hash and
+token, so a detection is not an artefact of one fixed trace.
+
+Across 465 executed scenarios the verifier detected every attack
+(465/465, 100\%), and in every scenario the rules that failed included the rule
+targeting the injected primitive (Table~\ref{tab:adversarial-matrix}). Detection
+is uniform across chain depth and across attack families, which indicates the
+guarantees compose rather than depending on a single fixture.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Compositional adversarial matrix. Every scenario is executed against
+the deterministic verifier; ``detected'' means at least one rule or the
+selection-audit check failed.}
+\label{tab:adversarial-matrix}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Axis & Bucket & Scenarios & Detected \\
+\midrule
+\multirow{3}{*}{Chain depth} & single primitive & 45 & 45 (100\%) \\
+                             & ordered pair     & 360 & 360 (100\%) \\
+                             & three-step chain & 60 & 60 (100\%) \\
+\midrule
+\multirow{5}{*}{Family}      & merchant         & 210 & 210 (100\%) \\
+                             & agent            & 215 & 215 (100\%) \\
+                             & settlement       & 200 & 200 (100\%) \\
+                             & delivery         & 215 & 215 (100\%) \\
+                             & evidence         & 105 & 105 (100\%) \\
+\midrule
+\multicolumn{2}{@{}l}{Total} & 465 & 465 (100\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Malicious merchants and compromised agents.}
+The two adversarial roles the reviewer highlights are covered directly. For
+malicious merchants we execute payee substitution, merchant-identity revocation,
+and delivery forgery, alone and combined with a manipulated discovery step; all
+are rejected. For compromised agents we assume control of the agent's
+orchestration logic but \emph{not} its signing key, and execute amount
+escalation, asset switching, chain switching, task substitution and payment-key
+de-authorization; all are rejected, because the human-signed mandate and the
+recomputed commitment bind the fields the agent would have to change.
+
+\paragraph{Pre-settlement prevention.}
+Detection after settlement is necessary but not sufficient, so we additionally
+measure prevention where a pre-settlement gate exists. In the delegated flow the
+predicate guard is evaluated \emph{before} the facilitator is called, and
+settlement proceeds only if the guard allows it. Across nine scenarios
+(payee substitution, revoked merchant, amount escalation, asset switch, chain
+switch, task substitution, expired authorization, selection-then-substitution,
+and escalation-then-replay) the guard denied eight outright and the facilitator
+rejected the ninth on an already-consumed nonce; no settlement receipt was
+issued for any attacked attempt (Table~\ref{tab:presettlement}).
+
+\begin{table}[t]
+\centering
+\small
+\caption{Pre-settlement prevention in the delegated flow. ``Receipt issued''
+refers to the attacked attempt; the guard is queried before any settlement call,
+so a false value is direct evidence that no value moved.}
+\label{tab:presettlement}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Scenario & Guard denied & Settlement attempted & Receipt issued \\
+\midrule
+Malicious merchant: payee substitution      & yes & no & no \\
+Malicious merchant: revoked identity        & yes & no & no \\
+Compromised agent: amount escalation        & yes & no & no \\
+Compromised agent: asset switch             & yes & no & no \\
+Compromised agent: chain switch             & yes & no & no \\
+Compromised agent: task substitution        & yes & no & no \\
+Expired authorization                       & yes & no & no \\
+Multi-step: selection then substitution     & yes & no & no \\
+Multi-step: escalation then replay          & n/a & yes & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Concurrent transactions.}
+Concurrency is the remaining failure mode a sequential replay test cannot
+observe: two requests can both pass a consumed-nonce check before either writes.
+We therefore reserve the nonce in an in-flight set between signature
+verification and settlement, and evaluate the reservation under burst load at
+concurrency levels 2, 4, 8, 16 and 32, with twenty trials per level in three
+shapes: identical nonces, distinct nonces, and a mixture. Across 3{,}720
+concurrent attempts no nonce settled twice, every distinct-nonce burst settled
+completely, and no anomaly occurred (Table~\ref{tab:concurrency}).
+
+\begin{table}[t]
+\centering
+\small
+\caption{Concurrent settlement. Each cell aggregates twenty trials; the
+same-nonce column is the number of settlements observed, which must equal the
+trial count (one per trial).}
+\label{tab:concurrency}
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+Concurrency & Trials per shape & Settled (same nonce) & Settled (distinct) & Anomalies \\
+\midrule
+2  & 20 & 20  & 40  & 0 \\
+4  & 20 & 20  & 80  & 0 \\
+8  & 20 & 20  & 160 & 0 \\
+16 & 20 & 20  & 320 & 0 \\
+32 & 20 & 20  & 640 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Scope.}
+Three limits apply. First, the matrix measures detection; prevention is
+established only for the delegated flow, where a guard exists before settlement
+--- in the exact flow the human signs the concrete descriptor, so there is no
+pre-settlement gate to test beyond signature validity. Second, the nonce
+reservation is per-process; a multi-replica facilitator requires a shared nonce
+store, which we do not claim to have evaluated. Third, the primitives are
+modelled from the protocol surface rather than discovered by fuzzing, so the
+matrix bounds the attacks we thought of, not all attacks.

@@ -1,0 +1,10 @@
+Tamarin-style counterexample description (textual, not a parsed Tamarin trace):
+  theory CLBAligned / RCLB extension (packages/clb-core/src/epochs.ts)
+  lemma: revocation-aware binding accepts only CURRENT epochs
+  trace:
+    Anchor_Principal(H)
+    DelegatedB(H, C_t, E_I=1, E_M=1, T_expiry=1800000000, N=0x11..11)
+    Revocation: authority advances identity epoch E_I to 2
+    Settlement presents the SAME C_t with E_I=1 at t=1700000000
+  expected: REJECT (IDENTITY_EPOCH_STALE)
+  question: does the implementation accept the old identity epoch?

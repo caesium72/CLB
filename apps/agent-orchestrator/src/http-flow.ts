@@ -756,11 +756,16 @@ export async function runHumanPresentOverHttp(
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bundle),
+      body: JSON.stringify({
+        ...bundle,
+        expectedHumanPrincipal: privateKeyToAccount(config.userPrivateKey).address,
+      }),
     },
   );
 
-  const verification = await verifyTrace(bundle);
+  const verification = await verifyTrace(bundle, {
+    expectedHumanPrincipal: privateKeyToAccount(config.userPrivateKey).address,
+  });
 
   const mergedVerification = {
     ...verification,
@@ -877,6 +882,7 @@ export async function runDelegatedOverHttp(
     identityRef,
     mandateDigest: computeMandateDigest(mandate),
     predicateId: predicateDescriptor.predicateId,
+    predicate,
     settlementParams,
     domain,
   };
@@ -1052,10 +1058,15 @@ export async function runDelegatedOverHttp(
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bundle),
+      body: JSON.stringify({
+        ...bundle,
+        expectedHumanPrincipal: privateKeyToAccount(config.userPrivateKey).address,
+      }),
     },
   );
-  const verification = await verifyTrace(bundle);
+  const verification = await verifyTrace(bundle, {
+    expectedHumanPrincipal: privateKeyToAccount(config.userPrivateKey).address,
+  });
 
   const mergedVerification = {
     ...verification,

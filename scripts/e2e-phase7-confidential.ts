@@ -20,13 +20,14 @@
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { buildValidModeBBundle, verifyTrace } from "@clb-acel/attack-core";
+import { TEST_KEYS, buildValidModeBBundle, verifyTrace } from "@clb-acel/attack-core";
 import {
   commitConfidential,
   verifyConfidential,
   verifyPayeeCommitment,
 } from "@clb-acel/clb-core";
 import { type Hex, parseUnits } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import {
   createInMemoryBlobStore,
   decrypt,
@@ -91,7 +92,10 @@ async function main() {
   });
 
   // 4. Verify the trace via the confidential (proof-only) path.
-  const verification = await verifyTrace(bundle, { confidential: true });
+  const verification = await verifyTrace(bundle, {
+    confidential: true,
+    expectedHumanPrincipal: privateKeyToAccount(TEST_KEYS.userKey).address,
+  });
   assert(
     verification.result.status === "PASS",
     `verifier should PASS, got ${verification.result.status} (${verification.result.failedRules.join(", ")})`,

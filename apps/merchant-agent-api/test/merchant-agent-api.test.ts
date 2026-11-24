@@ -18,7 +18,7 @@ const nonce = `0x${"a".repeat(64)}` as const;
 async function server() {
   return buildMerchantServer({
     logger: false,
-    config: { merchantPrivateKey: merchantKey, merchantAddress, network: "base-sepolia", chainId: 84532 },
+    config: { merchantPrivateKey: merchantKey, merchantAddress, network: "base-sepolia", chainId: 84532, price: "0.0000001" },
   });
 }
 

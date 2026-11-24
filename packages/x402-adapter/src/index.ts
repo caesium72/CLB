@@ -290,6 +290,68 @@ export class InvalidPaymentSignatureError extends Error {
   }
 }
 
+/**
+ * Chain a facilitator is willing to settle for. The CLB nonce is identical on
+ * every chain (it is H(C), independent of where it is spent) and each
+ * facilitator owns a separate consumed-nonce store, so without this check the
+ * same signed bytes settle once per chain.
+ */
+export type FacilitatorChain = {
+  chainId: number;
+  /** x402 network label. When omitted, only `chainId` is enforced. */
+  network?: string;
+};
+
+/** Local/demo facilitators simulate Base Sepolia settlement. */
+export const DEFAULT_FACILITATOR_CHAIN: FacilitatorChain = {
+  chainId: baseSepolia.id,
+  network: "base-sepolia",
+};
+
+/** Resolve the facilitator's own chain from deployment configuration. */
+export function defaultFacilitatorChain(): FacilitatorChain {
+  const raw = process.env.CHAIN_ID?.trim();
+  const parsed = raw === undefined ? Number.NaN : Number(raw);
+  const network = process.env.X402_NETWORK?.trim();
+  if (Number.isInteger(parsed) && parsed > 0 && parsed !== baseSepolia.id) {
+    // Non-default chain: network labels are deployment-specific, so bind on chainId only.
+    return { chainId: parsed, ...(network ? { network } : {}) };
+  }
+  return {
+    chainId: baseSepolia.id,
+    network: network ?? DEFAULT_FACILITATOR_CHAIN.network,
+  };
+}
+
+export class ChainMismatchError extends Error {
+  readonly expectedChainId: number;
+  readonly actualChainId: number;
+  readonly expectedNetwork?: string;
+  readonly actualNetwork: string;
+
+  constructor(expected: FacilitatorChain, actual: PaymentAuthorization) {
+    super(
+      `Payment authorization targets chain ${actual.chainId} (${actual.network}), ` +
+        `but this facilitator only settles chain ${expected.chainId}` +
+        (expected.network ? ` (${expected.network})` : ""),
+    );
+    this.name = "ChainMismatchError";
+    this.expectedChainId = expected.chainId;
+    this.actualChainId = actual.chainId;
+    this.expectedNetwork = expected.network;
+    this.actualNetwork = actual.network;
+  }
+}
+
+function chainMatches(chain: FacilitatorChain | null, payload: PaymentPayload): boolean {
+  if (chain === null) return true;
+  const auth = payload.authorization;
+  return (
+    auth.chainId === chain.chainId &&
+    (chain.network === undefined || auth.network === chain.network)
+  );
+}
+
 export type Facilitator = {
   settle(payload: PaymentPayload): Promise<SettlementReceipt>;
   verify(payload: PaymentPayload): Promise<boolean>;
@@ -317,26 +379,43 @@ function buildSettlementReceipt(auth: PaymentAuthorization, txHash: Hex): Settle
   };
 }
 
-function inMemoryFacilitator(settleFn: (payload: PaymentPayload) => Promise<SettlementReceipt>): Facilitator {
+/**
+ * Nonce reservation store shared by every facilitator that must agree on which
+ * nonces are spent. `reserve` MUST be atomic: two concurrent callers for the
+ * same nonce may never both receive `true`. A single-process implementation can
+ * rely on the JS event loop; a multi-replica one needs a real atomic primitive
+ * (Redis SETNX, a unique index, a conditional UPDATE).
+ */
+export type NonceStore = {
+  reserve(nonce: Hex): Promise<boolean>;
+  commit(nonce: Hex, receipt: SettlementReceipt): Promise<void>;
+  release(nonce: Hex): Promise<void>;
+  get(nonce: Hex): SettlementReceipt | null;
+  isConsumed(nonce: Hex): boolean;
+};
+
+export function createInMemoryNonceStore(): NonceStore {
   const consumed = new Map<Hex, SettlementReceipt>();
+  const inFlight = new Set<Hex>();
 
   return {
-    async verify(payload) {
-      return verifyPaymentPayload(payload);
-    },
-    async settle(payload) {
-      if (!(await verifyPaymentPayload(payload))) {
-        throw new InvalidPaymentSignatureError();
+    async reserve(nonce) {
+      if (consumed.has(nonce) || inFlight.has(nonce)) {
+        return false;
       }
-      if (consumed.has(payload.authorization.nonce)) {
-        throw new NonceAlreadyConsumedError(payload.authorization.nonce);
-      }
-
-      const receipt = await settleFn(payload);
-      consumed.set(payload.authorization.nonce, receipt);
-      return receipt;
+      // Synchronous check-and-set: no await between the read and the write, so
+      // another caller cannot slip in between them.
+      inFlight.add(nonce);
+      return true;
     },
-    getSettlement(nonce) {
+    async commit(nonce, receipt) {
+      consumed.set(nonce, receipt);
+      inFlight.delete(nonce);
+    },
+    async release(nonce) {
+      inFlight.delete(nonce);
+    },
+    get(nonce) {
       return consumed.get(nonce) ?? null;
     },
     isConsumed(nonce) {
@@ -345,15 +424,69 @@ function inMemoryFacilitator(settleFn: (payload: PaymentPayload) => Promise<Sett
   };
 }
 
-export function createLocalFacilitator(): Facilitator {
-  return inMemoryFacilitator(async (payload) =>
-    buildSettlementReceipt(payload.authorization, simulateTxHash(payload.authorization)),
+function inMemoryFacilitator(
+  settleFn: (payload: PaymentPayload) => Promise<SettlementReceipt>,
+  options: { store?: NonceStore; chain?: FacilitatorChain | null } = {},
+): Facilitator {
+  const store = options.store ?? createInMemoryNonceStore();
+  const chain = options.chain ?? null;
+
+  return {
+    async verify(payload) {
+      if (!chainMatches(chain, payload)) return false;
+      return verifyPaymentPayload(payload);
+    },
+    async settle(payload) {
+      // Fail closed before touching the nonce store: a payload signed for chain
+      // A must never consume a slot in chain B's facilitator.
+      if (chain && !chainMatches(chain, payload)) {
+        throw new ChainMismatchError(chain, payload.authorization);
+      }
+      if (!(await verifyPaymentPayload(payload))) {
+        throw new InvalidPaymentSignatureError();
+      }
+
+      const nonce = payload.authorization.nonce;
+      if (!(await store.reserve(nonce))) {
+        throw new NonceAlreadyConsumedError(nonce);
+      }
+
+      try {
+        const receipt = await settleFn(payload);
+        await store.commit(nonce, receipt);
+        return receipt;
+      } catch (error) {
+        // A failed settlement releases the reservation so a legitimate retry
+        // can proceed. Successful settlements remain blocked by `consumed`.
+        await store.release(nonce);
+        throw error;
+      }
+    },
+    getSettlement(nonce) {
+      return store.get(nonce);
+    },
+    isConsumed(nonce) {
+      return store.isConsumed(nonce);
+    },
+  };
+}
+
+export function createLocalFacilitator(
+  store?: NonceStore,
+  chain: FacilitatorChain | null = defaultFacilitatorChain(),
+): Facilitator {
+  return inMemoryFacilitator(
+    async (payload) =>
+      buildSettlementReceipt(payload.authorization, simulateTxHash(payload.authorization)),
+    { store, chain },
   );
 }
 
 export type HttpFacilitatorOptions = {
   baseUrl: string;
   fetchImpl?: typeof fetch;
+  /** Chain this remote facilitator settles for; pass `null` for a multi-chain service. */
+  chain?: FacilitatorChain | null;
 };
 
 /** Remote x402 facilitator client (Base Sepolia or hosted facilitator). */
@@ -361,25 +494,30 @@ export function createHttpFacilitator(options: HttpFacilitatorOptions): Facilita
   const fetchImpl = options.fetchImpl ?? fetch;
   const baseUrl = options.baseUrl.replace(/\/$/u, "");
 
-  return inMemoryFacilitator(async (payload) => {
-    const response = await fetchImpl(`${baseUrl}/settle`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+  return inMemoryFacilitator(
+    async (payload) => {
+      const response = await fetchImpl(`${baseUrl}/settle`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Facilitator settlement failed (${response.status})`);
-    }
+      if (!response.ok) {
+        throw new Error(`Facilitator settlement failed (${response.status})`);
+      }
 
-    return (await response.json()) as SettlementReceipt;
-  });
+      return (await response.json()) as SettlementReceipt;
+    },
+    { chain: options.chain ?? defaultFacilitatorChain() },
+  );
 }
 
 export type OnChainFacilitatorOptions = {
   rpcUrl: string;
   privateKey: Hex;
   chainId?: number;
+  /** Override binding; defaults to `{ chainId }` (chainId-only, network is RPC-inferred). */
+  chain?: FacilitatorChain | null;
 };
 
 /**
@@ -396,16 +534,21 @@ export function createOnChainFacilitator(options: OnChainFacilitatorOptions): Fa
   const publicClient = createPublicClient({ chain, transport });
   const walletClient = createWalletClient({ chain, transport, account });
 
-  return inMemoryFacilitator(async (payload) => {
-    const auth = payload.authorization;
-    const txHash = await walletClient.sendTransaction({
-      to: getAddress(auth.to),
-      value: BigInt(0),
-      data: keccak256(toBytes(canonicalJson({ kind: "x402-settlement", auth, signature: payload.signature }))),
-    });
-    await publicClient.waitForTransactionReceipt({ hash: txHash });
-    return buildSettlementReceipt(auth, txHash);
-  });
+  return inMemoryFacilitator(
+    async (payload) => {
+      const auth = payload.authorization;
+      const txHash = await walletClient.sendTransaction({
+        to: getAddress(auth.to),
+        value: BigInt(0),
+        data: keccak256(
+          toBytes(canonicalJson({ kind: "x402-settlement", auth, signature: payload.signature })),
+        ),
+      });
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
+      return buildSettlementReceipt(auth, txHash);
+    },
+    { chain: options.chain === undefined ? { chainId } : options.chain },
+  );
 }
 
 export type FacilitatorMode = "local" | "http" | "chain";
@@ -433,24 +576,31 @@ function resolveSettlerPrivateKey(): Hex | undefined {
 
 /** Resolve the active facilitator from environment variables. */
 export function createFacilitator(mode?: FacilitatorMode): Facilitator {
-  const explicit = mode ?? (process.env.X402_FACILITATOR_MODE?.trim().toLowerCase() as FacilitatorMode | undefined);
+  const explicit =
+    mode ??
+    (process.env.X402_FACILITATOR_MODE?.trim().toLowerCase() as FacilitatorMode | undefined);
   const facilitatorUrl = process.env.X402_FACILITATOR_URL?.trim();
   const rpcUrl = process.env.RPC_URL_BASE_SEPOLIA?.trim() ?? process.env.RPC_URL?.trim();
   const settlerKey = resolveSettlerPrivateKey();
   const assetAddress = process.env.X402_ASSET_ADDRESS?.trim();
+  const chain = defaultFacilitatorChain();
 
   if (explicit === "http" || (!explicit && facilitatorUrl)) {
-    return createHttpFacilitator({ baseUrl: facilitatorUrl ?? "http://localhost:8787" });
+    return createHttpFacilitator({ baseUrl: facilitatorUrl ?? "http://localhost:8787", chain });
   }
 
-  const wantsChain = explicit === "chain" || (!explicit && Boolean(rpcUrl && settlerKey && assetAddress));
+  const wantsChain =
+    explicit === "chain" || (!explicit && Boolean(rpcUrl && settlerKey && assetAddress));
   if (wantsChain && rpcUrl && settlerKey) {
     return createOnChainFacilitator({
       rpcUrl,
       privateKey: settlerKey,
-      chainId: Number(process.env.CHAIN_ID ?? baseSepolia.id),
+      chainId: chain.chainId,
+      chain,
     });
   }
 
-  return createLocalFacilitator();
+  return createLocalFacilitator(undefined, chain);
 }
+
+export * from "./concurrency";

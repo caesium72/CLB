@@ -2,6 +2,7 @@ import { verifyMandate } from "@clb-acel/ap2-adapter";
 import {
   computeCommitment,
   computeMandateDigest,
+  checkRevocationAwareAcceptance,
   computeModeBSettlementCommitment,
   deriveNonce,
   deriveSettlementNonce,
@@ -24,7 +25,7 @@ import type {
   VerificationCertificate,
 } from "@clb-acel/schemas";
 import { verifyPaymentPayload } from "@clb-acel/x402-adapter";
-import { type Hex, getAddress, keccak256, toBytes } from "viem";
+import { type Address, type Hex, getAddress, keccak256, parseUnits, toBytes } from "viem";
 import type {
   RuleId,
   RuleOutcome,
@@ -34,6 +35,45 @@ import type {
 } from "./types";
 
 export * from "./types";
+
+/**
+ * `expectedHumanPrincipal` is optional only for source compatibility with
+ * existing callers; a sound verdict requires it. It MUST be sourced from a
+ * trusted, independent anchor (e.g. a human/owner registry or an
+ * out-of-band-established wallet address) — never from
+ * `bundle.mandate.humanPrincipal`. When absent, R2/R5 fail closed.
+ */
+export type VerifyTraceOptionsWithPrincipal = VerifyTraceOptions & {
+  expectedHumanPrincipal?: Address;
+  /**
+   * Trusted Merkle root obtained OUT-OF-BAND (e.g. read from the on-chain
+   * AgenticAuditAnchor by the caller, or from a signed attestation). R1 compares
+   * it with the root recomputed from the bundle. Without this value R1 proves
+   * only internal consistency: recomputeEvidenceIntegrity can re-link and
+   * re-root any self-consistent rewrite of an untrusted agent's event set.
+   */
+  expectedMerkleRoot?: Hex;
+  /**
+   * Fail closed: refuse an evidence-integrity PASS unless expectedMerkleRoot is
+   * supplied. Opt-in to preserve source compatibility; verifiers evaluating
+   * untrusted traces should enable it.
+   */
+  strictEvidenceIntegrity?: boolean;
+  /**
+   * Object types that MUST be present in the trace. Derived from the human-signed
+   * mandate / protocol policy by the CALLER — never from the bundle under test.
+   * Enables a structural completeness check in R1 alongside the root comparison.
+   */
+  requiredEventObjectTypes?: readonly string[];
+  /**
+   * RCLB opt-in gate. When supplied, an INDEPENDENT revocation-aware binding
+   * check runs in addition to R1–R17. The epoch snapshot in `current` must come
+   * from the trusted authority at execution time, never from the bundle. If any
+   * required state or time is missing the gate FAILS CLOSED. Default paths that
+   * omit this option are byte-for-byte unchanged.
+   */
+  revocationBinding?: RevocationVerifierInput;
+};
 
 export const VERIFIER_VERSION = "verifier-1.0.0";
 
@@ -122,22 +162,43 @@ function modeBCommitmentInputOf(bundle: TraceBundle): ModeBSettlementInput | nul
     mandateDigest: computeMandateDigest(bundle.mandate),
     predicateId: descriptor.predicateId,
     settlementParams: params,
+    predicate: descriptor.predicate,
     domain: bundle.clb.domain,
   };
 }
 
-function checkHashChain(bundle: TraceBundle): RuleOutcome {
+function checkHashChain(
+  bundle: TraceBundle,
+  options: Pick<
+    VerifyTraceOptionsWithPrincipal,
+    "expectedMerkleRoot" | "strictEvidenceIntegrity" | "requiredEventObjectTypes"
+  > = {},
+): RuleOutcome {
   const computedHashes: Hex[] = [];
+  const seenEventIds = new Set<string>();
+  const presentTypes = new Set<string>();
 
   for (let index = 0; index < bundle.events.length; index += 1) {
     const event = bundle.events[index];
     if (!event) {
       return { ok: false, detail: `Missing event at index ${index}` };
     }
+    if (seenEventIds.has(event.eventId)) {
+      return { ok: false, detail: `Duplicate event id ${event.eventId}` };
+    }
+    seenEventIds.add(event.eventId);
+    presentTypes.add(event.objectType);
 
     const expectedPrevious = index === 0 ? undefined : computedHashes[index - 1];
     if (event.previousEventHash !== expectedPrevious) {
       return { ok: false, detail: `Broken hash chain at event ${event.eventId}` };
+    }
+    // R1 now checks the event signature surface. The signature is part of the
+    // event hash, so a swap also breaks the declared hash/Merkle root.
+    // Authenticity (ECDSA recovery against an actor key) is NOT claimed here:
+    // fixture signatures are placeholders and events carry no signer address.
+    if (!/^0x[0-9a-fA-F]{130}$/.test(event.signature)) {
+      return { ok: false, detail: `Malformed event signature at ${event.eventId}` };
     }
 
     computedHashes.push(hashEvidenceEvent(event));
@@ -152,17 +213,73 @@ function checkHashChain(bundle: TraceBundle): RuleOutcome {
     }
   }
 
-  if (buildMerkleRoot(computedHashes) !== bundle.merkleRoot) {
+  const recomputedRoot = buildMerkleRoot(computedHashes);
+  if (recomputedRoot !== bundle.merkleRoot) {
     return { ok: false, detail: "Merkle root does not match recomputed event hashes" };
+  }
+
+  const { expectedMerkleRoot, strictEvidenceIntegrity, requiredEventObjectTypes } = options;
+
+  // Trusted-anchor comparison. Internal consistency alone is not evidence of
+  // integrity: recomputeEvidenceIntegrity heals links + hashes + root for any
+  // edited event set without a secret. Matching an anchored root is what makes
+  // omission/fabrication detectable.
+  if (strictEvidenceIntegrity === true && expectedMerkleRoot === undefined) {
+    return { ok: false, detail: "STRICT_EVIDENCE_INTEGRITY_REQUIRES_TRUSTED_ROOT" };
+  }
+  if (
+    expectedMerkleRoot !== undefined &&
+    recomputedRoot.toLowerCase() !== expectedMerkleRoot.toLowerCase()
+  ) {
+    return {
+      ok: false,
+      detail: `Evidence Merkle root does not match trusted expected root (recomputed ${recomputedRoot}, expected ${expectedMerkleRoot})`,
+    };
+  }
+
+  if (requiredEventObjectTypes) {
+    const missing = requiredEventObjectTypes.filter((type) => !presentTypes.has(type));
+    if (missing.length > 0) {
+      return { ok: false, detail: `Missing required evidence object types: ${missing.join(", ")}` };
+    }
   }
 
   return { ok: true };
 }
 
-async function checkSignatures(bundle: TraceBundle): Promise<RuleOutcome> {
+/**
+ * Verify the mandate against an INDEPENDENTLY ANCHORED human principal.
+ *
+ * WHY: `mandate.humanPrincipal` is a self-declared field inside the signed
+ * object. `verifyMandate` defaults its `expectedSigner` to that field, so an
+ * attacker can relax a constraint, re-sign with their own key, set
+ * `humanPrincipal` to their own address and recompute C/nonce/receipt — every
+ * rule then passes. The Tamarin model avoids this by minting `!HumanPk` only in
+ * `Register_Human` and checking signatures against that fact, never against a
+ * field of the attacker-supplied message. We mirror it here: the expected
+ * signer must come from the caller's trusted anchor, and with no anchor we
+ * fail closed instead of trusting the declaration.
+ */
+async function verifyMandateAgainstAnchor(
+  bundle: TraceBundle,
+  expectedHumanPrincipal: Address | undefined,
+): Promise<{ valid: boolean; reasons: string[] }> {
+  if (!expectedHumanPrincipal) {
+    return { valid: false, reasons: ["HUMAN_PRINCIPAL_NOT_INDEPENDENTLY_ANCHORED"] };
+  }
+  return verifyMandate(bundle.mandate, {
+    clb: bundle.clb,
+    expectedSigner: expectedHumanPrincipal,
+  });
+}
+
+async function checkSignatures(
+  bundle: TraceBundle,
+  expectedHumanPrincipal: Address | undefined,
+): Promise<RuleOutcome> {
   const failures: string[] = [];
 
-  const mandateResult = await verifyMandate(bundle.mandate, { clb: bundle.clb });
+  const mandateResult = await verifyMandateAgainstAnchor(bundle, expectedHumanPrincipal);
   if (!mandateResult.valid) {
     failures.push(`mandate(${mandateResult.reasons.join(",")})`);
   }
@@ -203,8 +320,11 @@ function checkPaymentKeyAuthorized(bundle: TraceBundle): RuleOutcome {
     : { ok: false, detail: `Payer ${bundle.settlement.payer} not authorized by agent card` };
 }
 
-async function checkMandateSignature(bundle: TraceBundle): Promise<RuleOutcome> {
-  const result = await verifyMandate(bundle.mandate, { clb: bundle.clb });
+async function checkMandateSignature(
+  bundle: TraceBundle,
+  expectedHumanPrincipal: Address | undefined,
+): Promise<RuleOutcome> {
+  const result = await verifyMandateAgainstAnchor(bundle, expectedHumanPrincipal);
   return result.valid ? { ok: true } : { ok: false, detail: result.reasons.join(", ") };
 }
 
@@ -315,8 +435,16 @@ function checkChainDomain(bundle: TraceBundle): RuleOutcome {
     if (!predicate.allowedChainIds.includes(concrete.chainId)) {
       return { ok: false, detail: `Settlement chain ${concrete.chainId} not in predicate.allowedChainIds` };
     }
-    if (bundle.payerAgent.chainId !== bundle.clb.identityRef.chainId) {
-      return { ok: false, detail: "Payer agent chainId differs from bound identity" };
+    // G4: the EIP-712 domain chain is the chain C' was signed for. Mode B
+    // previously never compared it, allowing a domain-chain transplant.
+    const domainChain = bundle.clb.domain.chainId;
+    if (
+      concrete.chainId !== domainChain ||
+      bundle.settlement.chainId !== domainChain ||
+      bundle.payerAgent.chainId !== domainChain ||
+      bundle.clb.identityRef.chainId !== domainChain
+    ) {
+      return { ok: false, detail: "chainId differs across domain/concrete/settlement/agent/identity" };
     }
     return { ok: true };
   }
@@ -350,20 +478,53 @@ function checkAmountWithinMandate(bundle: TraceBundle): RuleOutcome {
 }
 
 /**
+ * The confidential cap must come from the human-signed mandate, never from a
+ * bundle-authored field. `mandateDigest` covers `constraints.maxAmount`, which
+ * `issueMandate` populates from the predicate's `maxValue` in Mode B. The
+ * 6-decimal conversion matches `settlementParamsFromExact`'s default.
+ */
+function signedCapAtomic(bundle: TraceBundle): bigint | null {
+  const signed = bundle.mandate.constraints.maxAmount;
+  if (!signed) return null;
+  try {
+    const cap = parseUnits(signed, 6);
+    return cap >= 0n && cap < (1n << 64n) ? cap : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * R11 (confidential): discharge the amount-within-mandate predicate via the
  * range proof — `value <= maxValue` — without ever reading a plaintext amount.
+ * The declared proof cap may only TIGHTEN the signed cap: a bundle author who
+ * inflates `confidential.maxValueAtomic` cannot raise the authorized amount.
  */
 function checkAmountConfidential(bundle: TraceBundle): RuleOutcome {
   const confidential = bundle.confidential;
   if (!confidential) {
     return { ok: false, detail: "Confidential mode requires bundle.confidential (commitment + range proof)" };
   }
+  const signedCap = signedCapAtomic(bundle);
+  if (signedCap === null) {
+    return { ok: false, detail: "R11 requires a human-signed mandate.constraints.maxAmount in [0, 2^64)" };
+  }
+  let declaredCap: bigint;
+  try {
+    declaredCap = BigInt(confidential.maxValueAtomic);
+  } catch {
+    return { ok: false, detail: "Malformed confidential.maxValueAtomic" };
+  }
+  if (declaredCap < 0n) {
+    return { ok: false, detail: "Negative confidential.maxValueAtomic" };
+  }
+  const effectiveCap = declaredCap < signedCap ? declaredCap : signedCap;
   const ok = verifyConfidential(confidential.valueCommitment, confidential.rangeProof, {
-    maxValueAtomic: confidential.maxValueAtomic,
+    maxValueAtomic: effectiveCap,
   });
   return ok
     ? { ok: true }
-    : { ok: false, detail: "Range proof does not attest value <= maxValue" };
+    : { ok: false, detail: "Range proof does not attest value <= signed maxValue" };
 }
 
 function checkPayeeMatches(bundle: TraceBundle): RuleOutcome {
@@ -465,17 +626,18 @@ function certificateHash(certificate: Omit<VerificationCertificate, "certificate
  */
 export async function verifyTrace(
   bundle: TraceBundle,
-  options: VerifyTraceOptions = {},
+  options: VerifyTraceOptionsWithPrincipal = {},
 ): Promise<VerifyTraceOutput> {
   const outcomes = {} as Record<RuleId, RuleOutcome>;
   // Confidential mode discharges R11 via the range proof (no plaintext amount).
   const confidential = options.confidential === true && bundle.confidential !== undefined;
+  const { expectedHumanPrincipal } = options;
 
-  outcomes.R1_HASH_CHAIN_INTACT = checkHashChain(bundle);
-  outcomes.R2_SIGNATURES_VALID = await checkSignatures(bundle);
+  outcomes.R1_HASH_CHAIN_INTACT = checkHashChain(bundle, options);
+  outcomes.R2_SIGNATURES_VALID = await checkSignatures(bundle, expectedHumanPrincipal);
   outcomes.R3_AGENT_IDENTITY_RESOLVES = checkIdentityResolves(bundle);
   outcomes.R4_AGENT_PAYMENT_KEY_AUTHORIZED = checkPaymentKeyAuthorized(bundle);
-  outcomes.R5_MANDATE_SIGNATURE_VALID = await checkMandateSignature(bundle);
+  outcomes.R5_MANDATE_SIGNATURE_VALID = await checkMandateSignature(bundle, expectedHumanPrincipal);
   outcomes.R6_CLB_COMMITMENT_RECOMPUTES = checkCommitmentRecomputes(bundle);
   outcomes.R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR = checkSettlementMatchesDescriptor(bundle);
   outcomes.R8_PAYMENT_NONCE_EQUALS_HASH_C = checkNonceEqualsHashC(bundle);
@@ -491,7 +653,25 @@ export async function verifyTrace(
   outcomes.R15_TASK_HASH_MATCHES = checkTaskHashMatches(bundle);
   outcomes.R17_PREDICATE_TRUE_FOR_MODE_B = checkPredicateTrueForModeB(bundle);
 
+  // RCLB gate: additive and opt-in. It does not alter any R1–R17 outcome; it
+  // only adds a new failure code when the CURRENT authority state rejects C_t.
+  const revocationGate = options.revocationBinding;
+  const revocationOutcome =
+    revocationGate === undefined
+      ? null
+      : verifyRevocationBinding({
+          ...revocationGate,
+          now: revocationGate.now ?? settlementTimeSeconds(bundle),
+        });
+  if (revocationOutcome !== null) {
+    // Exposed for callers that want the failure reason; not part of RuleId (which
+    // is owned by ./types and left untouched for the default path).
+    (outcomes as unknown as Record<string, RuleOutcome>)[R18_REVOCATION_AWARE_BINDING] = revocationOutcome;
+  }
   const failedRules = RULE_ORDER.filter((rule) => !outcomes[rule].ok);
+  if (revocationOutcome !== null && !revocationOutcome.ok) {
+    failedRules.push(R18_REVOCATION_AWARE_BINDING as unknown as RuleId);
+  }
   const status = failedRules.length === 0 ? "PASS" : "FAIL";
   const checkedAt = new Date().toISOString();
   const modeBInput = isModeB(bundle) ? modeBCommitmentInputOf(bundle) : null;
@@ -505,7 +685,10 @@ export async function verifyTrace(
     traceId: bundle.traceId,
     mode: bundle.mode,
     status,
-    rulesChecked: RULE_ORDER,
+    rulesChecked:
+      revocationGate === undefined
+        ? RULE_ORDER
+        : [...RULE_ORDER, R18_REVOCATION_AWARE_BINDING as unknown as RuleId],
     failedRules,
     clbCommitment,
     settlementTxHash: bundle.settlement.txHash,
@@ -531,4 +714,72 @@ export async function verifyTrace(
     // amount was read for R11.
     ...(confidential ? {} : { readPlaintextAmount: true }),
   };
+}
+
+// ---------------------------------------------------------------------------
+// RCLB — NEW dedicated region: optional R18 revocation-aware binding rule
+// ---------------------------------------------------------------------------
+
+/**
+ * Trusted CURRENT authority state plus the revocation-aware commitment carried
+ * by the settlement message. `current` is deliberately optional at the type
+ * level so a failed registry read cannot be silently treated as "still valid".
+ */
+export type RevocationVerifierInput = {
+  current?: { identityEpoch?: bigint; mandateEpoch?: bigint };
+  /** C_t presented by the settlement message. */
+  commitment: Hex;
+  /** C or C' recomputed from the trace bundle (the base commitment). */
+  baseCommitment: Hex;
+  /** E_I bound into C_t. */
+  identityEpoch: bigint;
+  /** E_M bound into C_t. */
+  mandateEpoch: bigint;
+  /** T_expiry bound into C_t (Unix seconds, inclusive). */
+  expiry: bigint;
+  /** N bound into C_t (single-use application nonce). */
+  nonce: Hex;
+  /** Settlement time in Unix seconds; defaults to `settlement.settledAt`. */
+  now?: bigint | null;
+  /** N values already consumed by the authority. */
+  consumedNonces?: readonly Hex[];
+};
+
+/** New rule id, additive to RULE_ORDER (which lives in `./types`). */
+export const R18_REVOCATION_AWARE_BINDING = "R18_REVOCATION_AWARE_BINDING" as const;
+
+/** Deterministic settlement time in Unix seconds; null when unparseable. */
+function settlementTimeSeconds(bundle: TraceBundle): bigint | null {
+  const parsed = Date.parse(bundle.settlement.settledAt);
+  return Number.isNaN(parsed) ? null : BigInt(Math.floor(parsed / 1000));
+}
+
+/**
+ * R18. Pure re-check of C_t against CURRENT authority state. Returns a normal
+ * RuleOutcome; verifyTrace adds the failure code only when this option is used.
+ * A missing epoch snapshot, missing time or malformed nonce fails closed.
+ */
+export function verifyRevocationBinding(input: RevocationVerifierInput): RuleOutcome {
+  const now = input.now ?? null;
+  if (now === null) {
+    return { ok: false, detail: "REVOCATION_SETTLEMENT_TIME_UNAVAILABLE" };
+  }
+  const consumed = new Set(
+    (input.consumedNonces ?? []).map((nonce) => nonce.toLowerCase()),
+  );
+  const acceptance = checkRevocationAwareAcceptance({
+    fields: {
+      baseCommitment: input.baseCommitment,
+      identityEpoch: input.identityEpoch,
+      mandateEpoch: input.mandateEpoch,
+      expiry: input.expiry,
+      nonce: input.nonce,
+    },
+    commitment: input.commitment,
+    currentIdentityEpoch: input.current?.identityEpoch,
+    currentMandateEpoch: input.current?.mandateEpoch,
+    now,
+    consumedNonces: consumed,
+  });
+  return acceptance.ok ? { ok: true } : { ok: false, detail: acceptance.detail };
 }

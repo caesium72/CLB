@@ -1,0 +1,30 @@
+maude tool: 'maude'
+ checking version: 3.1. OK.
+ checking installation: OK.
+[Theory CLBAligned] Theory loaded
+[Theory CLBAligned] Theory translated
+[Theory CLBAligned] Theory closed
+[Saturating Sources] Step 1 (Max 5)
+[Open Chains] Too many chain constraints, stopping precomputation. Open Chains limits (can be changed with -c=): 10
+[Open Chains] Too many chain constraints, stopping precomputation. Open Chains limits (can be changed with -c=): 10
+[Saturating Sources] Step 2 (Max 5)
+[Saturating Sources] Done
+
+==============================================================================
+summary of summaries:
+
+analyzed: clb-aligned.spthy
+
+  output:          proofs/clb-aligned.proof
+  processing time: 8.04s
+  
+  exec_aligned_modeB (exists-trace): verified (22 steps)
+  P1_identity_binding (all-traces): verified (10 steps)
+  P2_authorization_integrity (all-traces): verified (18 steps)
+  P3_no_replay (all-traces): verified (96 steps)
+  P4_non_transferability (all-traces): verified (16 steps)
+  P5_predicate_soundness (all-traces): verified (18 steps)
+  P6_principal_anchor (all-traces): verified (6 steps)
+  P7_failed_settlement_recovery (exists-trace): verified (25 steps)
+
+==============================================================================

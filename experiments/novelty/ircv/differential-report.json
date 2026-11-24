@@ -1,0 +1,173 @@
+{
+  "schema": "ircv-differential/v1",
+  "modelSource": "formal/tamarin/clb-aligned.spthy",
+  "constraintsEvaluated": [
+    "MC-P1",
+    "MC-P2",
+    "MC-P3",
+    "MC-P4",
+    "MC-P5",
+    "MC-P6"
+  ],
+  "modelEventKinds": [
+    "commitment",
+    "delegation",
+    "key_authorization",
+    "nonce_consumption",
+    "predicate_decision",
+    "predicate_registration",
+    "principal_anchor",
+    "settlement",
+    "settlement_failure",
+    "verification_verdict"
+  ],
+  "implementationOnlyKinds": [
+    "nonce"
+  ],
+  "kindCoverage": {
+    "observedKinds": [
+      "commitment",
+      "delegation",
+      "key_authorization",
+      "nonce",
+      "nonce_consumption",
+      "predicate_decision",
+      "predicate_registration",
+      "principal_anchor",
+      "settlement",
+      "settlement_failure",
+      "verification_verdict"
+    ],
+    "mappedKinds": [
+      "commitment",
+      "delegation",
+      "key_authorization",
+      "nonce_consumption",
+      "predicate_decision",
+      "predicate_registration",
+      "principal_anchor",
+      "settlement",
+      "settlement_failure",
+      "verification_verdict"
+    ],
+    "unmappedKinds": [
+      "nonce"
+    ],
+    "modelKindsNotObserved": []
+  },
+  "scenarios": [
+    {
+      "scenarioId": "MODE_A_HONEST",
+      "scenarioKind": "out-of-model",
+      "description": "Honest exact-settlement trace (Mode A).",
+      "expectation": "NOT COMPARABLE (model is Mode B only); verifier PASS",
+      "conformance": "NOT COMPARABLE",
+      "violations": [],
+      "verifierStatus": "PASS",
+      "failedRules": [],
+      "result": "PASS",
+      "notes": []
+    },
+    {
+      "scenarioId": "MODE_B_HONEST",
+      "scenarioKind": "honest",
+      "description": "Honest delegated settlement inside the human-signed predicate.",
+      "expectation": "CONFORMANT (all MC constraints hold); verifier PASS",
+      "conformance": "CONFORMANT",
+      "violations": [],
+      "verifierStatus": "PASS",
+      "failedRules": [],
+      "result": "PASS",
+      "notes": []
+    },
+    {
+      "scenarioId": "MODE_B_PAYEE_ATTACK",
+      "scenarioKind": "attack",
+      "description": "Settlement routes to a payee outside the human-signed predicate.",
+      "expectation": "NON-CONFORMANT (MC-P4); verifier FAIL",
+      "conformance": "NON-CONFORMANT",
+      "violations": [
+        {
+          "constraintId": "MC-P4",
+          "detail": "No admitting predicate decision before settlement 8",
+          "expected": "predicate_decision(predicateId=predicate-001, decision=allow)",
+          "actual": "predicate-001:reject"
+        }
+      ],
+      "verifierStatus": "FAIL",
+      "failedRules": [
+        "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+        "R17_PREDICATE_TRUE_FOR_MODE_B"
+      ],
+      "result": "PASS",
+      "notes": [
+        "The mode-b fixture calls the facilitator directly and therefore settles despite the predicate rejection; the pre-settlement guard path (draftModeBPayment + InMemoryPredicateGuard) is a separate, earlier gate."
+      ]
+    },
+    {
+      "scenarioId": "MODE_B_AMOUNT_ATTACK",
+      "scenarioKind": "attack",
+      "description": "Settlement amount exceeds the human-signed predicate cap.",
+      "expectation": "NON-CONFORMANT (MC-P4); verifier FAIL",
+      "conformance": "NON-CONFORMANT",
+      "violations": [
+        {
+          "constraintId": "MC-P4",
+          "detail": "No admitting predicate decision before settlement 8",
+          "expected": "predicate_decision(predicateId=predicate-001, decision=allow)",
+          "actual": "predicate-001:reject"
+        }
+      ],
+      "verifierStatus": "FAIL",
+      "failedRules": [
+        "R11_AMOUNT_WITHIN_MANDATE",
+        "R17_PREDICATE_TRUE_FOR_MODE_B"
+      ],
+      "result": "PASS",
+      "notes": [
+        "Fixture-level divergence: the direct facilitator path settles before the off-chain predicate gate; see MODE_B_PAYEE_ATTACK note."
+      ]
+    },
+    {
+      "scenarioId": "MODE_B_REPLAY_ATTACK",
+      "scenarioKind": "attack",
+      "description": "Second settlement attempt with the same C' nonce.",
+      "expectation": "CONFORMANT after prevention (MC-P3 holds); verifier FAIL flags the attempt",
+      "conformance": "CONFORMANT",
+      "violations": [],
+      "verifierStatus": "FAIL",
+      "failedRules": [
+        "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+      ],
+      "replayPrevented": true,
+      "result": "PASS",
+      "notes": [
+        "The second attempt was rejected by the local x402 facilitator before a second nonce consumption was recorded."
+      ]
+    },
+    {
+      "scenarioId": "RCLB_STALE_IDENTITY_EPOCH",
+      "scenarioKind": "out-of-model",
+      "description": "Settlement presents C_t signed under an identity epoch that has since been revoked.",
+      "expectation": "NOT COMPARABLE (RCLB absent from clb-aligned.spthy); verifier R18 FAIL",
+      "conformance": "NOT COMPARABLE",
+      "violations": [],
+      "verifierStatus": "FAIL",
+      "failedRules": [
+        "R18_REVOCATION_AWARE_BINDING"
+      ],
+      "result": "PASS",
+      "notes": [
+        "R18 is additive and opt-in; the model has no revocation fact, so this scenario is reported as out-of-model."
+      ]
+    }
+  ],
+  "summary": {
+    "totalScenarios": 6,
+    "comparableScenarios": 4,
+    "resultsPass": 6,
+    "resultsFail": 0,
+    "conformantHonestScenarios": 1,
+    "detectedAttackScenarios": 3
+  }
+}

@@ -50,6 +50,9 @@
           "R14_DELIVERY_AFTER_SETTLEMENT": {
             "ok": true
           },
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT": {
+            "ok": true
+          },
           "R15_TASK_HASH_MATCHES": {
             "ok": true
           },
@@ -76,26 +79,28 @@
             "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
             "R13_ASSET_ALLOWED",
             "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R14b_DELIVERY_BOUND_TO_SETTLEMENT",
             "R15_TASK_HASH_MATCHES",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
           "failedRules": [],
-          "clbCommitment": "0x3ae4ee9fe81a9f632999e6644a1748e676d34435f68768f1e2bea82acb361a85",
-          "settlementTxHash": "0xf099d39007a612f97863a53064b72a60975d8413138b271a5944eb4898dd8d4d",
-          "traceMerkleRoot": "0x36e51814b0f866add13fe8409fb33b8c113c3dfbc0a743e8654d49e225871592",
+          "clbCommitment": "0x6f04aa3f66310cc55776898ac7dff22636ef4b13b51c1453a4181b89bae3ca73",
+          "settlementTxHash": "0xa4467beb4126c9edacf7b3eb795d9850cf4c29a9572ee12bed190c240dd50829",
+          "traceMerkleRoot": "0x72f83984edc3c66ba6b7a55255ab5240ed3aa7d72fc19784ffb9cc81696e1643",
           "verifierVersion": "verifier-1.0.0",
-          "createdAt": "2026-05-31T07:59:23.281Z",
-          "certificateHash": "0x31d4a24151799d5e567950893d2a3b048e7f199f58c9ff138faca59cf811819a"
+          "createdAt": "2026-11-24T21:26:25.491Z",
+          "certificateHash": "0x97b7d31bf0bd28e8e7d826179c66e6eaefb9a2331e6af2448dd5abb3bffb8503"
         },
         "result": {
           "traceId": "trace-predicate-happy",
           "status": "PASS",
           "failedRules": [],
           "warnings": [],
-          "certificateHash": "0x31d4a24151799d5e567950893d2a3b048e7f199f58c9ff138faca59cf811819a",
-          "checkedAt": "2026-05-31T07:59:23.281Z",
+          "certificateHash": "0x97b7d31bf0bd28e8e7d826179c66e6eaefb9a2331e6af2448dd5abb3bffb8503",
+          "checkedAt": "2026-11-24T21:26:25.491Z",
           "mode": "MODE_B_PREDICATE"
-        }
+        },
+        "readPlaintextAmount": true
       },
       "expectedFailedRules": [],
       "matched": true,
@@ -138,8 +143,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0x625d620d07f80f8b4309043902900dafbf3018dc8a3a3717b629e0ee6ce73bbd",
-          "nonce": "0x8200bdc834820aa93530fab6b2f7afe4af486e801ceea438eea838f2c47defe8",
+          "commitmentCprime": "0x3e5f16bdd5440c665130c2fc3ba8d6f86393f9f6cb19002b637efe863d4127ea",
+          "nonce": "0x548e0a975d76b82bb30fb16be49eac006d079b163e78fc11cfa12ddbef7582c9",
           "guardWouldAllow": true
         },
         "violatedTrace": {
@@ -165,8 +170,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0x3ae4ee9fe81a9f632999e6644a1748e676d34435f68768f1e2bea82acb361a85",
-          "nonce": "0x00d71f325e5f9eb2d0fdc32eb653ffe0eec3a05cfffb69a9ec2d0857acde259b",
+          "commitmentCprime": "0x6f04aa3f66310cc55776898ac7dff22636ef4b13b51c1453a4181b89bae3ca73",
+          "nonce": "0x3c615f51f2d202859c324418aac5e8b35bb3740ac700e93bf93f95bf43558f92",
           "guardWouldAllow": true
         }
       },
@@ -174,27 +179,31 @@
         "B0": {
           "detected": false,
           "prevented": false,
-          "note": "Valid settlement; nothing to detect."
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B1": {
           "detected": false,
           "prevented": false,
-          "note": "Valid settlement; nothing to detect."
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B2": {
           "detected": false,
           "prevented": false,
-          "note": "Valid settlement; R17 passes."
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B3": {
           "detected": false,
           "prevented": false,
           "failedRules": [],
-          "note": "Live B3: valid settlement (happy path)."
+          "note": "Valid delegated settlement — nothing to detect.",
+          "outcome": "EXPLOITED"
         }
       },
       "metrics": {
-        "verifyLatencyMs": 10.327332999999996,
+        "verifyLatencyMs": 14.99860000000001,
         "eventCount": 7,
         "storageBytesEstimate": 3676
       }
@@ -249,6 +258,9 @@
           "R14_DELIVERY_AFTER_SETTLEMENT": {
             "ok": true
           },
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT": {
+            "ok": true
+          },
           "R15_TASK_HASH_MATCHES": {
             "ok": true
           },
@@ -276,6 +288,7 @@
             "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
             "R13_ASSET_ALLOWED",
             "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R14b_DELIVERY_BOUND_TO_SETTLEMENT",
             "R15_TASK_HASH_MATCHES",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
@@ -283,12 +296,12 @@
             "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
-          "clbCommitment": "0x8cd7e4645d63d249ade4023d14729c820b920284d74931f633f0235deba9a82a",
-          "settlementTxHash": "0x869aff192e715b59b83be52f05f601ae1ca3c05ce4e7277222edac25db885782",
-          "traceMerkleRoot": "0x0f88f2f9f7565b630226629c0b236faad704938f1e6527a8d90e688b85b5acb3",
+          "clbCommitment": "0xfb69510be8bbc6e33a92e07c41ab3a64d30609a8412f829d4f280b5b86a51479",
+          "settlementTxHash": "0x045000fa757bf37610078de5aa754424ef9cb7a73dca27ad94de737522cf9900",
+          "traceMerkleRoot": "0x5ecd7a0b84639750145c98b9cc898f55be7f18cdb204c5658464b9c6d56faa54",
           "verifierVersion": "verifier-1.0.0",
-          "createdAt": "2026-05-31T07:59:23.295Z",
-          "certificateHash": "0x1d587220861804b0e4a47dc97964c282bfea079626c2dc2a4dba9720c89877bb"
+          "createdAt": "2026-11-24T21:26:25.521Z",
+          "certificateHash": "0x6ac51516b5150b5865435d95d4d33a6fe26eb56f6f3cb264c4d600193dd4c28a"
         },
         "result": {
           "traceId": "trace-predicate-payee",
@@ -298,10 +311,11 @@
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
           "warnings": [],
-          "certificateHash": "0x1d587220861804b0e4a47dc97964c282bfea079626c2dc2a4dba9720c89877bb",
-          "checkedAt": "2026-05-31T07:59:23.295Z",
+          "certificateHash": "0x6ac51516b5150b5865435d95d4d33a6fe26eb56f6f3cb264c4d600193dd4c28a",
+          "checkedAt": "2026-11-24T21:26:25.521Z",
           "mode": "MODE_B_PREDICATE"
-        }
+        },
+        "readPlaintextAmount": true
       },
       "expectedFailedRules": [
         "R17_PREDICATE_TRUE_FOR_MODE_B",
@@ -358,8 +372,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0xf3dd7a56ddde07c10ce5a0f4d633d79e48a0c104766b1d0001c0af1dddaf6cf7",
-          "nonce": "0xc39df4b462d98284dc6079a3b8b2f760bb4c3a80065cefc062db7e55418fa0d9",
+          "commitmentCprime": "0x18ec98c8972300b4a04107e9c8a0b81b3cac9bad2a81401e3546c18ff0c984d5",
+          "nonce": "0x8bb772268fd711e22c4769a9cd94f74bda142ecf6b8d4f80258b8cd42d2675dc",
           "guardWouldAllow": true
         },
         "violatedTrace": {
@@ -385,8 +399,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0x8cd7e4645d63d249ade4023d14729c820b920284d74931f633f0235deba9a82a",
-          "nonce": "0xe71ab7bf518de491e39d49f53511e74198eb6e43adcef116393ee0193329a1ef",
+          "commitmentCprime": "0xfb69510be8bbc6e33a92e07c41ab3a64d30609a8412f829d4f280b5b86a51479",
+          "nonce": "0xc88465d82f0ea9e9907a4fae6a1890680878d51cfe4e9cad50cd04c26bdb07f4",
           "guardWouldAllow": false
         }
       },
@@ -394,17 +408,20 @@
         "B0": {
           "detected": false,
           "prevented": false,
-          "note": "Vanilla x402 has no predicate enforcement."
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B1": {
-          "detected": false,
+          "detected": true,
           "prevented": false,
-          "note": "AP2 INTENT without C' binding or guard."
+          "note": "Rejected: PAYEE_NOT_ALLOWED",
+          "outcome": "DETECTED"
         },
         "B2": {
           "detected": true,
           "prevented": false,
-          "note": "Audit-only detects post-settlement: payee outside allowedPayees"
+          "note": "Rejected: PAYEE_OUT_OF_CONTEXT",
+          "outcome": "DETECTED"
         },
         "B3": {
           "detected": true,
@@ -413,11 +430,12 @@
             "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
-          "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+          "note": "Prevented by the predicate guard before any transfer (R17).",
+          "outcome": "PREVENTED"
         }
       },
       "metrics": {
-        "verifyLatencyMs": 4.4455409999999915,
+        "verifyLatencyMs": 8.7192,
         "eventCount": 7,
         "storageBytesEstimate": 3676
       }
@@ -472,6 +490,9 @@
           "R14_DELIVERY_AFTER_SETTLEMENT": {
             "ok": true
           },
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT": {
+            "ok": true
+          },
           "R15_TASK_HASH_MATCHES": {
             "ok": true
           },
@@ -499,6 +520,7 @@
             "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
             "R13_ASSET_ALLOWED",
             "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R14b_DELIVERY_BOUND_TO_SETTLEMENT",
             "R15_TASK_HASH_MATCHES",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
@@ -506,12 +528,12 @@
             "R11_AMOUNT_WITHIN_MANDATE",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
-          "clbCommitment": "0x6fca6fd15b326b4c4259d2a9bc71e606949f5d37bee6d12d4413b8d84235d5af",
-          "settlementTxHash": "0x5e19b49ad31ca1d2b14366ea846b5288ecc5209a503c5f6ecda4538f87315ad5",
-          "traceMerkleRoot": "0x628d8c1acb53f61fabcce9b4795e18a48498180b597dbc41482b467c2a3c2049",
+          "clbCommitment": "0xa8f6c4c1a030b5b4f53c857c493200b9a6495ccf88d73635b5deaad633039bef",
+          "settlementTxHash": "0x463f585460ac7a006d12bc1f8150f46e4ebb8509b7ba60bcf9dbb1a60c489034",
+          "traceMerkleRoot": "0xd32af6fe529ff35dd9bd7886646f343261a96e88a19d335b502af6bbe901ff91",
           "verifierVersion": "verifier-1.0.0",
-          "createdAt": "2026-05-31T07:59:23.306Z",
-          "certificateHash": "0x6d10433e5975a56cd7c0b983214659b02d6f90ca23d02ba3756da65c0a974d23"
+          "createdAt": "2026-11-24T21:26:25.552Z",
+          "certificateHash": "0x718bf14f01d8ffb2f1b27921d312557c5c62ecdf829065947d0b8611960e4f45"
         },
         "result": {
           "traceId": "trace-predicate-amount",
@@ -521,10 +543,11 @@
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
           "warnings": [],
-          "certificateHash": "0x6d10433e5975a56cd7c0b983214659b02d6f90ca23d02ba3756da65c0a974d23",
-          "checkedAt": "2026-05-31T07:59:23.306Z",
+          "certificateHash": "0x718bf14f01d8ffb2f1b27921d312557c5c62ecdf829065947d0b8611960e4f45",
+          "checkedAt": "2026-11-24T21:26:25.552Z",
           "mode": "MODE_B_PREDICATE"
-        }
+        },
+        "readPlaintextAmount": true
       },
       "expectedFailedRules": [
         "R17_PREDICATE_TRUE_FOR_MODE_B",
@@ -581,8 +604,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0x6ab37632165a9a93c89ce6b6b5921bf1b7ebb2731bd860929f3692f818968149",
-          "nonce": "0x4aaf68a2119b593dd8d5d79a2b3f7ec13fe4514419ff69aea7de81a8e3b90efe",
+          "commitmentCprime": "0xe56002eecae4c1143c41c6d7e46ed16fdeb52f37b3039310d7dbbfc6d58e828f",
+          "nonce": "0xcd5423c7eb228be92a05bee8342583fea52d0badb96650a08377527422c03330",
           "guardWouldAllow": true
         },
         "violatedTrace": {
@@ -608,8 +631,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0x6fca6fd15b326b4c4259d2a9bc71e606949f5d37bee6d12d4413b8d84235d5af",
-          "nonce": "0x46bbc89e32ac3bc0e5a86e634a467325e3288840eec3c173b61e60aabd821d2c",
+          "commitmentCprime": "0xa8f6c4c1a030b5b4f53c857c493200b9a6495ccf88d73635b5deaad633039bef",
+          "nonce": "0xcd437b01f5f625675da02b1ea6d1eac714dc004a79448bd4b3db9a9847d30a4a",
           "guardWouldAllow": false
         }
       },
@@ -617,17 +640,20 @@
         "B0": {
           "detected": false,
           "prevented": false,
-          "note": "Vanilla x402 has no predicate enforcement."
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B1": {
-          "detected": false,
-          "prevented": false,
-          "note": "AP2 INTENT without C' binding or guard."
-        },
-        "B2": {
           "detected": true,
           "prevented": false,
-          "note": "Audit-only detects post-settlement: value exceeds maxValue"
+          "note": "Rejected: AMOUNT_EXCEEDS_MANDATE",
+          "outcome": "DETECTED"
+        },
+        "B2": {
+          "detected": false,
+          "prevented": false,
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B3": {
           "detected": true,
@@ -636,11 +662,12 @@
             "R11_AMOUNT_WITHIN_MANDATE",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
-          "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+          "note": "Prevented by the predicate guard before any transfer (R17).",
+          "outcome": "PREVENTED"
         }
       },
       "metrics": {
-        "verifyLatencyMs": 4.24283299999999,
+        "verifyLatencyMs": 8.20659999999998,
         "eventCount": 7,
         "storageBytesEstimate": 3683
       }
@@ -695,6 +722,9 @@
           "R14_DELIVERY_AFTER_SETTLEMENT": {
             "ok": true
           },
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT": {
+            "ok": true
+          },
           "R15_TASK_HASH_MATCHES": {
             "ok": true
           },
@@ -722,6 +752,7 @@
             "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
             "R13_ASSET_ALLOWED",
             "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R14b_DELIVERY_BOUND_TO_SETTLEMENT",
             "R15_TASK_HASH_MATCHES",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
@@ -729,12 +760,12 @@
             "R13_ASSET_ALLOWED",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
-          "clbCommitment": "0xc2a6d699c7638c2bd64dbbb14ff82831ec7c1d2ba2e6b6acc82714116973020d",
-          "settlementTxHash": "0xd4330b337ce20a3601324967a9f99ecfe968fe2843490b335605f6628e8cb069",
-          "traceMerkleRoot": "0xe2cee8854b8905f3c1f84e9a45bdcdec7548b6fc40740bfdf9805015ff8c9313",
+          "clbCommitment": "0xca9fe4ab8fb29ae3177e7b0ec59072a01a3d41dca0d4590feb9b91e8ddf3167c",
+          "settlementTxHash": "0xe06258c02544c2187de90e4a89ebe344d2414c147e4a5ed83452a96108c3f803",
+          "traceMerkleRoot": "0x821514da94fa12afb935dde6fa1cefa6342baf2cacda9cbf14f6ec4be22e90ee",
           "verifierVersion": "verifier-1.0.0",
-          "createdAt": "2026-05-31T07:59:23.321Z",
-          "certificateHash": "0xf1e638b743369b9c2ac35499813c09730d666c2b85c9e31b68558789da07b7e6"
+          "createdAt": "2026-11-24T21:26:25.580Z",
+          "certificateHash": "0xac610e651c47740cc052e5d4ccbddf7a5d70dfd446ad47fdb38ac48ddf5bb2ff"
         },
         "result": {
           "traceId": "trace-predicate-asset",
@@ -744,10 +775,11 @@
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
           "warnings": [],
-          "certificateHash": "0xf1e638b743369b9c2ac35499813c09730d666c2b85c9e31b68558789da07b7e6",
-          "checkedAt": "2026-05-31T07:59:23.321Z",
+          "certificateHash": "0xac610e651c47740cc052e5d4ccbddf7a5d70dfd446ad47fdb38ac48ddf5bb2ff",
+          "checkedAt": "2026-11-24T21:26:25.580Z",
           "mode": "MODE_B_PREDICATE"
-        }
+        },
+        "readPlaintextAmount": true
       },
       "expectedFailedRules": [
         "R17_PREDICATE_TRUE_FOR_MODE_B",
@@ -804,8 +836,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0xa1483d522bec01a0e12fa35a0b99798276c1c53033595156ec49bab70c9575c0",
-          "nonce": "0x79bb77a979b2b1051d8b5cc1a2c3a2c506a36cdbdcba781c28ca75b719b86599",
+          "commitmentCprime": "0x7d4d06505399cd5c722b21517605cdde1b164986536d442a66fc51660c7b2abe",
+          "nonce": "0x90ca6b63161e30e59a67e8de5312bc8c0130bcac04b11018960cbf1a881a31bb",
           "guardWouldAllow": true
         },
         "violatedTrace": {
@@ -831,8 +863,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0xc2a6d699c7638c2bd64dbbb14ff82831ec7c1d2ba2e6b6acc82714116973020d",
-          "nonce": "0x1cdc9c6bafbba2e414be9f097002ebb74823e15301a2f5863fedf723dec73f5d",
+          "commitmentCprime": "0xca9fe4ab8fb29ae3177e7b0ec59072a01a3d41dca0d4590feb9b91e8ddf3167c",
+          "nonce": "0x7559703936775f494dc946f7b093a13b3e4a2247da48c58c8232345e01ea6c17",
           "guardWouldAllow": false
         }
       },
@@ -840,17 +872,20 @@
         "B0": {
           "detected": false,
           "prevented": false,
-          "note": "Vanilla x402 has no predicate enforcement."
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B1": {
-          "detected": false,
-          "prevented": false,
-          "note": "AP2 INTENT without C' binding or guard."
-        },
-        "B2": {
           "detected": true,
           "prevented": false,
-          "note": "Audit-only detects post-settlement: asset not in allowedAssets"
+          "note": "Rejected: ASSET_NOT_ALLOWED",
+          "outcome": "DETECTED"
+        },
+        "B2": {
+          "detected": false,
+          "prevented": false,
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B3": {
           "detected": true,
@@ -859,11 +894,12 @@
             "R13_ASSET_ALLOWED",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
-          "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+          "note": "Prevented by the predicate guard before any transfer (R17).",
+          "outcome": "PREVENTED"
         }
       },
       "metrics": {
-        "verifyLatencyMs": 4.527375000000006,
+        "verifyLatencyMs": 10.028200000000027,
         "eventCount": 7,
         "storageBytesEstimate": 3676
       }
@@ -917,6 +953,9 @@
           "R14_DELIVERY_AFTER_SETTLEMENT": {
             "ok": true
           },
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT": {
+            "ok": true
+          },
           "R15_TASK_HASH_MATCHES": {
             "ok": true
           },
@@ -944,18 +983,19 @@
             "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
             "R13_ASSET_ALLOWED",
             "R14_DELIVERY_AFTER_SETTLEMENT",
+            "R14b_DELIVERY_BOUND_TO_SETTLEMENT",
             "R15_TASK_HASH_MATCHES",
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
           "failedRules": [
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
-          "clbCommitment": "0x1c120d4a5f201d16bbba098aefc63c662d524185fbe4a46e362e41b9702c580b",
-          "settlementTxHash": "0x0c7e093d1acbf01aebd08750c0d9a9ce13e619d5159a0933e02162227c57ef59",
-          "traceMerkleRoot": "0xfc107ecc4cbd8968f6ad20a0e4e5538143d7c0a1ce30c5d1f6e9e40019f42275",
+          "clbCommitment": "0x543cf1580e4480117a307ed265bc077b229cfe4c0ef5e9e0cd352802f06fa370",
+          "settlementTxHash": "0x12c19a2a5d34dfab31f4bd1f5438476fd4d7ef42ec92966f9b3885723493a08f",
+          "traceMerkleRoot": "0xabad676fdbd70473f68e4e5926072ce5ab50c15aa1fe02d5f22b7fdb816319f1",
           "verifierVersion": "verifier-1.0.0",
-          "createdAt": "2026-05-31T07:59:23.331Z",
-          "certificateHash": "0xb3dcbcc53b1a26e5a8d8f7f68acda655f246d04230f17b4a448f84627e778a1f"
+          "createdAt": "2026-11-24T21:26:25.608Z",
+          "certificateHash": "0x64a425e03d075b98ebd90d7e442a593c6cc8afe23d9811c48ad9bbe9a920e7dc"
         },
         "result": {
           "traceId": "trace-predicate-expired",
@@ -964,10 +1004,11 @@
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
           "warnings": [],
-          "certificateHash": "0xb3dcbcc53b1a26e5a8d8f7f68acda655f246d04230f17b4a448f84627e778a1f",
-          "checkedAt": "2026-05-31T07:59:23.331Z",
+          "certificateHash": "0x64a425e03d075b98ebd90d7e442a593c6cc8afe23d9811c48ad9bbe9a920e7dc",
+          "checkedAt": "2026-11-24T21:26:25.608Z",
           "mode": "MODE_B_PREDICATE"
-        }
+        },
+        "readPlaintextAmount": true
       },
       "expectedFailedRules": [
         "R17_PREDICATE_TRUE_FOR_MODE_B"
@@ -1022,8 +1063,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0xf71108f1492851304898b7fa9517c0e3e9b6eb13db6360854264664d72ea2d8b",
-          "nonce": "0xce5b4c8d237d2d8516a08cad0e185e471b26c9b6a11c76319e8b873f0dc16a2a",
+          "commitmentCprime": "0xa9037737e75bcfaa6dc335306dd2c4098b024764ee9bdbbd1524280dcd86684a",
+          "nonce": "0x76af52fa4c0b9646cb409bed3b6fd746649650af22d76a02035cfe7e9197da1c",
           "guardWouldAllow": true
         },
         "violatedTrace": {
@@ -1049,8 +1090,8 @@
             "validBefore": "2026-12-30T06:00:00.000Z"
           },
           "settledAt": "2026-05-30T05:00:05.000Z",
-          "commitmentCprime": "0x1c120d4a5f201d16bbba098aefc63c662d524185fbe4a46e362e41b9702c580b",
-          "nonce": "0xca8bc9055cbb3b5fc2b4a441e0329fdce55af370b39c0d84019e71f2f428b566",
+          "commitmentCprime": "0x543cf1580e4480117a307ed265bc077b229cfe4c0ef5e9e0cd352802f06fa370",
+          "nonce": "0x7f60f15e4eae2e8be3d25a936bf243c39c1be58b083e45f49cc1dfa228574bea",
           "guardWouldAllow": false
         }
       },
@@ -1058,17 +1099,20 @@
         "B0": {
           "detected": false,
           "prevented": false,
-          "note": "Vanilla x402 has no predicate enforcement."
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B1": {
           "detected": false,
           "prevented": false,
-          "note": "AP2 INTENT without C' binding or guard."
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
         },
         "B2": {
           "detected": true,
           "prevented": false,
-          "note": "Audit-only detects post-settlement: settlement after validUntil"
+          "note": "Rejected: CONTEXT_EXPIRED",
+          "outcome": "DETECTED"
         },
         "B3": {
           "detected": true,
@@ -1076,11 +1120,12 @@
           "failedRules": [
             "R17_PREDICATE_TRUE_FOR_MODE_B"
           ],
-          "note": "Live B3 prevented at predicate guard; R17 audits the trace."
+          "note": "Prevented by the predicate guard before any transfer (R17).",
+          "outcome": "PREVENTED"
         }
       },
       "metrics": {
-        "verifyLatencyMs": 4.2254999999999825,
+        "verifyLatencyMs": 9.426499999999976,
         "eventCount": 7,
         "storageBytesEstimate": 3690
       }
@@ -1091,17 +1136,20 @@
       "B0": {
         "detected": false,
         "prevented": false,
-        "note": "Valid settlement; nothing to detect."
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B1": {
         "detected": false,
         "prevented": false,
-        "note": "Valid settlement; nothing to detect."
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B2": {
         "detected": false,
         "prevented": false,
-        "note": "Valid settlement; R17 passes."
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B3": {
         "detected": false,
@@ -1114,17 +1162,20 @@
       "B0": {
         "detected": false,
         "prevented": false,
-        "note": "Vanilla x402 has no predicate enforcement."
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B1": {
-        "detected": false,
+        "detected": true,
         "prevented": false,
-        "note": "AP2 INTENT without C' binding or guard."
+        "note": "Rejected: PAYEE_NOT_ALLOWED",
+        "outcome": "DETECTED"
       },
       "B2": {
         "detected": true,
         "prevented": false,
-        "note": "Audit-only detects post-settlement: payee outside allowedPayees"
+        "note": "Rejected: PAYEE_OUT_OF_CONTEXT",
+        "outcome": "DETECTED"
       },
       "B3": {
         "detected": true,
@@ -1140,17 +1191,20 @@
       "B0": {
         "detected": false,
         "prevented": false,
-        "note": "Vanilla x402 has no predicate enforcement."
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B1": {
-        "detected": false,
-        "prevented": false,
-        "note": "AP2 INTENT without C' binding or guard."
-      },
-      "B2": {
         "detected": true,
         "prevented": false,
-        "note": "Audit-only detects post-settlement: value exceeds maxValue"
+        "note": "Rejected: AMOUNT_EXCEEDS_MANDATE",
+        "outcome": "DETECTED"
+      },
+      "B2": {
+        "detected": false,
+        "prevented": false,
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B3": {
         "detected": true,
@@ -1166,17 +1220,20 @@
       "B0": {
         "detected": false,
         "prevented": false,
-        "note": "Vanilla x402 has no predicate enforcement."
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B1": {
-        "detected": false,
-        "prevented": false,
-        "note": "AP2 INTENT without C' binding or guard."
-      },
-      "B2": {
         "detected": true,
         "prevented": false,
-        "note": "Audit-only detects post-settlement: asset not in allowedAssets"
+        "note": "Rejected: ASSET_NOT_ALLOWED",
+        "outcome": "DETECTED"
+      },
+      "B2": {
+        "detected": false,
+        "prevented": false,
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B3": {
         "detected": true,
@@ -1192,17 +1249,20 @@
       "B0": {
         "detected": false,
         "prevented": false,
-        "note": "Vanilla x402 has no predicate enforcement."
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B1": {
         "detected": false,
         "prevented": false,
-        "note": "AP2 INTENT without C' binding or guard."
+        "note": "Accepted the attacked trace — attack missed.",
+        "outcome": "EXPLOITED"
       },
       "B2": {
         "detected": true,
         "prevented": false,
-        "note": "Audit-only detects post-settlement: settlement after validUntil"
+        "note": "Rejected: CONTEXT_EXPIRED",
+        "outcome": "DETECTED"
       },
       "B3": {
         "detected": true,

@@ -10,6 +10,7 @@ import {
   type VerifyTraceOutput,
 } from "@clb-acel/verifier-core";
 import Fastify, { type FastifyBaseLogger } from "fastify";
+import type { Address } from "viem";
 
 type BuildVerifierServerOptions = {
   logger?: boolean | FastifyBaseLogger;
@@ -30,7 +31,32 @@ function validationRegistryFromEnv(): ValidationRegistry {
   });
 }
 
-const bundleBodySchema = { type: "object", additionalProperties: true } as const;
+const bundleBodySchema = {
+  type: "object",
+  additionalProperties: true,
+  properties: {
+    /** Independently anchored human signer; never read from bundle.mandate. */
+    expectedHumanPrincipal: { type: "string", pattern: "^0x[0-9a-fA-F]{40}$" },
+  },
+} as const;
+
+/**
+ * Demo anchor for local/CI callers that predate this field. In a real deployment
+ * set VERIFIER_HUMAN_PRINCIPAL (or pass an injected anchor) from the human
+ * registry; the value below is the address of the fixtures' honest test signer,
+ * not anything read out of the submitted bundle.
+ */
+const DEMO_HUMAN_PRINCIPAL = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" as Address;
+
+function resolveHumanPrincipal(body: unknown): Address {
+  const configured = process.env.VERIFIER_HUMAN_PRINCIPAL?.trim();
+  const fromBody = (body as { expectedHumanPrincipal?: unknown } | null)?.expectedHumanPrincipal;
+  const candidate = configured ?? (typeof fromBody === "string" ? fromBody : undefined);
+  if (candidate && /^0x[0-9a-fA-F]{40}$/u.test(candidate)) {
+    return candidate as Address;
+  }
+  return DEMO_HUMAN_PRINCIPAL;
+}
 
 function getTraceId(params: unknown): string {
   const traceId = (params as { traceId?: unknown }).traceId;
@@ -57,8 +83,13 @@ export async function buildVerifierServer(options: BuildVerifierServerOptions = 
     { schema: { summary: "Verify a trace bundle and store its certificate", body: bundleBodySchema } },
     async (request, reply) => {
       const traceId = getTraceId(request.params);
-      const bundle = { ...(request.body as TraceBundle), traceId };
-      const output = await verifyTrace(bundle);
+      const expectedHumanPrincipal = resolveHumanPrincipal(request.body);
+      const { expectedHumanPrincipal: _anchor, ...bundleBody } = (request.body ?? {}) as TraceBundle & {
+        expectedHumanPrincipal?: string;
+      };
+      void _anchor;
+      const bundle = { ...bundleBody, traceId };
+      const output = await verifyTrace(bundle, { expectedHumanPrincipal });
       store.set(traceId, output);
 
       // On PASS, emit a validation entry via the selected adapter. On FAIL, emit nothing.

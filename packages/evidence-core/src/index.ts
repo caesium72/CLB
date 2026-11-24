@@ -50,6 +50,11 @@ export function canonicalJson(value: unknown): string {
   return JSON.stringify(normalize(value));
 }
 
+/** keccak256 over the canonical JSON encoding; shared by causal commitments. */
+export function keccakCanonical(value: unknown): `0x${string}` {
+  return keccakHex(canonicalJson(value));
+}
+
 function keccakHex(input: string | Uint8Array): `0x${string}` {
   const bytes = typeof input === "string" ? new TextEncoder().encode(input) : input;
   return `0x${bytesToHex(keccak_256(bytes))}`;
@@ -59,10 +64,13 @@ function strip0x(hex: string): string {
   return hex.startsWith("0x") ? hex.slice(2) : hex;
 }
 
+/**
+ * Hash the WHOLE event, including `signature`. Excluding it let an attacker
+ * swap an event's signature without changing its hash, chain link or Merkle
+ * leaf. Unicode/canonical ordering is handled by `canonicalJson`.
+ */
 export function hashEvidenceEvent(event: EvidenceEvent): `0x${string}` {
-  const { signature: _signature, ...eventWithoutSignature } = event;
-  void _signature;
-  return keccakHex(canonicalJson(eventWithoutSignature));
+  return keccakHex(canonicalJson(event));
 }
 
 export function linkEvidenceEvents(events: EvidenceEvent[]): EvidenceEvent[] {
@@ -118,6 +126,119 @@ export function buildMerkleRoot(eventHashes: string[]): `0x${string}` {
   }
 
   return `0x${bytesToHex(root)}`;
+}
+
+/** Membership proof using the same binary keccak(left‖right) + duplicate-last encoding as `buildMerkleRoot`. */
+export type MerkleProof = {
+  leaf: `0x${string}`;
+  index: number;
+  leafCount: number;
+  siblings: `0x${string}`[];
+};
+
+export function buildMerkleProof(eventHashes: string[], index: number): MerkleProof {
+  if (!Number.isInteger(index) || index < 0 || index >= eventHashes.length) {
+    throw new Error("Merkle proof index out of range");
+  }
+  const leaves = eventHashes.map((hash) => hexToBytes(strip0x(hash)));
+  let level = leaves;
+  let cursor = index;
+  const siblings: `0x${string}`[] = [];
+
+  while (level.length > 1) {
+    const pairIndex = cursor % 2 === 0 ? cursor + 1 : cursor - 1;
+    // Mirrors `right = level[index + 1] ?? left` in buildMerkleRoot.
+    const sibling = level[pairIndex] ?? level[cursor];
+    if (!sibling) throw new Error("Invalid Merkle level");
+    siblings.push(`0x${bytesToHex(sibling)}`);
+
+    const nextLevel: Uint8Array[] = [];
+    for (let i = 0; i < level.length; i += 2) {
+      const left = level[i];
+      const right = level[i + 1] ?? left;
+      if (!left || !right) throw new Error("Invalid Merkle level");
+      nextLevel.push(keccak_256(new Uint8Array([...left, ...right])));
+    }
+    level = nextLevel;
+    cursor = Math.floor(cursor / 2);
+  }
+
+  return {
+    leaf: `0x${bytesToHex(leaves[index]!)}`,
+    index,
+    leafCount: eventHashes.length,
+    siblings,
+  };
+}
+
+export function verifyMerkleProof(root: string, proof: MerkleProof): boolean {
+  try {
+    if (
+      !Number.isInteger(proof.index) ||
+      proof.index < 0 ||
+      proof.index >= proof.leafCount ||
+      proof.leafCount <= 0
+    ) {
+      return false;
+    }
+    if (proof.siblings.length !== Math.ceil(Math.log2(proof.leafCount))) return false;
+    let hash = hexToBytes(strip0x(proof.leaf));
+    if (hash.length !== 32) return false;
+    let index = proof.index;
+    for (const siblingHex of proof.siblings) {
+      const sibling = hexToBytes(strip0x(siblingHex));
+      if (sibling.length !== 32) return false;
+      hash =
+        index % 2 === 0
+          ? keccak_256(new Uint8Array([...hash, ...sibling]))
+          : keccak_256(new Uint8Array([...sibling, ...hash]));
+      index = Math.floor(index / 2);
+    }
+    return strip0x(`0x${bytesToHex(hash)}`).toLowerCase() === strip0x(root).toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Structural completeness audit for an event set produced by an untrusted agent.
+ *
+ * A hash chain and Merkle root bind events to EACH OTHER; they cannot prove that
+ * the set is complete. This check covers only the cheap structural part: event
+ * ids are unique and every object type required by the mandate/policy is
+ * present. It does NOT prove authenticity or that a present event is genuine —
+ * only comparing the Merkle root with a trusted external anchor does that.
+ */
+export type EvidenceSetAudit = {
+  ok: boolean;
+  reasons: string[];
+};
+
+export function auditEvidenceEventSet(
+  events: EvidenceEvent[],
+  requiredObjectTypes: readonly string[] = [],
+): EvidenceSetAudit {
+  const reasons: string[] = [];
+  if (events.length === 0) {
+    reasons.push("NO_EVENTS");
+  }
+
+  const seenIds = new Set<string>();
+  for (const event of events) {
+    if (seenIds.has(event.eventId)) {
+      reasons.push(`DUPLICATE_EVENT_ID:${event.eventId}`);
+    }
+    seenIds.add(event.eventId);
+  }
+
+  const presentTypes = new Set(events.map((event) => event.objectType));
+  for (const type of requiredObjectTypes) {
+    if (!presentTypes.has(type)) {
+      reasons.push(`MISSING_REQUIRED_OBJECT_TYPE:${type}`);
+    }
+  }
+
+  return { ok: reasons.length === 0, reasons };
 }
 
 const nodeTypeByObjectType: Record<string, EvidenceNode> = {
@@ -248,3 +369,7 @@ export function buildEvidenceGraph(events: EvidenceEvent[]): EvidenceGraph {
     edges,
   };
 }
+
+// Causal delegation / execution provenance (Novelty 3).
+export * from "./causal";
+

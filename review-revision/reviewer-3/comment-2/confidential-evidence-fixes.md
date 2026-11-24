@@ -1,0 +1,51 @@
+# R3-C2 security fixes — confidential commitments, evidence integrity, R10 chain binding
+
+Scope: owned files only. No manuscript, manifests, scripts, experiments, existing tests, or other source files were changed.
+
+## Changes made
+
+| File | Change |
+|---|---|
+| `packages/clb-core/src/confidential.ts` | `commitConfidential` now throws on `valueAtomic < 0 \|\| valueAtomic >= 2^64` (explicit, not modular). `RangeProof` gains `valueBits`: a second independent 64-bit Borromean-style proof that `Σ2^i·valueBits[i].C = (2^64−1)·G − C`, i.e. the committed value is a non-negative 64-bit integer. `verifyConfidential` requires **both** aggregate equations and all 128 bit OR-proofs, so a forged commitment to a negative value (Pedersen opens to `value mod n`) is rejected without ever seeing the plaintext. Extracted the shared proof builder into `proveUpperBound` / `aggregateMatches`. |
+| `packages/evidence-core/src/index.ts` | `hashEvidenceEvent` hashes the **whole** event including `signature` (was excluded). Added `MerkleProof`, `buildMerkleProof`, `verifyMerkleProof` using the same `keccak256(left‖right)` + duplicate-last encoding and tree depth as `buildMerkleRoot`. |
+| `packages/verifier-core/src/index.ts` | `checkChainDomain` Mode B now requires `clb.domain.chainId` to equal concrete/settlement/payerAgent/identityRef chains (G4). R11 confidential path derives the cap from `bundle.mandate.constraints.maxAmount` (`parseUnits(...,6)`, the same conversion as `settlementParamsFromExact`); `confidential.maxValueAtomic` may only **tighten** that cap, never inflate it, and malformed/missing signed caps fail closed. R1 now rejects malformed (non-65-byte-hex) event signatures and binds them through the event hash. No changes to R2/R5 anchor logic, `modeBCommitmentInputOf`, or the certificate shape. |
+| New tests | `confidential-security-fix.test.ts` (10), `evidence-security-fix.test.ts` (5), `r10-domain-chain.test.ts` (6) — 21 tests, 92 assertions, all pass. |
+
+## Per-gap status
+
+| ID | Sev | Status | Evidence |
+|---|---|---|---|
+| GAP-1 negative value verifies | HIGH | **FIXED** | Generation throws for `-1`, `-1000`, `−2^32`, `2^64`. New tests forge commitments `C0 − k·G` against the old upper-bound proof (the old attack still satisfies statement 1) and assert full verification returns `false` via `valueBits`. |
+| GAP-2 bundle-authored cap | HIGH | **FIXED** | Signed cap = `mandateDigest`-covered `constraints.maxAmount` (populated from predicate `maxValue` by `issueMandate` in Mode B). Effective cap = `min(signed, declared)`. Test: inflated `90_000000` cap with value `9_000000` now fails R11 against signed `5_000000`; missing signed cap fails closed. |
+| G4 Mode B domain chain | HIGH | **FIXED** | Honest Mode B passes R10; transplanting `clb.domain.chainId` to 8453 fails R10 with a domain-specific detail. |
+| GAP-4 signature outside hash | MEDIUM | **FIXED (binding) / PARTIAL (authenticity)** | Signature is inside the event hash; signature swap changes hash, link and Merkle root; R1 checks well-formed 65-byte signature. **Residual MEDIUM:** no ECDSA recovery against an actor key — fixture signatures are placeholders (`0x11…`) and events have no signer address, so authenticity cannot be checked without a schema/signer binding (not owned here). |
+| GAP-5 self-referential recompute | MEDIUM | **NOT FIXED — residual MEDIUM** | Cannot be fixed without a secret or a trusted external anchor. `recomputeEvidenceIntegrity` (attack-core, not owned) can rebuild hashes/root for any edited event set, and R1 only checks internal consistency. No fake fix applied. |
+| GAP-6 on-chain anchor in verifier/certificate | MEDIUM | **NOT DONE — residual MEDIUM** | `TraceBundle` has no anchor tx/root/hash fields and `VerificationCertificate` is schema-owned (not owned here). There is nothing in the bundle to put into the certificate. Requires threading an anchor reference + reading the anchored root from `AgenticAuditAnchor` into the verifier options/bundle first. |
+| GAP-7 no Merkle proof API | MEDIUM | **FIXED** | `buildMerkleProof` / `verifyMerkleProof` added; tests cover all indices for 1–5 leaves, odd duplication, wrong root/leaf/index/depth. |
+| GAP-8 injectable RNG | LOW | **Residual LOW (out of scope)** | `rng` option retained for deterministic tests; production defaults to CSPRNG. Renaming/gating it would break existing test callers. |
+| GAP-3 unchecked proof version | LOW | **Residual LOW** | Not changed: an existing test asserts a relabelled version still verifies; fixing it requires regenerating that test. |
+
+## Test results
+
+```
+bun test <3 new files>   -> 21 pass / 0 fail / 92 expect() calls
+bun run typecheck        -> exit 0 (tsc --build, no diagnostics)
+bun test (full suite)    -> 325 pass / 2 skip / 7 fail (334 tests, 59 files)
+```
+
+The 7 full-suite failures are **stale assertions in files outside my ownership**; they encode the pre-fix vulnerable behaviour and must be regenerated by their owner. None is a failure of the new tests:
+
+1. `packages/clb-core/test/confidential-adversarial.test.ts:100` — "in-range and below-cap values verify" now exceeds the 5 s per-test budget (proof is ~2× larger/slower). Split the test or raise its timeout.
+2. `packages/clb-core/test/confidential-adversarial.test.ts:116` — "oversized values ... rejected by verification, not at generation" expects `commit(2^64)` not to throw; new spec requires a throw.
+3. `packages/clb-core/test/confidential-adversarial.test.ts:124` — "GAP-1 (HIGH): NEGATIVE values produce VERIFYING proofs" expects `true` for `-1`, `-1000`, `−2^32`; invert it.
+4. `packages/clb-core/test/confidential.test.ts:25` — `expect(JSON.stringify(onchain).toLowerCase()).not.toContain("beef")` now collides with random hex in the doubled proof (deterministic seed `0xc0ffee`, collision is in `valueBits`/`bits`, not in `payeeCommitment`). Regenerate against a specific payee digest instead of a raw substring of the whole proof.
+5. `packages/evidence-core/test/evidence-core.test.ts:44` — expects two events with different signatures to hash equal. Invert to expect inequality.
+6. `packages/evidence-core/test/evidence-integrity-adversarial.test.ts:171` — "GAP-DOC: event signature is excluded" expects a signature swap to leave hash/chain intact. Invert it.
+7. `packages/evidence-core/test/evidence-integrity-adversarial.test.ts:222` — asserts the exact 6-symbol export list; update to include `buildMerkleProof` and `verifyMerkleProof`.
+
+## Honest costs / limits
+
+- **Proof size and time doubled** (~24 KB → ~48 KB, ~335 ms → ~670 ms per commit/verify). `DECISIONS.md` / `experiments/benchmarks/phase7-confidential.json` still cite the old ~24 KB figure; those artifacts were not touched per the hard rules and are now stale.
+- The second range proof is an **unaudited research prototype**, same caveat as the original; it closes the negative-value soundness hole but is not a Bulletproof and has no formal soundness proof.
+- R1's signature check is a **format + hash-binding check, not an authenticity check** (see GAP-4 residual).
+- No certificate/anchor fields were invented or faked (see GAP-6).

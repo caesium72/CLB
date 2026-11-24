@@ -1,7 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { bAp2X402 } from "../src/baselines/ap2-x402";
-import { buildValidBundle, descriptor, payerAgent, merchantAddress } from "../src/index";
+import { TEST_KEYS, buildValidBundle, descriptor, payerAgent, merchantAddress } from "../src/index";
 import { verifyTrace } from "@clb-acel/verifier-core";
+import { privateKeyToAccount } from "viem/accounts";
+
+const HUMAN = privateKeyToAccount(TEST_KEYS.userKey).address;
 
 describe("bAp2X402", () => {
   it("catches AMOUNT_ESCALATION (settlement value exceeds mandate maxAmount)", async () => {
@@ -14,7 +17,7 @@ describe("bAp2X402", () => {
     const base = await buildValidBundle();
     const swapped = { ...base, payerAgent: { ...payerAgent, authorizedPaymentKeys: [merchantAddress] } };
     expect((await bAp2X402(swapped)).accepted).toBe(true);            // no identity view -> missed
-    expect((await verifyTrace(swapped)).result.status).toBe("FAIL");  // CLB catches it (R4)
+    expect((await verifyTrace(swapped, { expectedHumanPrincipal: HUMAN })).result.status).toBe("FAIL");  // CLB catches it (R4)
   });
 
   it("accepts a fully valid bundle", async () => {

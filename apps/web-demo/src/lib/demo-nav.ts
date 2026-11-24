@@ -4,6 +4,7 @@ import {
   CreditCard,
   EyeOff,
   GitBranch,
+  Layout,
   Network,
   PenLine,
   Receipt,
@@ -156,6 +157,26 @@ export const demoSteps: DemoStep[] = [
       "Replay the paper's attacks against weaker baselines and watch the full stack stop them.",
     navHint: "Five attacks, reproduced",
     icon: Swords,
+    act: "attack-lab",
+  },
+  {
+    href: "/reviewer2",
+    label: "Adversarial Matrix",
+    title: "Broader adversarial evaluation",
+    pageDescription:
+      "Measured results for multi-step attacks, malicious merchants, compromised agents, and concurrent payments.",
+    navHint: "Reviewer #2, Comment 1",
+    icon: ShieldCheck,
+    act: "attack-lab",
+  },
+  {
+    href: "/novelty",
+    label: "Novelty Matrix",
+    title: "Novelty evaluation (N1–N5)",
+    pageDescription:
+      "Measured artifacts from five research prototypes: revocation-aware binding, causal delegation, recovery state machine, adaptive verification, and model-to-code refinement.",
+    navHint: "Novelty demos",
+    icon: Layout,
     act: "attack-lab",
   }
 ];

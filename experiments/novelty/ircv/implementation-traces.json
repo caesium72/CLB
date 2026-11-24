@@ -1,0 +1,905 @@
+[
+  {
+    "scenarioId": "MODE_A_HONEST",
+    "scenarioKind": "out-of-model",
+    "description": "Honest exact-settlement trace (Mode A).",
+    "expected": "NOT COMPARABLE (model is Mode B only); verifier PASS",
+    "trace": {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "implementation",
+      "sourcePath": "existing fixture → MODE_A_HONEST",
+      "scenarioId": "MODE_A_HONEST",
+      "mode": "MODE_A_EXACT",
+      "scenarioKind": "out-of-model",
+      "events": [
+        {
+          "seq": 1,
+          "kind": "principal_anchor",
+          "label": "PrincipalAnchored",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "declared": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+          },
+          "origin": "MODE_A_HONEST:trusted-anchor"
+        },
+        {
+          "seq": 2,
+          "kind": "key_authorization",
+          "label": "KeyAuthorized",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+          },
+          "origin": "MODE_A_HONEST:agent-card"
+        },
+        {
+          "seq": 3,
+          "kind": "commitment",
+          "label": "C",
+          "subject": "0x70f9a608d2dbdd38272616e7941b9a1506fb72b3c6148f2c76f8aebc95a4d229",
+          "bindings": {
+            "commitment": "0x70f9a608d2dbdd38272616e7941b9a1506fb72b3c6148f2c76f8aebc95a4d229",
+            "nonce": "0x0bba55304b61713656b08a490ead9d5ea1a453e33dea275097063d5a697f8519",
+            "mode": "MODE_A_EXACT"
+          },
+          "origin": "MODE_A_HONEST:commitment"
+        },
+        {
+          "seq": 4,
+          "kind": "nonce",
+          "label": "Nonce",
+          "subject": "0x0bba55304b61713656b08a490ead9d5ea1a453e33dea275097063d5a697f8519",
+          "bindings": {
+            "nonce": "0x0bba55304b61713656b08a490ead9d5ea1a453e33dea275097063d5a697f8519",
+            "derivation": "H(C) or H(C')"
+          },
+          "origin": "MODE_A_HONEST:payment-authorization"
+        },
+        {
+          "seq": 5,
+          "kind": "settlement",
+          "label": "SettledB",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "",
+            "predicateDigest": "0x",
+            "commitment": "0x70f9a608d2dbdd38272616e7941b9a1506fb72b3c6148f2c76f8aebc95a4d229",
+            "nonce": "0x0bba55304b61713656b08a490ead9d5ea1a453e33dea275097063d5a697f8519",
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "asset": "USDC",
+            "value": "2.00",
+            "chainId": "84532",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "settled": "true"
+          },
+          "origin": "MODE_A_HONEST:settlement-receipt"
+        },
+        {
+          "seq": 6,
+          "kind": "nonce_consumption",
+          "label": "Consumed",
+          "subject": "0x0bba55304b61713656b08a490ead9d5ea1a453e33dea275097063d5a697f8519",
+          "bindings": {
+            "nonce": "0x0bba55304b61713656b08a490ead9d5ea1a453e33dea275097063d5a697f8519",
+            "count": "1"
+          },
+          "origin": "MODE_A_HONEST:nonce-store"
+        },
+        {
+          "seq": 7,
+          "kind": "verification_verdict",
+          "label": "Eq(verify(sig,Cp,pkH),true)",
+          "subject": "ircv-mode-a-honest",
+          "bindings": {
+            "status": "PASS",
+            "failedRules": "",
+            "verifierVersion": "verifier-1.0.0"
+          },
+          "origin": "MODE_A_HONEST:verifyTrace"
+        }
+      ],
+      "notes": [
+        "Events are derived from existing fixtures and verifyTrace output; no protocol code was modified.",
+        "The trusted principal anchor is the test key from packages/attack-core/src/fixtures.ts."
+      ]
+    },
+    "verifier": {
+      "status": "PASS",
+      "failedRules": []
+    },
+    "notes": []
+  },
+  {
+    "scenarioId": "MODE_B_HONEST",
+    "scenarioKind": "honest",
+    "description": "Honest delegated settlement inside the human-signed predicate.",
+    "expected": "CONFORMANT (all MC constraints hold); verifier PASS",
+    "trace": {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "implementation",
+      "sourcePath": "existing fixture → MODE_B_HONEST",
+      "scenarioId": "MODE_B_HONEST",
+      "mode": "MODE_B_PREDICATE",
+      "scenarioKind": "honest",
+      "events": [
+        {
+          "seq": 1,
+          "kind": "principal_anchor",
+          "label": "PrincipalAnchored",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "declared": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+          },
+          "origin": "MODE_B_HONEST:trusted-anchor"
+        },
+        {
+          "seq": 2,
+          "kind": "key_authorization",
+          "label": "KeyAuthorized",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+          },
+          "origin": "MODE_B_HONEST:agent-card"
+        },
+        {
+          "seq": 3,
+          "kind": "predicate_registration",
+          "label": "PredicateRegistered",
+          "subject": "predicate-001",
+          "bindings": {
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d"
+          },
+          "origin": "MODE_B_HONEST:clb-descriptor"
+        },
+        {
+          "seq": 4,
+          "kind": "delegation",
+          "label": "DelegatedB",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+            "commitment": "0xe5237c98f1f94bbce3d1a339c58e686de5fa7cc765eb4fd20485d5964cb9c323",
+            "nonce": "0xdd46dc5ccc14622607bd7992c19a41208e5f9c33befcdff7d46243de4a670f8b"
+          },
+          "origin": "MODE_B_HONEST:mode-b-commitment"
+        },
+        {
+          "seq": 5,
+          "kind": "commitment",
+          "label": "Cp",
+          "subject": "0xe5237c98f1f94bbce3d1a339c58e686de5fa7cc765eb4fd20485d5964cb9c323",
+          "bindings": {
+            "commitment": "0xe5237c98f1f94bbce3d1a339c58e686de5fa7cc765eb4fd20485d5964cb9c323",
+            "nonce": "0xdd46dc5ccc14622607bd7992c19a41208e5f9c33befcdff7d46243de4a670f8b",
+            "mode": "MODE_B_PREDICATE"
+          },
+          "origin": "MODE_B_HONEST:commitment"
+        },
+        {
+          "seq": 6,
+          "kind": "nonce",
+          "label": "Nonce",
+          "subject": "0xdd46dc5ccc14622607bd7992c19a41208e5f9c33befcdff7d46243de4a670f8b",
+          "bindings": {
+            "nonce": "0xdd46dc5ccc14622607bd7992c19a41208e5f9c33befcdff7d46243de4a670f8b",
+            "derivation": "H(C) or H(C')"
+          },
+          "origin": "MODE_B_HONEST:payment-authorization"
+        },
+        {
+          "seq": 7,
+          "kind": "predicate_decision",
+          "label": "GuardPassed",
+          "subject": "predicate-001",
+          "bindings": {
+            "predicateId": "predicate-001",
+            "decision": "allow",
+            "detail": ""
+          },
+          "origin": "MODE_B_HONEST:R17"
+        },
+        {
+          "seq": 8,
+          "kind": "settlement",
+          "label": "SettledB",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+            "commitment": "0xe5237c98f1f94bbce3d1a339c58e686de5fa7cc765eb4fd20485d5964cb9c323",
+            "nonce": "0xdd46dc5ccc14622607bd7992c19a41208e5f9c33befcdff7d46243de4a670f8b",
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "asset": "USDC",
+            "value": "2.00",
+            "chainId": "84532",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "settled": "true"
+          },
+          "origin": "MODE_B_HONEST:settlement-receipt"
+        },
+        {
+          "seq": 9,
+          "kind": "nonce_consumption",
+          "label": "Consumed",
+          "subject": "0xdd46dc5ccc14622607bd7992c19a41208e5f9c33befcdff7d46243de4a670f8b",
+          "bindings": {
+            "nonce": "0xdd46dc5ccc14622607bd7992c19a41208e5f9c33befcdff7d46243de4a670f8b",
+            "count": "1"
+          },
+          "origin": "MODE_B_HONEST:nonce-store"
+        },
+        {
+          "seq": 10,
+          "kind": "verification_verdict",
+          "label": "Eq(verify(sig,Cp,pkH),true)",
+          "subject": "ircv-mode-b-honest",
+          "bindings": {
+            "status": "PASS",
+            "failedRules": "",
+            "verifierVersion": "verifier-1.0.0"
+          },
+          "origin": "MODE_B_HONEST:verifyTrace"
+        }
+      ],
+      "notes": [
+        "Events are derived from existing fixtures and verifyTrace output; no protocol code was modified.",
+        "The trusted principal anchor is the test key from packages/attack-core/src/fixtures.ts."
+      ]
+    },
+    "verifier": {
+      "status": "PASS",
+      "failedRules": []
+    },
+    "notes": []
+  },
+  {
+    "scenarioId": "MODE_B_PAYEE_ATTACK",
+    "scenarioKind": "attack",
+    "description": "Settlement routes to a payee outside the human-signed predicate.",
+    "expected": "NON-CONFORMANT (MC-P4); verifier FAIL",
+    "trace": {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "implementation",
+      "sourcePath": "existing fixture → MODE_B_PAYEE_ATTACK",
+      "scenarioId": "MODE_B_PAYEE_ATTACK",
+      "mode": "MODE_B_PREDICATE",
+      "scenarioKind": "attack",
+      "events": [
+        {
+          "seq": 1,
+          "kind": "principal_anchor",
+          "label": "PrincipalAnchored",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "declared": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:trusted-anchor"
+        },
+        {
+          "seq": 2,
+          "kind": "key_authorization",
+          "label": "KeyAuthorized",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:agent-card"
+        },
+        {
+          "seq": 3,
+          "kind": "predicate_registration",
+          "label": "PredicateRegistered",
+          "subject": "predicate-001",
+          "bindings": {
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:clb-descriptor"
+        },
+        {
+          "seq": 4,
+          "kind": "delegation",
+          "label": "DelegatedB",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+            "commitment": "0x36235074a8777aa6eeb2464474fcb724b59bdd6c7e1d3b0bb18b9535aeffc0d8",
+            "nonce": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:mode-b-commitment"
+        },
+        {
+          "seq": 5,
+          "kind": "commitment",
+          "label": "Cp",
+          "subject": "0x36235074a8777aa6eeb2464474fcb724b59bdd6c7e1d3b0bb18b9535aeffc0d8",
+          "bindings": {
+            "commitment": "0x36235074a8777aa6eeb2464474fcb724b59bdd6c7e1d3b0bb18b9535aeffc0d8",
+            "nonce": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490",
+            "mode": "MODE_B_PREDICATE"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:commitment"
+        },
+        {
+          "seq": 6,
+          "kind": "nonce",
+          "label": "Nonce",
+          "subject": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490",
+          "bindings": {
+            "nonce": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490",
+            "derivation": "H(C) or H(C')"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:payment-authorization"
+        },
+        {
+          "seq": 7,
+          "kind": "predicate_decision",
+          "label": "GuardPassed",
+          "subject": "predicate-001",
+          "bindings": {
+            "predicateId": "predicate-001",
+            "decision": "reject",
+            "detail": "Predicate violated: PAYEE_NOT_ALLOWED"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:R17"
+        },
+        {
+          "seq": 8,
+          "kind": "settlement",
+          "label": "SettledB",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+            "commitment": "0x36235074a8777aa6eeb2464474fcb724b59bdd6c7e1d3b0bb18b9535aeffc0d8",
+            "nonce": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490",
+            "payTo": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "asset": "USDC",
+            "value": "2.00",
+            "chainId": "84532",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "settled": "true"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:settlement-receipt"
+        },
+        {
+          "seq": 9,
+          "kind": "settlement_failure",
+          "label": "FailedSettle",
+          "subject": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490",
+          "bindings": {
+            "nonce": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490",
+            "reason": "PAYEE_NOT_ALLOWED",
+            "detail": "Predicate violated: PAYEE_NOT_ALLOWED"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:failed-attempt"
+        },
+        {
+          "seq": 10,
+          "kind": "nonce_consumption",
+          "label": "Consumed",
+          "subject": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490",
+          "bindings": {
+            "nonce": "0xd7512860486f23fe823fba20f6ce7ef8890006d2639a54217f32b9fa1c8ec490",
+            "count": "1"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:nonce-store"
+        },
+        {
+          "seq": 11,
+          "kind": "verification_verdict",
+          "label": "Eq(verify(sig,Cp,pkH),true)",
+          "subject": "ircv-mode-b-payee-attack",
+          "bindings": {
+            "status": "FAIL",
+            "failedRules": "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK,R17_PREDICATE_TRUE_FOR_MODE_B",
+            "verifierVersion": "verifier-1.0.0"
+          },
+          "origin": "MODE_B_PAYEE_ATTACK:verifyTrace"
+        }
+      ],
+      "notes": [
+        "Events are derived from existing fixtures and verifyTrace output; no protocol code was modified.",
+        "The trusted principal anchor is the test key from packages/attack-core/src/fixtures.ts."
+      ]
+    },
+    "verifier": {
+      "status": "FAIL",
+      "failedRules": [
+        "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+        "R17_PREDICATE_TRUE_FOR_MODE_B"
+      ]
+    },
+    "notes": [
+      "The mode-b fixture calls the facilitator directly and therefore settles despite the predicate rejection; the pre-settlement guard path (draftModeBPayment + InMemoryPredicateGuard) is a separate, earlier gate."
+    ]
+  },
+  {
+    "scenarioId": "MODE_B_AMOUNT_ATTACK",
+    "scenarioKind": "attack",
+    "description": "Settlement amount exceeds the human-signed predicate cap.",
+    "expected": "NON-CONFORMANT (MC-P4); verifier FAIL",
+    "trace": {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "implementation",
+      "sourcePath": "existing fixture → MODE_B_AMOUNT_ATTACK",
+      "scenarioId": "MODE_B_AMOUNT_ATTACK",
+      "mode": "MODE_B_PREDICATE",
+      "scenarioKind": "attack",
+      "events": [
+        {
+          "seq": 1,
+          "kind": "principal_anchor",
+          "label": "PrincipalAnchored",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "declared": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:trusted-anchor"
+        },
+        {
+          "seq": 2,
+          "kind": "key_authorization",
+          "label": "KeyAuthorized",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:agent-card"
+        },
+        {
+          "seq": 3,
+          "kind": "predicate_registration",
+          "label": "PredicateRegistered",
+          "subject": "predicate-001",
+          "bindings": {
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:clb-descriptor"
+        },
+        {
+          "seq": 4,
+          "kind": "delegation",
+          "label": "DelegatedB",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+            "commitment": "0x1959bee10ad9f2a6e7da659b670cd645387c1b426ebb11c4677f3ce08fc6febb",
+            "nonce": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:mode-b-commitment"
+        },
+        {
+          "seq": 5,
+          "kind": "commitment",
+          "label": "Cp",
+          "subject": "0x1959bee10ad9f2a6e7da659b670cd645387c1b426ebb11c4677f3ce08fc6febb",
+          "bindings": {
+            "commitment": "0x1959bee10ad9f2a6e7da659b670cd645387c1b426ebb11c4677f3ce08fc6febb",
+            "nonce": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7",
+            "mode": "MODE_B_PREDICATE"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:commitment"
+        },
+        {
+          "seq": 6,
+          "kind": "nonce",
+          "label": "Nonce",
+          "subject": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7",
+          "bindings": {
+            "nonce": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7",
+            "derivation": "H(C) or H(C')"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:payment-authorization"
+        },
+        {
+          "seq": 7,
+          "kind": "predicate_decision",
+          "label": "GuardPassed",
+          "subject": "predicate-001",
+          "bindings": {
+            "predicateId": "predicate-001",
+            "decision": "reject",
+            "detail": "Predicate violated: AMOUNT_EXCEEDS_MAX"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:R17"
+        },
+        {
+          "seq": 8,
+          "kind": "settlement",
+          "label": "SettledB",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+            "commitment": "0x1959bee10ad9f2a6e7da659b670cd645387c1b426ebb11c4677f3ce08fc6febb",
+            "nonce": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7",
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "asset": "USDC",
+            "value": "9.00",
+            "chainId": "84532",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "settled": "true"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:settlement-receipt"
+        },
+        {
+          "seq": 9,
+          "kind": "settlement_failure",
+          "label": "FailedSettle",
+          "subject": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7",
+          "bindings": {
+            "nonce": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7",
+            "reason": "AMOUNT_EXCEEDS_MAX",
+            "detail": "Predicate violated: AMOUNT_EXCEEDS_MAX"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:failed-attempt"
+        },
+        {
+          "seq": 10,
+          "kind": "nonce_consumption",
+          "label": "Consumed",
+          "subject": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7",
+          "bindings": {
+            "nonce": "0xa3de37fb8ce6f21207f4b8d552b4c6d494545b2167c6849e7cced702f7f171b7",
+            "count": "1"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:nonce-store"
+        },
+        {
+          "seq": 11,
+          "kind": "verification_verdict",
+          "label": "Eq(verify(sig,Cp,pkH),true)",
+          "subject": "ircv-mode-b-amount-attack",
+          "bindings": {
+            "status": "FAIL",
+            "failedRules": "R11_AMOUNT_WITHIN_MANDATE,R17_PREDICATE_TRUE_FOR_MODE_B",
+            "verifierVersion": "verifier-1.0.0"
+          },
+          "origin": "MODE_B_AMOUNT_ATTACK:verifyTrace"
+        }
+      ],
+      "notes": [
+        "Events are derived from existing fixtures and verifyTrace output; no protocol code was modified.",
+        "The trusted principal anchor is the test key from packages/attack-core/src/fixtures.ts."
+      ]
+    },
+    "verifier": {
+      "status": "FAIL",
+      "failedRules": [
+        "R11_AMOUNT_WITHIN_MANDATE",
+        "R17_PREDICATE_TRUE_FOR_MODE_B"
+      ]
+    },
+    "notes": [
+      "Fixture-level divergence: the direct facilitator path settles before the off-chain predicate gate; see MODE_B_PAYEE_ATTACK note."
+    ]
+  },
+  {
+    "scenarioId": "MODE_B_REPLAY_ATTACK",
+    "scenarioKind": "attack",
+    "description": "Second settlement attempt with the same C' nonce.",
+    "expected": "CONFORMANT after prevention (MC-P3 holds); verifier FAIL flags the attempt",
+    "trace": {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "implementation",
+      "sourcePath": "existing fixture → MODE_B_REPLAY_ATTACK",
+      "scenarioId": "MODE_B_REPLAY_ATTACK",
+      "mode": "MODE_B_PREDICATE",
+      "scenarioKind": "attack",
+      "events": [
+        {
+          "seq": 1,
+          "kind": "principal_anchor",
+          "label": "PrincipalAnchored",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "declared": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:trusted-anchor"
+        },
+        {
+          "seq": 2,
+          "kind": "key_authorization",
+          "label": "KeyAuthorized",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:agent-card"
+        },
+        {
+          "seq": 3,
+          "kind": "predicate_registration",
+          "label": "PredicateRegistered",
+          "subject": "predicate-001",
+          "bindings": {
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:clb-descriptor"
+        },
+        {
+          "seq": 4,
+          "kind": "delegation",
+          "label": "DelegatedB",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+            "commitment": "0x718a6c380de45fb35444607d716958e1d18417d9eada2e2027c2848600ec27ee",
+            "nonce": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:mode-b-commitment"
+        },
+        {
+          "seq": 5,
+          "kind": "commitment",
+          "label": "Cp",
+          "subject": "0x718a6c380de45fb35444607d716958e1d18417d9eada2e2027c2848600ec27ee",
+          "bindings": {
+            "commitment": "0x718a6c380de45fb35444607d716958e1d18417d9eada2e2027c2848600ec27ee",
+            "nonce": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96",
+            "mode": "MODE_B_PREDICATE"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:commitment"
+        },
+        {
+          "seq": 6,
+          "kind": "nonce",
+          "label": "Nonce",
+          "subject": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96",
+          "bindings": {
+            "nonce": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96",
+            "derivation": "H(C) or H(C')"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:payment-authorization"
+        },
+        {
+          "seq": 7,
+          "kind": "predicate_decision",
+          "label": "GuardPassed",
+          "subject": "predicate-001",
+          "bindings": {
+            "predicateId": "predicate-001",
+            "decision": "allow",
+            "detail": ""
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:R17"
+        },
+        {
+          "seq": 8,
+          "kind": "settlement",
+          "label": "SettledB",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "predicate-001",
+            "predicateDigest": "0x4ab3016eb2eb786f44c7ee89864cf95f995ba0e2c0a362bcf11fe4fcbc02f55d",
+            "commitment": "0x718a6c380de45fb35444607d716958e1d18417d9eada2e2027c2848600ec27ee",
+            "nonce": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96",
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "asset": "USDC",
+            "value": "2.00",
+            "chainId": "84532",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "settled": "true"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:settlement-receipt"
+        },
+        {
+          "seq": 9,
+          "kind": "settlement_failure",
+          "label": "FailedSettle",
+          "subject": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96",
+          "bindings": {
+            "nonce": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96",
+            "reason": "NONCE_REPLAY",
+            "detail": "NonceAlreadyConsumedError"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:failed-attempt"
+        },
+        {
+          "seq": 10,
+          "kind": "nonce_consumption",
+          "label": "Consumed",
+          "subject": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96",
+          "bindings": {
+            "nonce": "0x9fcf20f91cb1878d3bd8dfe9342528b2df0afa388aed318f9def4d6ac8459c96",
+            "count": "1"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:nonce-store"
+        },
+        {
+          "seq": 11,
+          "kind": "verification_verdict",
+          "label": "Eq(verify(sig,Cp,pkH),true)",
+          "subject": "ircv-mode-b-replay",
+          "bindings": {
+            "status": "FAIL",
+            "failedRules": "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+            "verifierVersion": "verifier-1.0.0"
+          },
+          "origin": "MODE_B_REPLAY_ATTACK:verifyTrace"
+        }
+      ],
+      "notes": [
+        "Events are derived from existing fixtures and verifyTrace output; no protocol code was modified.",
+        "The trusted principal anchor is the test key from packages/attack-core/src/fixtures.ts."
+      ]
+    },
+    "verifier": {
+      "status": "FAIL",
+      "failedRules": [
+        "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+      ]
+    },
+    "notes": [
+      "The second attempt was rejected by the local x402 facilitator before a second nonce consumption was recorded."
+    ],
+    "facilitator": {
+      "replayPrevented": true,
+      "errorName": "NonceAlreadyConsumedError"
+    }
+  },
+  {
+    "scenarioId": "RCLB_STALE_IDENTITY_EPOCH",
+    "scenarioKind": "out-of-model",
+    "description": "Settlement presents C_t signed under an identity epoch that has since been revoked.",
+    "expected": "NOT COMPARABLE (RCLB absent from clb-aligned.spthy); verifier R18 FAIL",
+    "trace": {
+      "schema": "ircv-trace/v1",
+      "sourceKind": "implementation",
+      "sourcePath": "existing fixture → RCLB_STALE_IDENTITY_EPOCH",
+      "scenarioId": "RCLB_STALE_IDENTITY_EPOCH",
+      "mode": "MODE_A_EXACT",
+      "scenarioKind": "out-of-model",
+      "events": [
+        {
+          "seq": 1,
+          "kind": "principal_anchor",
+          "label": "PrincipalAnchored",
+          "subject": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "bindings": {
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "declared": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+          },
+          "origin": "RCLB_STALE_IDENTITY_EPOCH:trusted-anchor"
+        },
+        {
+          "seq": 2,
+          "kind": "key_authorization",
+          "label": "KeyAuthorized",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+          },
+          "origin": "RCLB_STALE_IDENTITY_EPOCH:agent-card"
+        },
+        {
+          "seq": 3,
+          "kind": "commitment",
+          "label": "C",
+          "subject": "0x5237aee4589f33ae80211582a04bf801b3933b22ca6d44c98525847d70fee5c3",
+          "bindings": {
+            "commitment": "0x5237aee4589f33ae80211582a04bf801b3933b22ca6d44c98525847d70fee5c3",
+            "nonce": "0x6df3116280e79a26acad7bf27e2005a942e1b953e1ed4dd093fd9b1d3f119f7f",
+            "mode": "MODE_A_EXACT"
+          },
+          "origin": "RCLB_STALE_IDENTITY_EPOCH:commitment"
+        },
+        {
+          "seq": 4,
+          "kind": "nonce",
+          "label": "Nonce",
+          "subject": "0x6df3116280e79a26acad7bf27e2005a942e1b953e1ed4dd093fd9b1d3f119f7f",
+          "bindings": {
+            "nonce": "0x6df3116280e79a26acad7bf27e2005a942e1b953e1ed4dd093fd9b1d3f119f7f",
+            "derivation": "H(C) or H(C')"
+          },
+          "origin": "RCLB_STALE_IDENTITY_EPOCH:payment-authorization"
+        },
+        {
+          "seq": 5,
+          "kind": "settlement",
+          "label": "SettledB",
+          "subject": "shopping-agent-001",
+          "bindings": {
+            "agentId": "shopping-agent-001",
+            "principal": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "predicateId": "",
+            "predicateDigest": "0x",
+            "commitment": "0x5237aee4589f33ae80211582a04bf801b3933b22ca6d44c98525847d70fee5c3",
+            "nonce": "0x6df3116280e79a26acad7bf27e2005a942e1b953e1ed4dd093fd9b1d3f119f7f",
+            "payTo": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "asset": "USDC",
+            "value": "2.00",
+            "chainId": "84532",
+            "key": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+            "settled": "true",
+            "revocation": "IDENTITY_EPOCH_STALE"
+          },
+          "origin": "RCLB_STALE_IDENTITY_EPOCH:settlement-receipt"
+        },
+        {
+          "seq": 6,
+          "kind": "settlement_failure",
+          "label": "FailedSettle",
+          "subject": "0x6df3116280e79a26acad7bf27e2005a942e1b953e1ed4dd093fd9b1d3f119f7f",
+          "bindings": {
+            "nonce": "0x6df3116280e79a26acad7bf27e2005a942e1b953e1ed4dd093fd9b1d3f119f7f",
+            "reason": "IDENTITY_EPOCH_STALE",
+            "detail": "Authority advanced E_I from 2 to 3 after signing."
+          },
+          "origin": "RCLB_STALE_IDENTITY_EPOCH:failed-attempt"
+        },
+        {
+          "seq": 7,
+          "kind": "nonce_consumption",
+          "label": "Consumed",
+          "subject": "0x6df3116280e79a26acad7bf27e2005a942e1b953e1ed4dd093fd9b1d3f119f7f",
+          "bindings": {
+            "nonce": "0x6df3116280e79a26acad7bf27e2005a942e1b953e1ed4dd093fd9b1d3f119f7f",
+            "count": "1"
+          },
+          "origin": "RCLB_STALE_IDENTITY_EPOCH:nonce-store"
+        },
+        {
+          "seq": 8,
+          "kind": "verification_verdict",
+          "label": "Eq(verify(sig,Cp,pkH),true)",
+          "subject": "ircv-rclb-stale-epoch",
+          "bindings": {
+            "status": "FAIL",
+            "failedRules": "R18_REVOCATION_AWARE_BINDING",
+            "verifierVersion": "verifier-1.0.0"
+          },
+          "origin": "RCLB_STALE_IDENTITY_EPOCH:verifyTrace"
+        }
+      ],
+      "notes": [
+        "Events are derived from existing fixtures and verifyTrace output; no protocol code was modified.",
+        "The trusted principal anchor is the test key from packages/attack-core/src/fixtures.ts."
+      ]
+    },
+    "verifier": {
+      "status": "FAIL",
+      "failedRules": [
+        "R18_REVOCATION_AWARE_BINDING"
+      ]
+    },
+    "notes": [
+      "R18 is additive and opt-in; the model has no revocation fact, so this scenario is reported as out-of-model."
+    ]
+  }
+]

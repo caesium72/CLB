@@ -37,11 +37,15 @@ describe("canonicalJson", () => {
 });
 
 describe("hashEvidenceEvent", () => {
-  test("hashes event_without_signature deterministically", () => {
+  test("hashes events deterministically and binds the signature (FIXED)", () => {
     const first = event({ publicFields: { b: 2, a: 1 }, signature: sigA });
-    const second = event({ publicFields: { a: 1, b: 2 }, signature: sigB });
+    const same = event({ publicFields: { a: 1, b: 2 }, signature: sigA });
+    const differentSig = event({ publicFields: { a: 1, b: 2 }, signature: sigB });
 
-    expect(hashEvidenceEvent(first)).toBe(hashEvidenceEvent(second));
+    // Canonical field order is stable...
+    expect(hashEvidenceEvent(first)).toBe(hashEvidenceEvent(same));
+    // ...but the signature is now part of the hash, so changing it breaks the chain.
+    expect(hashEvidenceEvent(first)).not.toBe(hashEvidenceEvent(differentSig));
     expect(hashEvidenceEvent(first)).toMatch(/^0x[0-9a-f]{64}$/);
   });
 });

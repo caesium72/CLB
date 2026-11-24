@@ -9,7 +9,11 @@
       "ap2x402": "REJECT",
       "ebay": "REJECT",
       "clbacel": "REJECT",
-      "clbDetection": "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+      "clbDetection": "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "DETECTED",
+      "ebayOutcome": "DETECTED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "AMOUNT_ESCALATION",
@@ -19,7 +23,11 @@
       "ap2x402": "REJECT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "R11_AMOUNT_WITHIN_MANDATE"
+      "clbDetection": "R11_AMOUNT_WITHIN_MANDATE",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "DETECTED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "ASSET_SWITCH",
@@ -29,7 +37,11 @@
       "ap2x402": "REJECT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "R13_ASSET_ALLOWED"
+      "clbDetection": "R13_ASSET_ALLOWED",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "DETECTED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "CHAIN_TRANSPLANT",
@@ -39,7 +51,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR, R10_CHAIN_DOMAIN_MATCHES"
+      "clbDetection": "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR, R10_CHAIN_DOMAIN_MATCHES",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "AGENT_IDENTITY_SWAP",
@@ -49,7 +65,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "R4_AGENT_PAYMENT_KEY_AUTHORIZED"
+      "clbDetection": "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "MANDATE_REPLAY",
@@ -59,7 +79,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "REJECT",
       "clbacel": "REJECT",
-      "clbDetection": "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+      "clbDetection": "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "DETECTED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "CART_OR_TASK_SWITCH",
@@ -69,7 +93,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "R15_TASK_HASH_MATCHES"
+      "clbDetection": "R15_TASK_HASH_MATCHES",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "PAYMENT_WITHOUT_DELIVERY",
@@ -79,7 +107,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "R2_SIGNATURES_VALID, R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+      "clbDetection": "R2_SIGNATURES_VALID, R14b_DELIVERY_BOUND_TO_SETTLEMENT",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "FAKE_FEEDBACK",
@@ -89,7 +121,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "audit: Feedback event has no prior VERIFICATION_CERTIFICATE evidence"
+      "clbDetection": "audit: Feedback event has no prior VERIFICATION_CERTIFICATE evidence",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "PROMPT_INJECTION_SELECTION",
@@ -99,7 +135,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "audit: Discovery selected a merchant outside allowedPayees"
+      "clbDetection": "audit: Discovery selected a merchant outside allowedPayees",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "DETECTED"
     },
     {
       "id": "PREDICATE_HAPPY_PATH",
@@ -109,7 +149,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "ACCEPT",
       "clbacel": "ACCEPT",
-      "clbDetection": "—"
+      "clbDetection": "—",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "EXPLOITED"
     },
     {
       "id": "PREDICATE_PAYEE_VIOLATION",
@@ -119,7 +163,11 @@
       "ap2x402": "REJECT",
       "ebay": "REJECT",
       "clbacel": "REJECT",
-      "clbDetection": "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK, R17_PREDICATE_TRUE_FOR_MODE_B"
+      "clbDetection": "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK, R17_PREDICATE_TRUE_FOR_MODE_B",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "DETECTED",
+      "ebayOutcome": "DETECTED",
+      "clbacelOutcome": "PREVENTED"
     },
     {
       "id": "PREDICATE_AMOUNT_VIOLATION",
@@ -129,7 +177,11 @@
       "ap2x402": "REJECT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "R11_AMOUNT_WITHIN_MANDATE, R17_PREDICATE_TRUE_FOR_MODE_B"
+      "clbDetection": "R11_AMOUNT_WITHIN_MANDATE, R17_PREDICATE_TRUE_FOR_MODE_B",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "DETECTED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "PREVENTED"
     },
     {
       "id": "PREDICATE_ASSET_VIOLATION",
@@ -139,7 +191,11 @@
       "ap2x402": "REJECT",
       "ebay": "ACCEPT",
       "clbacel": "REJECT",
-      "clbDetection": "R13_ASSET_ALLOWED, R17_PREDICATE_TRUE_FOR_MODE_B"
+      "clbDetection": "R13_ASSET_ALLOWED, R17_PREDICATE_TRUE_FOR_MODE_B",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "DETECTED",
+      "ebayOutcome": "EXPLOITED",
+      "clbacelOutcome": "PREVENTED"
     },
     {
       "id": "PREDICATE_EXPIRED",
@@ -149,7 +205,11 @@
       "ap2x402": "ACCEPT",
       "ebay": "REJECT",
       "clbacel": "REJECT",
-      "clbDetection": "R17_PREDICATE_TRUE_FOR_MODE_B"
+      "clbDetection": "R17_PREDICATE_TRUE_FOR_MODE_B",
+      "vanillaOutcome": "EXPLOITED",
+      "ap2x402Outcome": "EXPLOITED",
+      "ebayOutcome": "DETECTED",
+      "clbacelOutcome": "PREVENTED"
     }
   ]
 }

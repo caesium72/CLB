@@ -1,0 +1,10 @@
+scenario,addresses,guard_allowed,guard_error,settlement_attempted,receipt_issued,prevented,violations
+MALICIOUS_MERCHANT_PAYEE_SUBSTITUTION,"malicious-merchant",false,PredicateViolationError,false,false,true,"PAYEE_NOT_ALLOWED"
+MALICIOUS_MERCHANT_REVOKED_IDENTITY,"malicious-merchant",false,PredicateViolationError,false,false,true,"PAYEE_NOT_ALLOWED"
+COMPROMISED_AGENT_AMOUNT_ESCALATION,"compromised-agent",false,PredicateViolationError,false,false,true,"AMOUNT_EXCEEDS_MAX"
+COMPROMISED_AGENT_ASSET_SWITCH,"compromised-agent",false,PredicateViolationError,false,false,true,"ASSET_NOT_ALLOWED"
+COMPROMISED_AGENT_CHAIN_SWITCH,"compromised-agent",false,PredicateViolationError,false,false,true,"CHAIN_NOT_ALLOWED"
+COMPROMISED_AGENT_TASK_SUBSTITUTION,"compromised-agent",false,PredicateViolationError,false,false,true,"TASK_HASH_MISMATCH"
+EXPIRED_AUTHORIZATION,"compromised-agent",false,PredicateViolationError,false,false,true,"PREDICATE_EXPIRED"
+MULTI_STEP_SELECTION_THEN_SUBSTITUTION,"multi-step;malicious-merchant",false,PredicateViolationError,false,false,true,"PAYEE_NOT_ALLOWED"
+MULTI_STEP_ESCALATION_THEN_REPLAY,"multi-step;compromised-agent",true,,true,false,true,"NONCE_ALREADY_CONSUMED"

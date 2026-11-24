@@ -1,7 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { bEbayMonitor } from "../src/baselines/ebay-monitor";
-import { buildValidBundle, markReplayAttempt } from "../src/index";
+import { TEST_KEYS, buildValidBundle, markReplayAttempt } from "../src/index";
 import { verifyTrace } from "@clb-acel/verifier-core";
+import { privateKeyToAccount } from "viem/accounts";
+
+const HUMAN = privateKeyToAccount(TEST_KEYS.userKey).address;
 
 describe("bEbayMonitor", () => {
   it("catches MANDATE_REPLAY via consume-once", async () => {
@@ -14,7 +17,7 @@ describe("bEbayMonitor", () => {
     const base = await buildValidBundle();
     const transplanted = { ...base, settlement: { ...base.settlement, chainId: 1 } };
     expect(bEbayMonitor(transplanted).accepted).toBe(true);            // no chain-domain check -> missed
-    expect((await verifyTrace(transplanted)).result.status).toBe("FAIL"); // CLB catches it (R10)
+    expect((await verifyTrace(transplanted, { expectedHumanPrincipal: HUMAN })).result.status).toBe("FAIL"); // CLB catches it (R10)
   });
 
   it("accepts a fully valid bundle", async () => {

@@ -17,8 +17,16 @@
  * C_delta`; Pedersen binding then forces the committed delta to equal a value in
  * `[0, 2^RANGE_BITS)`. With `maxValue < 2^RANGE_BITS`, an in-range delta implies
  * `value ≤ maxValue` (a negative delta wraps to ≈2^256 and cannot be a 64-bit
- * sum, so the check fails). The maxValue itself is the public, human-signed
- * budget and is supplied by the verifier — it is never embedded in the blob.
+ * sum, so the check fails).
+ *
+ * A SECOND independent 64-bit proof attests `value ∈ [0, 2^64)` against the
+ * same commitment. Without it a negative value commits as `value mod n` (a
+ * huge unsigned scalar) yet yields a small positive delta `max − value`, so
+ * the upper-bound proof alone accepts negative amounts. Verification requires
+ * both proofs; generation rejects out-of-domain values explicitly rather than
+ * relying on modular arithmetic. The maxValue supplied to the verifier must be
+ * derived from the human-signed mandate (see the verifier R11 path) — it is
+ * never trusted from a bundle-authored field alone.
  *
  * SWAPPABLE ADAPTER: this is the ONLY file in the codebase that imports a curve
  * library (`@noble/curves`). Replacing it with a Bulletproof/WASM backend means
@@ -183,6 +191,13 @@ export type RangeProof = {
   bitLength: number;
   /** Bit commitments + OR proofs for delta = maxValue − value, LSB first. */
   bits: BitProof[];
+  /**
+   * Independent bit commitments + OR proofs that the committed value itself is
+   * a non-negative 64-bit integer. `Σ 2^i·valueBits[i].C = (2^64−1)·G − C`.
+   * This is what excludes negative values, which the upper-bound proof alone
+   * cannot distinguish from large unsigned scalars (modular wrap).
+   */
+  valueBits: BitProof[];
 };
 
 export type ConfidentialInput = {
@@ -229,32 +244,15 @@ function commitPayee(payTo: string, payeeSalt: Hex): Hex {
 }
 
 /**
- * Produce a confidential commitment to `valueAtomic` together with a range proof
- * that `value <= maxValue`. Throws only on an out-of-range maxValue; an
- * out-of-budget value still produces a structurally valid object whose proof
- * fails verification (so callers can run the same path for honest and dishonest
- * settlements).
+ * Prove `value <= upper` by decomposing `upper − value` into 64 bits. The
+ * weighted bit blindings are chosen to cancel the value commitment's blinding,
+ * so `Σ 2^i·C_i = (upper − value)·G − blinding·H = upper·G − C`.
  */
-export function commitConfidential(
-  input: ConfidentialInput,
-  options: ConfidentialOptions = {},
-): ConfidentialCommitment {
-  const value = toBig(input.valueAtomic);
-  const max = toBig(input.maxValueAtomic);
-  if (max < 0n || max >= MAX_RANGE) {
-    throw new Error(`maxValueAtomic must be in [0, 2^${RANGE_BITS})`);
-  }
-  const rng: Rng = options.rng ?? secureScalar;
-
-  const blinding = nextScalar(rng);
-  const commitmentPoint = mul(G, value).add(mul(H, blinding));
-
-  // delta = max − value (may be negative if value > max → proof will fail).
-  const delta = max - value;
+function proveUpperBound(value: bigint, upper: bigint, blinding: bigint, rng: Rng): BitProof[] {
+  const delta = upper - value;
   const deltaBits = ((delta % MAX_RANGE) + MAX_RANGE) % MAX_RANGE;
 
-  // Per-bit blindings r_i must satisfy Σ 2^i·r_i ≡ −blinding (mod n) so that
-  // Σ 2^i·C_i = delta·G + (−blinding)·H = C_delta.
+  // Per-bit blindings r_i must satisfy Σ 2^i·r_i ≡ −blinding (mod n).
   const blindings: bigint[] = [];
   let acc = 0n;
   for (let i = 0; i < RANGE_BITS - 1; i += 1) {
@@ -271,11 +269,49 @@ export function commitConfidential(
     const bit = Number((deltaBits >> BigInt(i)) & 1n) as 0 | 1;
     bits.push(proveBit(bit, blindings[i]!, rng));
   }
+  return bits;
+}
+
+/** Check `Σ 2^i·C_i == target` for one 64-bit decomposition. */
+function aggregateMatches(bits: BitProof[], target: CurvePoint): boolean {
+  let weighted = Point.ZERO;
+  for (let i = 0; i < RANGE_BITS; i += 1) {
+    weighted = weighted.add(mul(pointFromHex(bits[i]!.C), 1n << BigInt(i)));
+  }
+  return weighted.equals(target);
+}
+
+/**
+ * Produce a confidential commitment to `valueAtomic` together with two range
+ * proofs: `value <= maxValue` and `value ∈ [0, 2^64)`. Out-of-domain values
+ * (`value < 0 || value >= 2^64`) are rejected explicitly — an over-cap but
+ * in-domain value still produces a structurally valid object whose proof fails
+ * verification, so callers can exercise the same path for honest settlements.
+ */
+export function commitConfidential(
+  input: ConfidentialInput,
+  options: ConfidentialOptions = {},
+): ConfidentialCommitment {
+  const value = toBig(input.valueAtomic);
+  const max = toBig(input.maxValueAtomic);
+  if (max < 0n || max >= MAX_RANGE) {
+    throw new Error(`maxValueAtomic must be in [0, 2^${RANGE_BITS})`);
+  }
+  if (value < 0n || value >= MAX_RANGE) {
+    throw new Error(`valueAtomic must be in [0, 2^${RANGE_BITS})`);
+  }
+  const rng: Rng = options.rng ?? secureScalar;
+
+  const blinding = nextScalar(rng);
+  const commitmentPoint = mul(G, value).add(mul(H, blinding));
+
+  const bits = proveUpperBound(value, max, blinding, rng);
+  const valueBits = proveUpperBound(value, MAX_RANGE - 1n, blinding, rng);
 
   const payeeSalt = options.payeeSalt ?? scalarToHex(nextScalar(rng));
   const payeeCommitment = commitPayee(input.payTo, payeeSalt);
   const commitment = pointToHex(commitmentPoint);
-  const rangeProof: RangeProof = { version: DOMAIN, bitLength: RANGE_BITS, bits };
+  const rangeProof: RangeProof = { version: DOMAIN, bitLength: RANGE_BITS, bits, valueBits };
 
   return {
     commitment,
@@ -302,7 +338,13 @@ export function verifyConfidential(
   options: { maxValueAtomic: bigint | string | number },
 ): boolean {
   try {
-    if (rangeProof.bitLength !== RANGE_BITS || rangeProof.bits.length !== RANGE_BITS) {
+    if (
+      rangeProof.bitLength !== RANGE_BITS ||
+      !Array.isArray(rangeProof.bits) ||
+      rangeProof.bits.length !== RANGE_BITS ||
+      !Array.isArray(rangeProof.valueBits) ||
+      rangeProof.valueBits.length !== RANGE_BITS
+    ) {
       return false;
     }
     const max = toBig(options.maxValueAtomic);
@@ -311,17 +353,18 @@ export function verifyConfidential(
     }
     const C = pointFromHex(commitment);
 
-    // Bind the bit commitments to C_delta = maxValue·G − C.
-    let weighted = Point.ZERO;
-    for (let i = 0; i < RANGE_BITS; i += 1) {
-      weighted = weighted.add(mul(pointFromHex(rangeProof.bits[i]!.C), 1n << BigInt(i)));
+    // Statement 1: value <= max, via delta = max − value ∈ [0, 2^64).
+    if (!aggregateMatches(rangeProof.bits, mul(G, max).subtract(C))) {
+      return false;
     }
-    if (!weighted.equals(mul(G, max).subtract(C))) {
+    // Statement 2: value ∈ [0, 2^64). Without this, value mod n (negative
+    // values) is indistinguishable from a large unsigned scalar and passes 1.
+    if (!aggregateMatches(rangeProof.valueBits, mul(G, MAX_RANGE - 1n).subtract(C))) {
       return false;
     }
 
-    // Each commitment must open to a single bit.
-    return rangeProof.bits.every(verifyBit);
+    // Every bit commitment must open to a single bit.
+    return rangeProof.bits.every(verifyBit) && rangeProof.valueBits.every(verifyBit);
   } catch {
     return false;
   }

@@ -6,17 +6,17 @@
   "violating": {
     "reverted": true,
     "reason": "AmountExceedsMax",
-    "commitment": "0xc1c71d6c57908843ad629aeed1ec72dc11d355c9fa0d5c00a25e9f4e9d9d02cb",
-    "nonce": "0x5185d0ba61cb30ea957a06e53768dabc568607517011bee624d0174c3316ae16",
+    "commitment": "0x6bbbd8482abf087984c6c52df190ab1a8b71339ea80e6fa9cc36055651e97b17",
+    "nonce": "0xbad5c34e0ebdd0119e0e2515e183d924e438d7b30068feee8de1d1c9488fab1c",
     "value": "9.00",
     "maxValue": "5.00"
   },
   "happy": {
     "reverted": false,
-    "txHash": "0xebda587fa4dc6146d6073ba323092b70dd642c078ce4921975b4469b63ec065f",
-    "commitment": "0xa553f7b125ccadbb805084e17db399c5bb38302e24f0bcc9baf5a36b387f0d27",
-    "nonce": "0x36a77123baae7280267c3798f7ffa67d96d243dde10355882327e5f507c00432",
-    "gasUsed": "76006",
+    "txHash": "0x3af61428b0af7dfb1a2ac1aacfc2a99c0a5bd67c4f7b9a36c2c07b7e3c6b81c8",
+    "commitment": "0x40b2bc17a040c9f5f0535ee3c5b45a3855bc2e617fac39312f48f032295b7ef5",
+    "nonce": "0x940cc75d0117853f42738486ddc2c26f086190e33103baa6d5b527514b83d106",
+    "gasUsed": "92496",
     "value": "2.00"
   },
   "replay": {
@@ -24,9 +24,9 @@
     "reason": "NonceAlreadyConsumed"
   },
   "gas": {
-    "happyPathOnChainGasUsed": "76006",
-    "validateAndConsumeForgeReport": "52590",
+    "happyPathOnChainGasUsed": "92496",
+    "validateAndConsumeForgeReport": "72925",
     "source": "forge+anvil"
   },
-  "generatedAt": "2026-06-05T07:03:16.122Z"
+  "generatedAt": "2026-11-24T17:12:15.866Z"
 }

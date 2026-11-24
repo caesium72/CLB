@@ -1,5 +1,6 @@
 import {
   computeModeBSettlementCommitment,
+  computePredicateExtrasDigest,
   deriveSettlementNonce,
   evaluatePredicate,
   type ModeBSettlementInput,
@@ -19,6 +20,20 @@ import type { Hex } from "viem";
  * interface is deliberately small so a real caveat enforcer can replace it.
  */
 
+/**
+ * DEMO on-chain binding material for `registerPredicateBound` /
+ * `validateAndConsumeBound`. `signature` is used at registration only; the
+ * settlement path consumes the other fields so the guard can enforce the
+ * human's principal / mandate / task pin on-chain.
+ */
+export type PredicateGuardBinding = {
+  principal: Hex;
+  mandateDigest: Hex;
+  taskHash: Hex;
+  agentIdHashes: Hex[];
+  signature: Hex;
+};
+
 export type GuardSettlementInput = {
   predicate: SpendingPredicate;
   params: SettlementParams;
@@ -29,6 +44,8 @@ export type GuardSettlementInput = {
   now?: Date;
   /** Actual task hash of the settlement (e.g. report.inputDataHash). */
   observedTaskHash?: Hex;
+  /** When set, broadcast the enforced `validateAndConsumeBound` path. */
+  binding?: PredicateGuardBinding;
 };
 
 export type GuardResult = {
@@ -154,9 +171,13 @@ export type ContractGuardWriter = (input: {
   address: Hex;
   /** Inputs to recompute C' on-chain: identityRef, mandateDigest, predicateId, settlementParams. */
   commitment: ModeBSettlementInput;
+  /** Digest of agent IDs / task hash — the 4th arg of the 7-arg validateAndConsume. */
+  extraFieldsDigest: Hex;
   /** Off-chain recomputed C' and nonce = H(C'), passed to validateAndConsume. */
   cPrime: Hex;
   nonce: Hex;
+  /** Present => call the enforced bound path instead of the legacy one. */
+  binding?: PredicateGuardBinding;
 }) => Promise<{ txHash: Hex }>;
 
 export type ContractPredicateGuardOptions = {
@@ -229,8 +250,10 @@ export class ContractPredicateGuard implements PredicateGuardAdapter {
       const { txHash } = await this.writer({
         address: this.address,
         commitment: input.commitment,
+        extraFieldsDigest: computePredicateExtrasDigest(input.predicate),
         cPrime: commitment,
         nonce,
+        ...(input.binding ? { binding: input.binding } : {}),
       });
       return { commitment, nonce, reverted: false, txHash };
     } catch (error) {
@@ -263,6 +286,15 @@ export function createPredicateGuard(
 export {
   PREDICATE_GUARD_ABI,
   extractRevertName,
+  makeViemGuardReader,
   makeViemGuardWriter,
+  registerPredicateBound,
+  type GuardPredicateConfig,
   type GuardViemClients,
 } from "./onchain";
+export {
+  MockGuardChain,
+  MOCK_TX_HASH,
+  mockConfigFromPredicate,
+  type MockPredicateConfig,
+} from "./mock-guard-chain";

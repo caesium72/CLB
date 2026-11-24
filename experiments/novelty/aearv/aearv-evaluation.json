@@ -1,0 +1,1364 @@
+{
+  "generatedAt": "2026-11-24T20:49:20.429Z",
+  "novelty": "AEARV (Novelty 5)",
+  "disclaimer": "Deterministic prototype risk model. Weights and thresholds are a priori engineering choices, NOT empirically calibrated or externally validated.",
+  "seeds": [
+    1800000000000,
+    1800000000017,
+    1800000000042
+  ],
+  "n": {
+    "total": 39,
+    "honest": 9,
+    "attack": 15,
+    "policyGap": 15
+  },
+  "mandatoryRules": [
+    "R1_HASH_CHAIN_INTACT",
+    "R2_SIGNATURES_VALID",
+    "R5_MANDATE_SIGNATURE_VALID",
+    "R6_CLB_COMMITMENT_RECOMPUTES",
+    "R8_PAYMENT_NONCE_EQUALS_HASH_C",
+    "R9_NONCE_CONSUMED_EXACTLY_ONCE",
+    "R10_CHAIN_DOMAIN_MATCHES",
+    "R17_PREDICATE_TRUE_FOR_MODE_B"
+  ],
+  "riskWeights": {
+    "identityAssurance": 0.2,
+    "authorizationRisk": 0.25,
+    "settlementRisk": 0.2,
+    "deliveryRisk": 0.2,
+    "historyRisk": 0.15
+  },
+  "thresholds": {
+    "v2": 0.34,
+    "v3": 0.67
+  },
+  "strategies": {
+    "fixedV1": {
+      "cases": 39,
+      "passed": 24,
+      "failed": 15,
+      "attackDetected": 15,
+      "attackTotal": 15,
+      "policyGapDetected": 0,
+      "policyGapTotal": 15,
+      "combinedThreatDetected": 15,
+      "combinedThreatTotal": 30,
+      "honestRejected": 0,
+      "honestTotal": 9,
+      "falsePositiveRate": 0,
+      "latencyMs": {
+        "n": 39,
+        "mean": 7.279664102564127,
+        "p50": 7.393599999999992,
+        "p95": 8.766800000000103,
+        "max": 9.506900000000087
+      },
+      "extraChecksExecuted": 0,
+      "extraChecksMean": 0,
+      "levelCounts": {
+        "V1": 39,
+        "V2": 0,
+        "V3": 0
+      }
+    },
+    "adaptive": {
+      "cases": 39,
+      "passed": 9,
+      "failed": 30,
+      "attackDetected": 15,
+      "attackTotal": 15,
+      "policyGapDetected": 15,
+      "policyGapTotal": 15,
+      "combinedThreatDetected": 30,
+      "combinedThreatTotal": 30,
+      "honestRejected": 0,
+      "honestTotal": 9,
+      "falsePositiveRate": 0,
+      "latencyMs": {
+        "n": 39,
+        "mean": 8.266512820512824,
+        "p50": 8.394499999999994,
+        "p95": 10.354399999999941,
+        "max": 10.364399999999932
+      },
+      "extraChecksExecuted": 156,
+      "extraChecksMean": 4,
+      "levelCounts": {
+        "V1": 3,
+        "V2": 12,
+        "V3": 24
+      }
+    },
+    "alwaysV3": {
+      "cases": 39,
+      "passed": 3,
+      "failed": 36,
+      "attackDetected": 15,
+      "attackTotal": 15,
+      "policyGapDetected": 15,
+      "policyGapTotal": 15,
+      "combinedThreatDetected": 30,
+      "combinedThreatTotal": 30,
+      "honestRejected": 6,
+      "honestTotal": 9,
+      "falsePositiveRate": 0.6666666666666666,
+      "latencyMs": {
+        "n": 39,
+        "mean": 8.63485128205127,
+        "p50": 8.463500000000067,
+        "p95": 11.366699999999923,
+        "max": 11.935299999999984
+      },
+      "extraChecksExecuted": 195,
+      "extraChecksMean": 5,
+      "levelCounts": {
+        "V1": 0,
+        "V2": 0,
+        "V3": 39
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "1800000000000-honest-low",
+      "seed": 1800000000000,
+      "kind": "honest",
+      "label": "honest-low",
+      "riskScore": 0,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V1",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000000-honest-medium",
+      "seed": 1800000000000,
+      "kind": "honest",
+      "label": "honest-medium",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000000-honest-high-approved",
+      "seed": 1800000000000,
+      "kind": "honest",
+      "label": "honest-high-approved",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "PASS"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000000-gap-identity-omission",
+      "seed": 1800000000000,
+      "kind": "policy-gap",
+      "label": "gap-identity-omission",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "IDENTITY_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "IDENTITY_PROVENANCE",
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000000-gap-delivery-omission",
+      "seed": 1800000000000,
+      "kind": "policy-gap",
+      "label": "gap-delivery-omission",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "DELIVERY_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "DELIVERY_PROVENANCE",
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000000-gap-unanchored-rewrite",
+      "seed": 1800000000000,
+      "kind": "policy-gap",
+      "label": "gap-unanchored-rewrite",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "TRUSTED_ROOT_ANCHOR"
+        ],
+        "alwaysV3": [
+          "TRUSTED_ROOT_ANCHOR"
+        ]
+      }
+    },
+    {
+      "id": "1800000000000-gap-approval-gate",
+      "seed": 1800000000000,
+      "kind": "policy-gap",
+      "label": "gap-approval-gate",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "HUMAN_APPROVAL_GATE"
+        ],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000000-gap-full-provenance",
+      "seed": 1800000000000,
+      "kind": "policy-gap",
+      "label": "gap-full-provenance",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "FULL_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000000-attack-payee",
+      "seed": 1800000000000,
+      "kind": "attack",
+      "label": "attack-payee",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "adaptive": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "alwaysV3": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000000-attack-amount",
+      "seed": 1800000000000,
+      "kind": "attack",
+      "label": "attack-amount",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "adaptive": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "alwaysV3": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000000-attack-replay",
+      "seed": 1800000000000,
+      "kind": "attack",
+      "label": "attack-replay",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ],
+        "adaptive": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ],
+        "alwaysV3": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000000-attack-delivery-forgery",
+      "seed": 1800000000000,
+      "kind": "attack",
+      "label": "attack-delivery-forgery",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ],
+        "adaptive": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ],
+        "alwaysV3": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000000-attack-chain-transplant",
+      "seed": 1800000000000,
+      "kind": "attack",
+      "label": "attack-chain-transplant",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ],
+        "adaptive": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ],
+        "alwaysV3": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000017-honest-low",
+      "seed": 1800000000017,
+      "kind": "honest",
+      "label": "honest-low",
+      "riskScore": 0,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V1",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000017-honest-medium",
+      "seed": 1800000000017,
+      "kind": "honest",
+      "label": "honest-medium",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000017-honest-high-approved",
+      "seed": 1800000000017,
+      "kind": "honest",
+      "label": "honest-high-approved",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "PASS"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000017-gap-identity-omission",
+      "seed": 1800000000017,
+      "kind": "policy-gap",
+      "label": "gap-identity-omission",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "IDENTITY_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "IDENTITY_PROVENANCE",
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000017-gap-delivery-omission",
+      "seed": 1800000000017,
+      "kind": "policy-gap",
+      "label": "gap-delivery-omission",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "DELIVERY_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "DELIVERY_PROVENANCE",
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000017-gap-unanchored-rewrite",
+      "seed": 1800000000017,
+      "kind": "policy-gap",
+      "label": "gap-unanchored-rewrite",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "TRUSTED_ROOT_ANCHOR"
+        ],
+        "alwaysV3": [
+          "TRUSTED_ROOT_ANCHOR"
+        ]
+      }
+    },
+    {
+      "id": "1800000000017-gap-approval-gate",
+      "seed": 1800000000017,
+      "kind": "policy-gap",
+      "label": "gap-approval-gate",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "HUMAN_APPROVAL_GATE"
+        ],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000017-gap-full-provenance",
+      "seed": 1800000000017,
+      "kind": "policy-gap",
+      "label": "gap-full-provenance",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "FULL_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000017-attack-payee",
+      "seed": 1800000000017,
+      "kind": "attack",
+      "label": "attack-payee",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "adaptive": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "alwaysV3": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000017-attack-amount",
+      "seed": 1800000000017,
+      "kind": "attack",
+      "label": "attack-amount",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "adaptive": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "alwaysV3": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000017-attack-replay",
+      "seed": 1800000000017,
+      "kind": "attack",
+      "label": "attack-replay",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ],
+        "adaptive": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ],
+        "alwaysV3": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000017-attack-delivery-forgery",
+      "seed": 1800000000017,
+      "kind": "attack",
+      "label": "attack-delivery-forgery",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ],
+        "adaptive": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ],
+        "alwaysV3": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000017-attack-chain-transplant",
+      "seed": 1800000000017,
+      "kind": "attack",
+      "label": "attack-chain-transplant",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ],
+        "adaptive": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ],
+        "alwaysV3": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000042-honest-low",
+      "seed": 1800000000042,
+      "kind": "honest",
+      "label": "honest-low",
+      "riskScore": 0,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V1",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000042-honest-medium",
+      "seed": 1800000000042,
+      "kind": "honest",
+      "label": "honest-medium",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000042-honest-high-approved",
+      "seed": 1800000000042,
+      "kind": "honest",
+      "label": "honest-high-approved",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "PASS",
+        "alwaysV3": "PASS"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000042-gap-identity-omission",
+      "seed": 1800000000042,
+      "kind": "policy-gap",
+      "label": "gap-identity-omission",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "IDENTITY_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "IDENTITY_PROVENANCE",
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000042-gap-delivery-omission",
+      "seed": 1800000000042,
+      "kind": "policy-gap",
+      "label": "gap-delivery-omission",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "DELIVERY_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "DELIVERY_PROVENANCE",
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000042-gap-unanchored-rewrite",
+      "seed": 1800000000042,
+      "kind": "policy-gap",
+      "label": "gap-unanchored-rewrite",
+      "riskScore": 0.35,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V2",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "TRUSTED_ROOT_ANCHOR"
+        ],
+        "alwaysV3": [
+          "TRUSTED_ROOT_ANCHOR"
+        ]
+      }
+    },
+    {
+      "id": "1800000000042-gap-approval-gate",
+      "seed": 1800000000042,
+      "kind": "policy-gap",
+      "label": "gap-approval-gate",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "HUMAN_APPROVAL_GATE"
+        ],
+        "alwaysV3": [
+          "HUMAN_APPROVAL_GATE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000042-gap-full-provenance",
+      "seed": 1800000000042,
+      "kind": "policy-gap",
+      "label": "gap-full-provenance",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "PASS",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [
+          "FULL_PROVENANCE"
+        ],
+        "alwaysV3": [
+          "FULL_PROVENANCE"
+        ]
+      }
+    },
+    {
+      "id": "1800000000042-attack-payee",
+      "seed": 1800000000042,
+      "kind": "attack",
+      "label": "attack-payee",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "adaptive": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ],
+        "alwaysV3": [
+          "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000042-attack-amount",
+      "seed": 1800000000042,
+      "kind": "attack",
+      "label": "attack-amount",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "adaptive": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ],
+        "alwaysV3": [
+          "R11_AMOUNT_WITHIN_MANDATE"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000042-attack-replay",
+      "seed": 1800000000042,
+      "kind": "attack",
+      "label": "attack-replay",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ],
+        "adaptive": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ],
+        "alwaysV3": [
+          "R9_NONCE_CONSUMED_EXACTLY_ONCE"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000042-attack-delivery-forgery",
+      "seed": 1800000000042,
+      "kind": "attack",
+      "label": "attack-delivery-forgery",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ],
+        "adaptive": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ],
+        "alwaysV3": [
+          "R2_SIGNATURES_VALID",
+          "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    },
+    {
+      "id": "1800000000042-attack-chain-transplant",
+      "seed": 1800000000042,
+      "kind": "attack",
+      "label": "attack-chain-transplant",
+      "riskScore": 1,
+      "decisions": {
+        "fixedV1": "FAIL",
+        "adaptive": "FAIL",
+        "alwaysV3": "FAIL"
+      },
+      "levels": {
+        "fixedV1": "V1",
+        "adaptive": "V3",
+        "alwaysV3": "V3"
+      },
+      "failedRules": {
+        "fixedV1": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ],
+        "adaptive": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ],
+        "alwaysV3": [
+          "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+          "R10_CHAIN_DOMAIN_MATCHES"
+        ]
+      },
+      "failedAdaptiveChecks": {
+        "fixedV1": [],
+        "adaptive": [],
+        "alwaysV3": []
+      }
+    }
+  ]
+}

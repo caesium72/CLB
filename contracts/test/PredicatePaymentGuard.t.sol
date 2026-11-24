@@ -16,29 +16,49 @@ contract PredicatePaymentGuardTest is Test {
     bytes32 private constant MANDATE_DIGEST =
         0x1111111111111111111111111111111111111111111111111111111111111111;
     uint256 private constant MAX_VALUE_ATOMIC = 5_000_000; // 5 USDC (6 decimals)
+    uint256 private constant HUMAN_KEY = 0x1111111111111111111111111111111111111111111111111111111111111111;
+    address private human;
+    /// @dev This fixture pins no agent-ID/task set, so the human binds
+    ///      `extraFieldsDigest == 0`. That is exactly the extras the legacy 4-arg
+    ///      C' helper used, so the clb-core golden vectors below still describe
+    ///      the same commitment.
+    bytes32 private constant EXTRAS = bytes32(0);
 
     function setUp() public {
+        human = vm.addr(HUMAN_KEY);
         guard = new PredicatePaymentGuard(CHAIN_ID);
+        vm.startPrank(human);
         _registerDefaultPredicate(type(uint64).max);
     }
 
-    function _registerDefaultPredicate(uint64 validUntil) internal {
+    function _config(uint64 validUntil) internal pure returns (PredicatePaymentGuard.PredicateConfig memory) {
         address[] memory payees = new address[](1);
         payees[0] = MERCHANT;
         bytes32[] memory assets = new bytes32[](1);
         assets[0] = keccak256(bytes("USDC"));
         uint256[] memory chains = new uint256[](1);
         chains[0] = CHAIN_ID;
-        guard.registerPredicate(
-            PREDICATE_ID,
-            PredicatePaymentGuard.PredicateConfig({
-                allowedPayees: payees,
-                allowedAssetHashes: assets,
-                allowedChainIds: chains,
-                maxValueAtomic: MAX_VALUE_ATOMIC,
-                validUntil: validUntil,
-                registered: true
-            })
+        return PredicatePaymentGuard.PredicateConfig({
+            allowedPayees: payees,
+            allowedAssetHashes: assets,
+            allowedChainIds: chains,
+            maxValueAtomic: MAX_VALUE_ATOMIC,
+            validUntil: validUntil,
+            registered: true
+        });
+    }
+
+    /// @dev Caller must already be pranked as `human` (msg.sender == principal).
+    function _registerDefaultPredicate(uint64 validUntil) internal {
+        _registerBoundOn(guard, validUntil);
+    }
+
+    function _registerBoundOn(PredicatePaymentGuard g, uint64 validUntil) internal {
+        PredicatePaymentGuard.PredicateConfig memory cfg = _config(validUntil);
+        bytes32 digest = g.bindingDigest(PREDICATE_ID, cfg, human, MANDATE_DIGEST, bytes32(0), EXTRAS);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(HUMAN_KEY, digest);
+        g.registerPredicateBound(
+            PREDICATE_ID, cfg, human, MANDATE_DIGEST, bytes32(0), EXTRAS, abi.encodePacked(r, s, v)
         );
     }
 
@@ -68,7 +88,7 @@ contract PredicatePaymentGuardTest is Test {
         view
         returns (bytes32 commitment, bytes32 nonce)
     {
-        commitment = guard.computeSettlementCommitment(_identity(), MANDATE_DIGEST, PREDICATE_ID, p);
+        commitment = guard.computeSettlementCommitment(_identity(), MANDATE_DIGEST, PREDICATE_ID, EXTRAS, p);
         nonce = guard.deriveNonce(commitment);
     }
 
@@ -79,15 +99,16 @@ contract PredicatePaymentGuardTest is Test {
     // Regenerated for Phase 7A (valueAtomic now bound in the params digest).
     bytes32 private constant GOLDEN_PARAMS_DIGEST =
         0x31c3a08746fb658e8a0b0e70c47cd5cca15a72c6ec13868552188ab7b64474c8;
+    // Regenerated after SETTLEMENT_TYPEHASH gained predicateDigest.
     bytes32 private constant GOLDEN_COMMITMENT =
-        0x817542353e29a304f9fafc79776a97d8081bfcc75bd3468b99ec52027b04db40;
+        0x9526957c84729109fa636797e0bde6a854d254e0fce50890d844b65bada50d13;
     bytes32 private constant GOLDEN_NONCE =
-        0xd52605019327eeeb192b754dc3ef8394bba5e38c8d8996ebea2952e94139063a;
+        0x867bdead9d5b29cc6af3cd76db0715b33da28a6cac5731d0433a793cfcfc23e4;
 
     function test_ParityWithClbCore() public view {
         PredicatePaymentGuard.SettlementParams memory p = _params(MERCHANT, "USDC", CHAIN_ID);
         assertEq(guard.settlementParamsDigest(p), GOLDEN_PARAMS_DIGEST, "params digest parity");
-        bytes32 commitment = guard.computeSettlementCommitment(_identity(), MANDATE_DIGEST, PREDICATE_ID, p);
+        bytes32 commitment = guard.computeSettlementCommitment(_identity(), MANDATE_DIGEST, PREDICATE_ID, EXTRAS, p);
         assertEq(commitment, GOLDEN_COMMITMENT, "C' parity with clb-core");
         assertEq(guard.deriveNonce(commitment), GOLDEN_NONCE, "nonce = H(C') parity");
     }
@@ -175,26 +196,10 @@ contract PredicatePaymentGuardTest is Test {
 
     function test_RevertWhen_PredicateExpired() public {
         PredicatePaymentGuard guard2 = new PredicatePaymentGuard(CHAIN_ID);
-        address[] memory payees = new address[](1);
-        payees[0] = MERCHANT;
-        bytes32[] memory assets = new bytes32[](1);
-        assets[0] = keccak256(bytes("USDC"));
-        uint256[] memory chains = new uint256[](1);
-        chains[0] = CHAIN_ID;
-        guard2.registerPredicate(
-            PREDICATE_ID,
-            PredicatePaymentGuard.PredicateConfig({
-                allowedPayees: payees,
-                allowedAssetHashes: assets,
-                allowedChainIds: chains,
-                maxValueAtomic: MAX_VALUE_ATOMIC,
-                validUntil: uint64(block.timestamp + 100),
-                registered: true
-            })
-        );
+        _registerBoundOn(guard2, uint64(block.timestamp + 100));
 
         PredicatePaymentGuard.SettlementParams memory p = _params(MERCHANT, "USDC", CHAIN_ID);
-        bytes32 commitment = guard2.computeSettlementCommitment(_identity(), MANDATE_DIGEST, PREDICATE_ID, p);
+        bytes32 commitment = guard2.computeSettlementCommitment(_identity(), MANDATE_DIGEST, PREDICATE_ID, EXTRAS, p);
         bytes32 nonce = guard2.deriveNonce(commitment);
 
         vm.warp(block.timestamp + 200);
@@ -204,13 +209,17 @@ contract PredicatePaymentGuardTest is Test {
         guard2.validateAndConsume(_identity(), MANDATE_DIGEST, PREDICATE_ID, p, commitment, nonce);
     }
 
-    function test_RevertWhen_PredicateNotRegistered() public {
+    /// @dev An unknown id has neither a config nor a binding. The binding gate
+    ///      runs first, so the settlement is rejected with `PredicateNotBound`
+    ///      before the (now unreachable on this path) `PredicateNotRegistered`
+    ///      check inside `_consume`.
+    function test_RevertWhen_PredicateNotBound() public {
         PredicatePaymentGuard.SettlementParams memory p = _params(MERCHANT, "USDC", CHAIN_ID);
         (bytes32 commitment, bytes32 nonce) = _commitAndNonce(p);
         bytes32 idHash = keccak256(bytes("unknown-predicate"));
 
         vm.expectRevert(
-            abi.encodeWithSelector(PredicatePaymentGuard.PredicateNotRegistered.selector, idHash)
+            abi.encodeWithSelector(PredicatePaymentGuard.PredicateNotBound.selector, idHash)
         );
         guard.validateAndConsume(_identity(), MANDATE_DIGEST, "unknown-predicate", p, commitment, nonce);
     }

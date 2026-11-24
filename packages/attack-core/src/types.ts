@@ -3,12 +3,71 @@ import type { RuleId, TraceBundle, VerifyTraceOutput } from "@clb-acel/verifier-
 
 export type { AttackId, AttackResultCode, BaselineId };
 
+/** The seven outcome categories required by the R3-C5 baseline-fairness review. */
+export const OUTCOME_CATEGORIES = [
+  "PREVENTED",
+  "DETECTED",
+  "EXPLOITED",
+  "PARTIALLY_MITIGATED",
+  "NOT_APPLICABLE",
+  "ERROR",
+  "SKIPPED",
+] as const;
+
+export type OutcomeCategory = (typeof OUTCOME_CATEGORIES)[number];
+
+/** Categories the two booleans cannot express; a marker always wins over them. */
+export type OutcomeMarker = Extract<
+  OutcomeCategory,
+  "PARTIALLY_MITIGATED" | "NOT_APPLICABLE" | "ERROR" | "SKIPPED"
+>;
+
 export type BaselineOutcome = {
   detected: boolean;
   prevented: boolean;
   note: string;
   failedRules?: RuleId[];
+  /** Seven-category taxonomy; derived by deriveOutcome(), never hand-guessed. */
+  outcome?: OutcomeCategory;
+  /** Explicit marker for terminal/non-boolean outcomes (ERROR, SKIPPED, ...). */
+  marker?: OutcomeMarker;
 };
+
+export function isOutcomeCategory(value: unknown): value is OutcomeCategory {
+  return typeof value === "string" && (OUTCOME_CATEGORIES as readonly string[]).includes(value);
+}
+
+/**
+ * Single source of truth for boolean (+ optional marker) → taxonomy.
+ * A marker wins so an ERROR/SKIPPED run can never look successful; an explicit
+ * outcome is validated; PREVENTED requires prevented:true, so DETECTED is never
+ * reported as PREVENTED.
+ */
+export function deriveOutcome(cell: {
+  detected: boolean;
+  prevented: boolean;
+  outcome?: OutcomeCategory;
+  marker?: OutcomeMarker;
+}): OutcomeCategory {
+  if (cell.marker !== undefined) {
+    if (!isOutcomeCategory(cell.marker)) {
+      throw new Error(`Unknown outcome marker: ${String(cell.marker)}`);
+    }
+    return cell.marker as OutcomeMarker;
+  }
+  if (cell.outcome !== undefined) {
+    if (!isOutcomeCategory(cell.outcome)) {
+      throw new Error(`Unknown outcome category: ${String(cell.outcome)}`);
+    }
+    if (cell.outcome === "PREVENTED" && cell.prevented !== true) {
+      throw new Error("PREVENTED requires prevented:true; DETECTED must not be reported as PREVENTED");
+    }
+    return cell.outcome;
+  }
+  if (cell.prevented) return "PREVENTED";
+  if (cell.detected) return "DETECTED";
+  return "EXPLOITED";
+}
 
 export type AuditCheckResult = {
   ok: boolean;

@@ -4,6 +4,7 @@ import { registerOpenApi } from "@clb-acel/service-kit";
 import {
   buildPaymentRequirements,
   createFacilitator,
+  createLocalFacilitator,
   InvalidPaymentSignatureError,
   NonceAlreadyConsumedError,
   type Facilitator,
@@ -112,6 +113,11 @@ export async function buildMerchantServer(options: BuildMerchantServerOptions = 
   const app = Fastify({ logger: options.logger ?? true });
   const config = resolveConfig(options.config);
   const facilitator = options.facilitator ?? createFacilitator();
+  // CHAIN_TRANSPLANT is a deliberate attack fixture: the descriptor is minted for
+  // chain 1 so the verifier can catch it. A chain-bound facilitator would reject
+  // before the attack is recorded, so this one demo endpoint uses a chain-agnostic
+  // local facilitator. Production settlement still uses the configured facilitator.
+  const transplantFacilitator = createLocalFacilitator(undefined, null);
   const scorer = resolveScorerFromEnv();
 
   await registerOpenApi(app, {
@@ -164,8 +170,10 @@ export async function buildMerchantServer(options: BuildMerchantServerOptions = 
     { schema: { summary: "Settle an x402 payment via the local facilitator" } },
     async (request, reply) => {
       const payload = request.body as PaymentPayload;
-      const receipt = await facilitator.settle(payload);
       const mode = attackMode(request);
+      const activeFacilitator =
+        mode === "CHAIN_TRANSPLANT" && !options.facilitator ? transplantFacilitator : facilitator;
+      const receipt = await activeFacilitator.settle(payload);
       if (mode === "PAYEE_SUBSTITUTION") {
         return reply.code(201).send({ ...receipt, payTo: ATTACKER_PAYEE });
       }

@@ -1,0 +1,393 @@
+{
+  "artifact": "CFRSC fault-injection results",
+  "generatedAt": "2026-11-24T20:28:09.375Z",
+  "generator": "packages/service-kit/test/recovery.test.ts + transient harness",
+  "implementation": "packages/service-kit/src/recovery.ts",
+  "storage": "createInMemoryRecoveryStore (in-process event loop; a real DB implements writeAtomic via conditional update)",
+  "verificationStatus": "EXECUTED locally with Bun 1.4.5; no symbolic/Tamarin proof claimed",
+  "summary": {
+    "scenarios": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "propertyDefinitions": {
+    "at-most-once financial settlement": "at most one accepted settlement confirmation/receipt per transaction; retries replay the original evidence",
+    "at-most-once service execution where enforceable": "at most one fulfillment execution id; a duplicate id is rejected or replayed",
+    "no premature refund": "REFUND only from COMPENSATION_PENDING reached via DISPUTE after a confirmed settlement",
+    "no false completion": "COMPLETE only from FULFILLMENT_PENDING with a report bound to the recorded settlement txHash and a non-empty attestation",
+    "safe recovery after uncertain outcomes": "TIMEOUT keeps SETTLEMENT_PENDING; reconciliation resolves to exactly one outcome; crashes reload from durable state",
+    "consistent evidence after retries/crashes": "append-only hash-chained evidence with idempotency-key dedupe; verifyRecoveryEvidence detects tampering"
+  },
+  "scenarios": [
+    {
+      "id": "duplicate-retry-after-timeout",
+      "description": "Settlement submitted, timeout leaves delivery uncertain, then the identical submit is retried.",
+      "injectedFault": "TIMEOUT + duplicate SUBMIT_SETTLEMENT with the same idempotency key",
+      "trace": [
+        {
+          "command": "AUTHORIZE",
+          "idempotencyKey": "tx-auth",
+          "outcome": "APPLIED",
+          "resultingState": "AUTHORIZED"
+        },
+        {
+          "command": "RESERVE",
+          "idempotencyKey": "tx-res",
+          "outcome": "APPLIED",
+          "resultingState": "RESERVED"
+        },
+        {
+          "command": "SUBMIT_SETTLEMENT",
+          "idempotencyKey": "set-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLEMENT_PENDING"
+        },
+        {
+          "command": "TIMEOUT",
+          "idempotencyKey": "timeout-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLEMENT_PENDING"
+        },
+        {
+          "command": "SUBMIT_SETTLEMENT",
+          "idempotencyKey": "set-1",
+          "outcome": "REPLAYED",
+          "resultingState": "SETTLEMENT_PENDING"
+        },
+        {
+          "command": "RECONCILE",
+          "idempotencyKey": "recon-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLED"
+        }
+      ],
+      "finalState": "SETTLED",
+      "properties": {
+        "at-most-once financial settlement": true,
+        "consistent evidence after retries": true
+      },
+      "propertyNotes": {
+        "at-most-once financial settlement": "exactly 1 accepted settlement confirmation(s) for txHash 0xaaa",
+        "consistent evidence after retries": "retry outcome=REPLAYED; evidence hash reused=true"
+      },
+      "evidenceIntegrity": {
+        "ok": true,
+        "reasons": []
+      },
+      "finalEvidenceHash": "8b06f482a199bc9e51e7e030321ede51c2bf839a14330212fe95133e48e517ab",
+      "pass": true
+    },
+    {
+      "id": "crash-between-reserved-and-settled",
+      "description": "Process dies after submission; a fresh machine reopens the same durable transaction and reconciles.",
+      "injectedFault": "drop in-memory machine between SUBMIT_SETTLEMENT and confirmation",
+      "trace": [
+        {
+          "command": "AUTHORIZE",
+          "idempotencyKey": "fi-crash-between-reserved-and-settled-auth",
+          "outcome": "APPLIED",
+          "resultingState": "AUTHORIZED"
+        },
+        {
+          "command": "RESERVE",
+          "idempotencyKey": "fi-crash-between-reserved-and-settled-res",
+          "outcome": "APPLIED",
+          "resultingState": "RESERVED"
+        },
+        {
+          "command": "SUBMIT_SETTLEMENT",
+          "idempotencyKey": "set-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLEMENT_PENDING"
+        },
+        {
+          "command": "RECONCILE",
+          "idempotencyKey": "recon-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLED"
+        }
+      ],
+      "finalState": "SETTLED",
+      "properties": {
+        "safe recovery after uncertain outcomes": true,
+        "consistent evidence after retries/crashes": true
+      },
+      "propertyNotes": {
+        "safe recovery after uncertain outcomes": "durable state at crash=SETTLEMENT_PENDING; after reconcile=SETTLED",
+        "consistent evidence after retries/crashes": "evidence sequence continues monotonically 1..4 with intact hash chain"
+      },
+      "evidenceIntegrity": {
+        "ok": true,
+        "reasons": []
+      },
+      "finalEvidenceHash": "32827b7b3a55cfb1cd33c093259741606dfd9e7e0c6d05bc2acdd03415dfb21c",
+      "pass": true
+    },
+    {
+      "id": "settlement-success-delivery-unknown",
+      "description": "Money has moved but the merchant's delivery artifact has not arrived or is not bound to the receipt.",
+      "injectedFault": "COMPLETE attempted before fulfillment, then with wrong txHash and missing attestation",
+      "trace": [
+        {
+          "command": "AUTHORIZE",
+          "idempotencyKey": "tx-auth",
+          "outcome": "APPLIED",
+          "resultingState": "AUTHORIZED"
+        },
+        {
+          "command": "RESERVE",
+          "idempotencyKey": "tx-res",
+          "outcome": "APPLIED",
+          "resultingState": "RESERVED"
+        },
+        {
+          "command": "SUBMIT_SETTLEMENT",
+          "idempotencyKey": "set-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLEMENT_PENDING"
+        },
+        {
+          "command": "CONFIRM_SETTLEMENT",
+          "idempotencyKey": "conf-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLED"
+        },
+        {
+          "command": "COMPLETE",
+          "idempotencyKey": "done-early",
+          "outcome": "REJECTED",
+          "resultingState": "SETTLED",
+          "reason": "NO_FALSE_COMPLETION"
+        },
+        {
+          "command": "START_FULFILLMENT",
+          "idempotencyKey": "exec-1",
+          "outcome": "APPLIED",
+          "resultingState": "FULFILLMENT_PENDING"
+        },
+        {
+          "command": "COMPLETE",
+          "idempotencyKey": "done-wrong",
+          "outcome": "REJECTED",
+          "resultingState": "FULFILLMENT_PENDING",
+          "reason": "NO_FALSE_COMPLETION"
+        },
+        {
+          "command": "COMPLETE",
+          "idempotencyKey": "done-nosig",
+          "outcome": "REJECTED",
+          "resultingState": "FULFILLMENT_PENDING",
+          "reason": "NO_FALSE_COMPLETION"
+        },
+        {
+          "command": "COMPLETE",
+          "idempotencyKey": "done-good",
+          "outcome": "APPLIED",
+          "resultingState": "COMPLETED"
+        }
+      ],
+      "finalState": "COMPLETED",
+      "properties": {
+        "no false completion": true,
+        "at-most-once service execution where enforceable": true
+      },
+      "propertyNotes": {
+        "no false completion": "three invalid completion attempts rejected with NO_FALSE_COMPLETION; only the bound report completed",
+        "at-most-once service execution where enforceable": "one execution id recorded; duplicate execution ids rejected (see unit test)"
+      },
+      "evidenceIntegrity": {
+        "ok": true,
+        "reasons": []
+      },
+      "finalEvidenceHash": "d02c86ea8a76bb48435d5057f637c2225586c89171ed413742b518954d806b3b",
+      "pass": true
+    },
+    {
+      "id": "premature-refund-attempt",
+      "description": "A refund is demanded while the settlement outcome is still unknown and again before any dispute.",
+      "injectedFault": "REFUND during SETTLEMENT_PENDING and START_COMPENSATION while merely SETTLED",
+      "trace": [
+        {
+          "command": "AUTHORIZE",
+          "idempotencyKey": "tx-auth",
+          "outcome": "APPLIED",
+          "resultingState": "AUTHORIZED"
+        },
+        {
+          "command": "RESERVE",
+          "idempotencyKey": "tx-res",
+          "outcome": "APPLIED",
+          "resultingState": "RESERVED"
+        },
+        {
+          "command": "SUBMIT_SETTLEMENT",
+          "idempotencyKey": "set-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLEMENT_PENDING"
+        },
+        {
+          "command": "TIMEOUT",
+          "idempotencyKey": "timeout-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLEMENT_PENDING"
+        },
+        {
+          "command": "REFUND",
+          "idempotencyKey": "refund-early",
+          "outcome": "REJECTED",
+          "resultingState": "SETTLEMENT_PENDING",
+          "reason": "NO_PREMATURE_REFUND"
+        },
+        {
+          "command": "DISPUTE",
+          "idempotencyKey": "dispute-early",
+          "outcome": "REJECTED",
+          "resultingState": "SETTLEMENT_PENDING",
+          "reason": "INVALID_TRANSITION"
+        },
+        {
+          "command": "RECONCILE",
+          "idempotencyKey": "recon-late",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLED"
+        },
+        {
+          "command": "START_COMPENSATION",
+          "idempotencyKey": "comp-early",
+          "outcome": "REJECTED",
+          "resultingState": "SETTLED",
+          "reason": "NO_PREMATURE_REFUND"
+        },
+        {
+          "command": "DISPUTE",
+          "idempotencyKey": "dispute-1",
+          "outcome": "APPLIED",
+          "resultingState": "DISPUTED"
+        },
+        {
+          "command": "START_COMPENSATION",
+          "idempotencyKey": "comp-1",
+          "outcome": "APPLIED",
+          "resultingState": "COMPENSATION_PENDING"
+        },
+        {
+          "command": "REFUND",
+          "idempotencyKey": "refund-1",
+          "outcome": "APPLIED",
+          "resultingState": "COMPENSATED"
+        }
+      ],
+      "finalState": "COMPENSATED",
+      "properties": {
+        "no premature refund": true
+      },
+      "propertyNotes": {
+        "no premature refund": "refund and dispute rejected while uncertain; compensation rejected while merely SETTLED; refund allowed only after SETTLED -> DISPUTED -> COMPENSATION_PENDING"
+      },
+      "evidenceIntegrity": {
+        "ok": true,
+        "reasons": []
+      },
+      "finalEvidenceHash": "0ce28fb7ce6ab55449e9b63670159e9c89bb253a33f318b3a1fe46e11c5f2e81",
+      "pass": true
+    },
+    {
+      "id": "false-completion-attempt",
+      "description": "A completion certificate is demanded for a transaction whose settlement was never confirmed.",
+      "injectedFault": "COMPLETE from RESERVED (no settlement receipt)",
+      "trace": [
+        {
+          "command": "AUTHORIZE",
+          "idempotencyKey": "tx-auth",
+          "outcome": "APPLIED",
+          "resultingState": "AUTHORIZED"
+        },
+        {
+          "command": "RESERVE",
+          "idempotencyKey": "tx-res",
+          "outcome": "APPLIED",
+          "resultingState": "RESERVED"
+        },
+        {
+          "command": "COMPLETE",
+          "idempotencyKey": "done-false",
+          "outcome": "REJECTED",
+          "resultingState": "RESERVED",
+          "reason": "NO_FALSE_COMPLETION"
+        }
+      ],
+      "finalState": "RESERVED",
+      "properties": {
+        "no false completion": true
+      },
+      "propertyNotes": {
+        "no false completion": "state remained RESERVED; no completion record created; rejection appended to evidence log"
+      },
+      "evidenceIntegrity": {
+        "ok": true,
+        "reasons": []
+      },
+      "finalEvidenceHash": "d44c9679d51f1665e5ed26b3a67742b283f8b338bb3201daf34ff457d87c7a83",
+      "pass": true
+    },
+    {
+      "id": "reorg-stale-settlement-evidence",
+      "description": "A previously observed tx hash is invalidated by a reorg; an attacker presents old evidence again.",
+      "injectedFault": "CONFIRM_SETTLEMENT with a different txHash after a receipt is already recorded",
+      "trace": [
+        {
+          "command": "AUTHORIZE",
+          "idempotencyKey": "tx-auth",
+          "outcome": "APPLIED",
+          "resultingState": "AUTHORIZED"
+        },
+        {
+          "command": "RESERVE",
+          "idempotencyKey": "tx-res",
+          "outcome": "APPLIED",
+          "resultingState": "RESERVED"
+        },
+        {
+          "command": "SUBMIT_SETTLEMENT",
+          "idempotencyKey": "set-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLEMENT_PENDING"
+        },
+        {
+          "command": "CONFIRM_SETTLEMENT",
+          "idempotencyKey": "conf-1",
+          "outcome": "APPLIED",
+          "resultingState": "SETTLED"
+        },
+        {
+          "command": "CONFIRM_SETTLEMENT",
+          "idempotencyKey": "conf-stale",
+          "outcome": "REJECTED",
+          "resultingState": "SETTLED",
+          "reason": "STALE_SETTLEMENT_EVIDENCE"
+        },
+        {
+          "command": "CONFIRM_SETTLEMENT",
+          "idempotencyKey": "conf-canonical",
+          "outcome": "REPLAYED",
+          "resultingState": "SETTLED"
+        }
+      ],
+      "finalState": "SETTLED",
+      "properties": {
+        "consistent evidence after retries/crashes": true,
+        "at-most-once financial settlement": true
+      },
+      "propertyNotes": {
+        "consistent evidence after retries/crashes": "stale txHash rejected; canonical receipt replayed with identical evidence hash",
+        "at-most-once financial settlement": "one accepted CONFIRM_SETTLEMENT effect; receipt never overwritten"
+      },
+      "evidenceIntegrity": {
+        "ok": true,
+        "reasons": []
+      },
+      "finalEvidenceHash": "f9d14e29d2ab41891cf0d3bdee4e81fc821ffb0f2aad3bacdf2c8df10ed0b540",
+      "pass": true
+    }
+  ]
+}

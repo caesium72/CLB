@@ -12,9 +12,10 @@ describe("runHumanPresent (in-process Mode A)", () => {
     expect(trace.mandate.clbCommitment).toBe(trace.clbCommitment);
     expect(trace.paymentPayload.authorization.nonce).toBe(trace.nonce);
     expect(trace.settlement.nonce).toBe(trace.nonce);
-    expect(trace.events).toHaveLength(7);
-    // 7 anchored event nodes + 2 presentation nodes (verifier verdict, ERC-8004 feedback).
-    expect(trace.graph.nodes).toHaveLength(9);
+    // 8 anchored events (DECISION_CONTEXT was added after this test was written)
+    // + 2 presentation nodes (verifier verdict, ERC-8004 feedback).
+    expect(trace.events).toHaveLength(8);
+    expect(trace.graph.nodes).toHaveLength(10);
     expect(trace.verification.certificate.traceMerkleRoot).toBe(trace.merkleRoot);
   });
 

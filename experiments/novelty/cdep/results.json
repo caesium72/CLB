@@ -1,0 +1,113 @@
+{
+  "experiment": "CDEP — causal delegation and execution provenance on a multi-agent DAG",
+  "generatedBy": "bun run experiments/novelty/cdep/run.ts",
+  "deterministic": true,
+  "method": "Each scenario is a fixed delegation-DAG fixture verified by the deterministic verifyCausalExecution() engine; expected finding codes are declared in the fixture, not inferred from the run.",
+  "cases": [
+    {
+      "id": "HONEST_DAG",
+      "description": "Human-authorized root delegates to an intermediate which delegates to the executing agent; settlement stays inside the terminal scope.",
+      "mutation": "none",
+      "expectedFindingCodes": [],
+      "observedFindingCodes": [],
+      "ok": true,
+      "matchedExpectation": true
+    },
+    {
+      "id": "SUBSTITUTED_INTERMEDIATE_AGENT",
+      "description": "An attacker replaces the intermediate delegatee and relinks the child commitment.",
+      "mutation": "cert-middle.child -> attacker identity; cert-terminal.parentExecCommitment reissued; cert-terminal.issuer left honest",
+      "expectedFindingCodes": [
+        "PARENT_CHILD_AUTHORITY_MISMATCH"
+      ],
+      "observedFindingCodes": [
+        "PARENT_CHILD_AUTHORITY_MISMATCH"
+      ],
+      "ok": false,
+      "matchedExpectation": true
+    },
+    {
+      "id": "SUBSTITUTED_ACTION",
+      "description": "The terminal action is replaced by a reissued action attributed to another agent.",
+      "mutation": "cert-terminal.action.targetAgentId + parametersHash; C_exec reissued",
+      "expectedFindingCodes": [
+        "ACTION_ATTRIBUTION_MISMATCH"
+      ],
+      "observedFindingCodes": [
+        "ACTION_ATTRIBUTION_MISMATCH"
+      ],
+      "ok": false,
+      "matchedExpectation": true
+    },
+    {
+      "id": "EXPANDED_DELEGATION",
+      "description": "The terminal branch expands its own spending cap beyond the parent's cap.",
+      "mutation": "cert-terminal.policy.scope.maxAmount 1.50 -> 5.00; C_exec reissued",
+      "expectedFindingCodes": [
+        "NON_EXPANDING_DELEGATION_VIOLATED"
+      ],
+      "observedFindingCodes": [
+        "NON_EXPANDING_DELEGATION_VIOLATED"
+      ],
+      "ok": false,
+      "matchedExpectation": true
+    },
+    {
+      "id": "BROKEN_PARENT_LINK",
+      "description": "The terminal certificate points at a parent commitment that was never issued by its parent.",
+      "mutation": "cert-terminal.parentExecCommitment -> unrelated digest; C_exec reissued",
+      "expectedFindingCodes": [
+        "PARENT_LINK_MISMATCH"
+      ],
+      "observedFindingCodes": [
+        "PARENT_LINK_MISMATCH"
+      ],
+      "ok": false,
+      "matchedExpectation": true
+    },
+    {
+      "id": "SUBSTITUTED_BRANCH",
+      "description": "A sibling branch terminating at the attacker is presented instead of the trusted terminal branch.",
+      "mutation": "add cert-sibling-attacker under the honest intermediate; terminalCertificateId switched",
+      "expectedFindingCodes": [
+        "BRANCH_SUBSTITUTION_DETECTED",
+        "CROSS_AGENT_ATTRIBUTION_FAILED"
+      ],
+      "observedFindingCodes": [
+        "BRANCH_SUBSTITUTION_DETECTED",
+        "CROSS_AGENT_ATTRIBUTION_FAILED",
+        "CROSS_AGENT_ATTRIBUTION_FAILED"
+      ],
+      "ok": false,
+      "matchedExpectation": true
+    },
+    {
+      "id": "SUBSTITUTED_PAYEE",
+      "description": "The settlement payee is routed outside the terminal branch's delegated scope.",
+      "mutation": "settlement.payTo -> attacker address",
+      "expectedFindingCodes": [
+        "PAYMENT_EXECUTION_LINEAGE_BROKEN"
+      ],
+      "observedFindingCodes": [
+        "PAYMENT_EXECUTION_LINEAGE_BROKEN"
+      ],
+      "ok": false,
+      "matchedExpectation": true
+    }
+  ],
+  "summary": {
+    "scenarioCount": 7,
+    "honestCases": 1,
+    "honestPassed": 1,
+    "attackCases": 6,
+    "attacksDetected": 6,
+    "falsePositives": 0,
+    "falseNegatives": 0
+  },
+  "limitations": [
+    "Fixtures are synthetic; no real multi-agent network, registry or on-chain settlement is exercised.",
+    "Certificates carry no authenticated signatures; root and terminal anchors are supplied by the caller from a trusted source, not fetched by the verifier.",
+    "The engine is offline and deterministic; it proves consistency of the presented DAG, not that the DAG is complete relative to an external event log.",
+    "Settlement lineage checks the delegation branch scope only; verifier rules R10–R13 and R12 still govern the actual mandate/registry constraints."
+  ]
+}

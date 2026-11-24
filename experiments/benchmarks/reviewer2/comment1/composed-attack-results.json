@@ -1,0 +1,175 @@
+{
+  "generatedAt": "2026-11-24T21:26:27.069Z",
+  "seed": 1800000000000,
+  "results": [
+    {
+      "id": "MERCHANT_SUBSTITUTION_WITH_SELECTION_MANIPULATION",
+      "attackerCapabilities": [
+        "Control of merchant-provided content",
+        "Ability to influence agent merchant selection",
+        "Ability to alter submitted settlement receipt"
+      ],
+      "steps": [
+        "Present an unauthorized merchant-selection instruction.",
+        "Record the unauthorized selectedPayee in the evidence trace.",
+        "Substitute the settlement payee with the attacker's address.",
+        "Mark the merchant identity as revoked before verification.",
+        "Run selection auditing and deterministic settlement verification."
+      ],
+      "detected": true,
+      "prevented": false,
+      "detectionStage": "post-settlement",
+      "failedRules": [
+        "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+        "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+      ],
+      "auditCheck": {
+        "ok": true,
+        "detail": "Discovery selected a merchant outside allowedPayees"
+      },
+      "eventCount": 8,
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
+        },
+        "B1": {
+          "detected": true,
+          "prevented": false,
+          "note": "Rejected: PAYEE_NOT_ALLOWED",
+          "outcome": "DETECTED"
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "Rejected: PAYEE_OUT_OF_CONTEXT",
+          "outcome": "DETECTED"
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK"
+          ],
+          "note": "Detected by the verifier or the explicit selection-audit check after a settlement receipt exists.",
+          "outcome": "DETECTED"
+        }
+      }
+    },
+    {
+      "id": "COMPROMISED_AGENT_WITH_AMOUNT_ESCALATION",
+      "attackerCapabilities": [
+        "Control of agent application/orchestration logic",
+        "Ability to submit altered settlement metadata",
+        "No possession of the user's signing key"
+      ],
+      "steps": [
+        "Start from a valid user-signed mandate and payment authorization.",
+        "Compromise agent orchestration without assuming signing-key theft.",
+        "Attempt to raise the settlement amount above the mandate limit.",
+        "Remove the payment key from the resolved agent authorization view.",
+        "Run deterministic verification against the modified trace."
+      ],
+      "detected": true,
+      "prevented": false,
+      "detectionStage": "post-settlement",
+      "failedRules": [
+        "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+        "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+        "R11_AMOUNT_WITHIN_MANDATE"
+      ],
+      "eventCount": 8,
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
+        },
+        "B1": {
+          "detected": true,
+          "prevented": false,
+          "note": "Rejected: AMOUNT_EXCEEDS_MANDATE",
+          "outcome": "DETECTED"
+        },
+        "B2": {
+          "detected": false,
+          "prevented": false,
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R4_AGENT_PAYMENT_KEY_AUTHORIZED",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R11_AMOUNT_WITHIN_MANDATE"
+          ],
+          "note": "Detected by the verifier or the explicit selection-audit check after a settlement receipt exists.",
+          "outcome": "DETECTED"
+        }
+      }
+    },
+    {
+      "id": "MALICIOUS_MERCHANT_WITH_FORGED_DELIVERY",
+      "attackerCapabilities": [
+        "Control of merchant delivery response",
+        "Ability to submit a forged report artifact",
+        "Ability to attempt settlement redirection"
+      ],
+      "steps": [
+        "Complete a valid local payment fixture.",
+        "Submit a delivery event claiming a forged report hash.",
+        "Replace the report hash without a corresponding merchant signature.",
+        "Attempt to redirect the settlement payee.",
+        "Verify report authenticity, delivery binding, and settlement consistency."
+      ],
+      "detected": true,
+      "prevented": false,
+      "detectionStage": "post-settlement",
+      "failedRules": [
+        "R2_SIGNATURES_VALID",
+        "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+        "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+        "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+      ],
+      "eventCount": 8,
+      "baselineComparison": {
+        "B0": {
+          "detected": false,
+          "prevented": false,
+          "note": "Accepted the attacked trace — attack missed.",
+          "outcome": "EXPLOITED"
+        },
+        "B1": {
+          "detected": true,
+          "prevented": false,
+          "note": "Rejected: PAYEE_NOT_ALLOWED",
+          "outcome": "DETECTED"
+        },
+        "B2": {
+          "detected": true,
+          "prevented": false,
+          "note": "Rejected: PAYEE_OUT_OF_CONTEXT",
+          "outcome": "DETECTED"
+        },
+        "B3": {
+          "detected": true,
+          "prevented": false,
+          "failedRules": [
+            "R2_SIGNATURES_VALID",
+            "R7_SETTLEMENT_PARAMS_MATCH_DESCRIPTOR",
+            "R12_PAYEE_MATCHES_CHECKOUT_OR_TASK",
+            "R14b_DELIVERY_BOUND_TO_SETTLEMENT"
+          ],
+          "note": "Detected by the verifier or the explicit selection-audit check after a settlement receipt exists.",
+          "outcome": "DETECTED"
+        }
+      }
+    }
+  ]
+}
